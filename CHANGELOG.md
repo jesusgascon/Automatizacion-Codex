@@ -25,3 +25,4 @@
 - Logo vectorial propio e integracion visual en README, manual y lanzador.
 - Seccion de creditos del proyecto.
 - Carpeta de salida configurable mediante `CODEX_SUMMARY_DIR`.
+- Instalador interactivo para elegir la carpeta de resumenes, logs y backups.

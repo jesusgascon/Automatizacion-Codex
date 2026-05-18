@@ -19,6 +19,8 @@ El script detecta:
 2. la base de sesiones mediante `STATE_DB` o el ultimo `~/.codex/state_*.sqlite`,
 3. el Escritorio mediante `xdg-user-dir DESKTOP`, `~/Escritorio` o `~/Desktop`.
 
+Durante una ejecucion interactiva de `instalar.sh`, el instalador pregunta donde guardar resumenes, logs y backups. Si se pulsa `Enter`, usa la ruta predeterminada. El codigo, el ejecutable y la documentacion permanecen en la carpeta donde se clono el repositorio.
+
 ## Variables opcionales
 
 | Variable | Valor esperado | Uso recomendado |

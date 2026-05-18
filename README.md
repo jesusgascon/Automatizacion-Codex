@@ -57,9 +57,12 @@ Al ser un repositorio público, la instalación no requiere autenticación de Gi
 El instalador:
 
 1. detecta la carpeta de Escritorio,
-2. crea la carpeta de salida de resúmenes,
-3. genera el lanzador `Resumir sesion de Codex.desktop`,
-4. marca como ejecutables los archivos necesarios.
+2. pregunta dónde guardar resúmenes, logs y backups si se ejecuta de forma interactiva,
+3. crea la carpeta de salida elegida,
+4. genera el lanzador `Resumir sesion de Codex.desktop`,
+5. marca como ejecutables los archivos necesarios.
+
+La aplicación y su documentación permanecen en la carpeta donde se clona el repositorio. Esa ubicación se decide antes de instalar, al elegir dónde ejecutar `git clone`.
 
 Verificación mínima tras instalar:
 

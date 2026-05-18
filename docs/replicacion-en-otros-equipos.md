@@ -40,7 +40,10 @@ cd "$HOME/Proyectos/Automatizacion-Codex"
 bash instalar.sh
 ```
 
-4. Verificar que aparezca un lanzador en el Escritorio.
+4. Cuando pregunte por la carpeta de resumenes:
+   - pulsar `Enter` para usar la ruta predeterminada,
+   - o escribir una ruta personalizada, por ejemplo `~/Documentos/Codex/Resumenes`.
+5. Verificar que aparezca un lanzador en el Escritorio.
 
 ## Resumen rapido para instalar en casa
 
@@ -76,6 +79,8 @@ El instalador adapta automaticamente:
 - la base local de sesiones de ese equipo,
 - la ruta donde se guardan los resumenes.
 
+Durante una instalacion interactiva pregunta donde guardar resumenes, logs y backups. La aplicacion, el ejecutable y la documentacion permanecen en la carpeta donde se clono el repositorio; esa carpeta se elige antes, al hacer `git clone`.
+
 No hace falta tocar rutas manualmente salvo que:
 
 - Codex no este en `PATH`,
@@ -91,6 +96,7 @@ No hace falta tocar rutas manualmente salvo que:
 - intenta marcar el lanzador como confiable mediante `gio` cuando el entorno lo permite,
 - avisa si faltan `python3`, `xdg-terminal-exec` o `codex`,
 - crea la carpeta de salida de resumenes.
+- pregunta de forma interactiva donde guardar resumenes, logs y backups cuando no se fuerza `CODEX_SUMMARY_DIR`.
 
 ## Alternativa con GitHub CLI
 

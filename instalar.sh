@@ -23,9 +23,47 @@ detect_desktop_dir() {
   fi
 }
 
+expand_user_path() {
+  case "$1" in
+    "~")
+      printf '%s\n' "$HOME"
+      ;;
+    "~/"*)
+      printf '%s/%s\n' "$HOME" "${1#~/}"
+      ;;
+    *)
+      printf '%s\n' "$1"
+      ;;
+  esac
+}
+
+choose_summary_dir() {
+  local default_dir="$1"
+  local chosen_dir
+
+  if [[ -n "${CODEX_SUMMARY_DIR:-}" ]]; then
+    printf '%s\n' "$CODEX_SUMMARY_DIR"
+    return 0
+  fi
+
+  if [[ -t 0 ]]; then
+    printf 'Carpeta para resumenes, logs y backups:\n'
+    printf ' [Enter] %s\n' "$default_dir"
+    printf ' Ruta personalizada: '
+    read -r chosen_dir
+    if [[ -n "$chosen_dir" ]]; then
+      expand_user_path "$chosen_dir"
+      return 0
+    fi
+  fi
+
+  printf '%s\n' "$default_dir"
+}
+
 DESKTOP_DIR="$(detect_desktop_dir)"
 LAUNCHER="$DESKTOP_DIR/Resumir sesion de Codex.desktop"
-OUT_DIR="${CODEX_SUMMARY_DIR:-$DESKTOP_DIR/Documentacion/Codex/Resumenes}"
+DEFAULT_OUT_DIR="$DESKTOP_DIR/Documentacion/Codex/Resumenes"
+OUT_DIR="$(choose_summary_dir "$DEFAULT_OUT_DIR")"
 
 if ! command -v python3 >/dev/null 2>&1; then
   printf 'Aviso: no se encuentra python3. El lanzador no funcionara sin Python 3.\n'
@@ -59,5 +97,6 @@ if command -v gio >/dev/null 2>&1; then
 fi
 
 printf 'Instalacion completada.\n'
+printf 'Aplicacion y documentacion: %s\n' "$SCRIPT_DIR"
 printf 'Lanzador: %s\n' "$LAUNCHER"
 printf 'Resumenes: %s\n' "$OUT_DIR"

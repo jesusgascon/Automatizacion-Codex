@@ -38,11 +38,15 @@ En `<Escritorio>/Documentacion/Codex/Resumenes/backups/`. Se crean antes de arch
 
 ## Puedo guardar los resumenes en otra carpeta?
 
-Si. Define `CODEX_SUMMARY_DIR` antes de ejecutar el instalador o el script, por ejemplo:
+Si. Durante `bash instalar.sh`, el instalador te pregunta la carpeta si lo ejecutas de forma interactiva. Tambien puedes definir `CODEX_SUMMARY_DIR` antes de ejecutar el instalador o el script, por ejemplo:
 
 ```bash
 CODEX_SUMMARY_DIR="$HOME/Documentos/Codex/Resumenes" bash instalar.sh
 ```
+
+## Puedo elegir desde el instalador donde guardar el ejecutable y la documentacion?
+
+No durante la instalacion. El ejecutable, el logo y la documentacion forman parte del repositorio y permanecen en la carpeta donde lo clonaste. Si quieres otra ubicacion para la aplicacion, elige esa carpeta antes de ejecutar `git clone`.
 
 ## Que debo hacer despues de actualizar desde GitHub?
 
