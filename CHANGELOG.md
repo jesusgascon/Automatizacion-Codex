@@ -23,3 +23,4 @@
 - Guia de instalacion actualizada para distribucion publica.
 - Filtro textual de sesiones por ID, ruta, titulo o primer mensaje.
 - Logo vectorial propio e integracion visual en README, manual y lanzador.
+- Seccion de creditos del proyecto.

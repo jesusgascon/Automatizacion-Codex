@@ -210,3 +210,8 @@ python3 -m unittest discover -s tests -v
 ## Licencia
 
 MIT. Consulta [LICENSE](LICENSE).
+
+## Creditos
+
+- Autor y mantenedor: Jesus Gascon.
+- Desarrollo, revision tecnica y documentacion realizados en colaboracion con Codex de OpenAI.
