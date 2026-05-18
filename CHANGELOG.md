@@ -18,3 +18,5 @@
 - Rotacion configurable de backups con `MAX_BACKUPS`.
 - Filtro de rutas bajo `$HOME` mas estricto.
 - Tests automatizados de regresion.
+- Documento de configuracion y mantenimiento.
+- Ampliacion del README, FAQ, manual y guias operativas para reflejar la version endurecida.

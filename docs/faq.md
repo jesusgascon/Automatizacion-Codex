@@ -27,3 +27,20 @@ Porque aun no existe un resumen asociado por ID de sesion. Selecciona la sesion 
 ## Puedo consultar un resumen sin regenerarlo?
 
 Si. Selecciona la sesion y usa `5) Ver ultimo resumen guardado`.
+
+## Donde se guardan los backups?
+
+En `<Escritorio>/Documentacion/Codex/Resumenes/backups/`. Se crean antes de archivar o desarchivar y por defecto se conservan los 10 mas recientes.
+
+## Que debo hacer despues de actualizar desde GitHub?
+
+Ejecuta:
+
+```bash
+git pull --ff-only
+bash -n resumir-sesion-codex.sh instalar.sh
+python3 -m unittest discover -s tests -v
+bash instalar.sh
+```
+
+Asi validas el codigo y regeneras el lanzador si cambio la plantilla o la ruta.

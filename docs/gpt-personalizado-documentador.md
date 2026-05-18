@@ -109,6 +109,7 @@ Pega aqui el script, lanzador, estructura de carpetas o procedimiento que quiera
 - `README.md`
 - `docs/arquitectura.md`
 - `docs/funcionamiento-detallado.md`
+- `docs/configuracion-y-mantenimiento.md`
 - `docs/replicacion-en-otros-equipos.md`
 - ejemplos reales de scripts tuyos bien documentados
 - si quieres consistencia maxima, una guia propia de estilo documental

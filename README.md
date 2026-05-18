@@ -40,6 +40,9 @@ N   Actualizada      Iniciada         Tokens       Resumen  Ruta                
 ## Instalación rápida
 
 ```bash
+gh auth login -h github.com
+mkdir -p "$HOME/Proyectos"
+cd "$HOME/Proyectos"
 gh repo clone jesusgascon/Automatizacion-Codex
 cd Automatizacion-Codex
 bash instalar.sh
@@ -53,6 +56,22 @@ El instalador:
 2. crea la carpeta de salida de resúmenes,
 3. genera el lanzador `Resumir sesion de Codex.desktop`,
 4. marca como ejecutables los archivos necesarios.
+
+Verificación mínima tras instalar:
+
+```bash
+bash -n resumir-sesion-codex.sh instalar.sh
+python3 -m unittest discover -s tests -v
+grep '^Exec=' "$HOME/Escritorio/Resumir sesion de Codex.desktop" 2>/dev/null || \
+grep '^Exec=' "$HOME/Desktop/Resumir sesion de Codex.desktop"
+```
+
+Después abre el lanzador y confirma que:
+
+- se muestra la vista inicial,
+- aparecen las sesiones del usuario actual,
+- puedes generar o consultar un resumen,
+- puedes volver atrás con `0` sin cerrar la ventana.
 
 ## Uso
 
@@ -123,6 +142,7 @@ Automatizacion-Codex/
 
 - [Arquitectura](docs/arquitectura.md)
 - [Funcionamiento detallado](docs/funcionamiento-detallado.md)
+- [Configuración y mantenimiento](docs/configuracion-y-mantenimiento.md)
 - [Instalación y réplica](docs/replicacion-en-otros-equipos.md)
 - [Privacidad](docs/privacidad.md)
 - [Compatibilidad](docs/compatibilidad.md)
@@ -140,6 +160,27 @@ Automatizacion-Codex/
 - `codex exec --ephemeral` permite resumir sin contaminar el historial con otra sesión persistente.
 - Los resúmenes nuevos incluyen `session_id` en el nombre para asociarlos sin ambigüedad.
 - El filtrado por `HOME` distingue la ruta exacta de subrutas válidas y evita coincidencias solo por prefijo textual.
+
+## Configuración operativa
+
+Variables opcionales:
+
+| Variable | Uso |
+| --- | --- |
+| `CODEX_BIN` | Fuerza la ruta al ejecutable de Codex. |
+| `STATE_DB` | Fuerza la base SQLite que debe leer el script. |
+| `MAX_BACKUPS` | Ajusta cuántos backups previos al archivado se conservan. |
+
+Ejemplo de diagnóstico puntual:
+
+```bash
+CODEX_BIN="$HOME/.nvm/versions/node/v24.0.0/bin/codex" \
+STATE_DB="$HOME/.codex/state_1.sqlite" \
+MAX_BACKUPS=20 \
+bash resumir-sesion-codex.sh
+```
+
+Para uso normal no hace falta definirlas; la autodetección es la ruta recomendada.
 
 ## Limitaciones conocidas
 

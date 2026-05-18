@@ -11,7 +11,7 @@ Resumir sesion de Codex.desktop
 El lanzador abre:
 
 ```bash
-gnome-terminal -- /ruta/al/proyecto/resumir-sesion-codex.sh
+xdg-terminal-exec -- /ruta/al/proyecto/resumir-sesion-codex.sh
 ```
 
 ## 2. Deteccion automatica
@@ -52,7 +52,7 @@ Consulta logica:
 ```sql
 select id, cwd, title, first_user_message, created_at, updated_at, tokens_used
 from threads
-where cwd like "$HOME%"
+where cwd = "$HOME" or cwd like "$HOME/%"
   and archived = 0
   and source in ('cli', 'vscode')
 order by updated_at desc;
@@ -64,6 +64,8 @@ Cada sesion muestra:
 
 - numero de opcion,
 - fecha y hora de ultima actualizacion,
+- fecha y hora de inicio,
+- tokens acumulados,
 - directorio de trabajo,
 - si existe resumen asociado,
 - titulo normalizado.

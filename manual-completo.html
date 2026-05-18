@@ -242,7 +242,7 @@
         <li>Consulta la tabla <code>threads</code> de la base local de Codex.</li>
         <li>Muestra las sesiones principales bajo <code>$HOME</code>, ordenadas por fecha reciente.</li>
         <li>El usuario elige una sesion.</li>
-        <li>El usuario elige entre resumir, abrir o resumir y abrir.</li>
+        <li>El usuario elige entre resumir, abrir, resumir y abrir, archivar o consultar el ultimo resumen existente.</li>
       </ol>
 
       <h2>4. Acciones disponibles</h2>
@@ -258,7 +258,7 @@
           <tr>
             <td><code>1</code></td>
             <td>Generar resumen</td>
-            <td>Crea <code>.txt</code> y <code>.log</code>, muestra vista previa y cierra.</td>
+            <td>Crea <code>.txt</code> y <code>.log</code>, muestra vista previa y vuelve al listado.</td>
           </tr>
           <tr>
             <td><code>2</code></td>
@@ -305,9 +305,9 @@
       </ol>
 
       <h2>6. Consulta SQLite</h2>
-      <pre><code>select id, cwd, title, first_user_message, updated_at
+      <pre><code>select id, cwd, title, first_user_message, created_at, updated_at, tokens_used
 from threads
-where cwd like "$HOME%"
+where cwd = "$HOME" or cwd like "$HOME/%"
   and archived = 0
   and source in ('cli', 'vscode')
 order by updated_at desc;</code></pre>
@@ -325,6 +325,7 @@ order by updated_at desc;</code></pre>
         <li>No cambia permisos de proyectos.</li>
         <li>No crea nuevas sesiones persistentes al resumir gracias a <code>--ephemeral</code>.</li>
         <li>Separa resumen limpio y log tecnico para facilitar auditoria.</li>
+        <li>Rota backups antiguos y conserva por defecto los 10 mas recientes.</li>
       </ul>
 
       <h2>8. Replicacion</h2>
@@ -337,7 +338,35 @@ order by updated_at desc;</code></pre>
       <pre><code>cd Automatizacion-Codex
 bash instalar.sh</code></pre>
 
-      <h2>9. GPT personalizado asociado</h2>
+      <h2>9. Configuracion y mantenimiento</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Funcion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>CODEX_BIN</code></td>
+            <td>Fuerza la ruta al ejecutable de Codex si la autodeteccion no basta.</td>
+          </tr>
+          <tr>
+            <td><code>STATE_DB</code></td>
+            <td>Fuerza una base concreta si existen varias.</td>
+          </tr>
+          <tr>
+            <td><code>MAX_BACKUPS</code></td>
+            <td>Ajusta la retencion de backups previos al archivado.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Tras actualizar el proyecto conviene ejecutar validacion de sintaxis, tests y de nuevo
+        <code>bash instalar.sh</code> para regenerar el lanzador si cambia la plantilla o la ruta.
+      </p>
+
+      <h2>10. GPT personalizado asociado</h2>
       <p>
         El proyecto incorpora una especificacion completa para crear un GPT personalizado orientado a
         documentar automatizaciones locales, scripts y lanzadores de Linux con el mismo nivel de detalle.

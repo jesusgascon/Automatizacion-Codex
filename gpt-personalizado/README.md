@@ -28,3 +28,5 @@ La version extensa y razonada sigue estando en:
 ```text
 docs/gpt-personalizado-documentador.md
 ```
+
+La lista de conocimiento incluye tambien `docs/configuracion-y-mantenimiento.md` para que el GPT pueda documentar no solo instalacion y arquitectura, sino tambien operacion recurrente y actualizaciones.

@@ -70,7 +70,7 @@ Campos utilizados:
 
 Filtros:
 
-- `cwd like "$HOME%"`
+- `cwd = "$HOME"` o `cwd like "$HOME/%"`
 - `archived = 0`
 - `source in ('cli', 'vscode')`
 
@@ -204,5 +204,5 @@ state-before-archive-YYYYMMDD-HHMMSS.sqlite
 
 - Cambio de esquema SQLite por parte de Codex.
 - Cambio de CLI o subcomandos de Codex.
-- Instalaciones no compatibles con `gnome-terminal`.
+- Escritorios sin `xdg-terminal-exec` o con un terminal no compatible con la plantilla actual.
 - Sesiones antiguas con metadatos escasos.

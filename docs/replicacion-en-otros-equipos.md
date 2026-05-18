@@ -101,14 +101,23 @@ Uso recomendado:
 
 ## Pruebas tras instalar
 
-1. Abrir el lanzador.
-2. Confirmar que aparece una lista de sesiones.
-3. Elegir una sesion conocida.
-4. Probar:
+1. Validar el proyecto:
+
+```bash
+bash -n resumir-sesion-codex.sh instalar.sh
+python3 -m unittest discover -s tests -v
+```
+
+2. Abrir el lanzador.
+3. Confirmar que aparece una lista de sesiones.
+4. Elegir una sesion conocida.
+5. Probar:
    - opcion `1` para generar resumen,
    - opcion `2` para continuar una sesion,
-   - opcion `3` para el flujo completo.
-5. Confirmar que existen:
+   - opcion `3` para el flujo completo,
+   - opcion `5` para leer un resumen existente,
+   - opcion `0` para volver sin cerrar la ventana.
+6. Confirmar que existen:
 
 ```text
 <Escritorio>/Documentacion/Codex/Resumenes/
@@ -136,6 +145,7 @@ Si se desea continuidad completa entre equipos:
 - Validar que siguen existiendo tablas y columnas esperadas en `threads`.
 - Mantener README y documentacion alineados con el script real.
 - Conservar logs si se usan para diagnostico; archivarlos si crecen demasiado.
+- Consultar [Configuracion y mantenimiento](configuracion-y-mantenimiento.md) para la operacion recurrente.
 
 ## Problemas frecuentes
 

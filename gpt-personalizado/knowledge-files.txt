@@ -1,5 +1,6 @@
 README.md
 docs/arquitectura.md
 docs/funcionamiento-detallado.md
+docs/configuracion-y-mantenimiento.md
 docs/replicacion-en-otros-equipos.md
 docs/gpt-personalizado-documentador.md
