@@ -40,7 +40,14 @@ fi
 
 mkdir -p "$OUT_DIR"
 chmod +x "$SCRIPT_PATH"
-sed "s|__SCRIPT_PATH__|$SCRIPT_PATH|g" "$TEMPLATE" > "$LAUNCHER"
+TEMPLATE="$TEMPLATE" SCRIPT_PATH="$SCRIPT_PATH" LAUNCHER="$LAUNCHER" python3 - <<'PY'
+import os
+from pathlib import Path
+
+template = Path(os.environ["TEMPLATE"]).read_text()
+launcher = template.replace("__SCRIPT_PATH__", os.environ["SCRIPT_PATH"])
+Path(os.environ["LAUNCHER"]).write_text(launcher)
+PY
 chmod +x "$LAUNCHER"
 if command -v gio >/dev/null 2>&1; then
   gio set "$LAUNCHER" metadata::trusted true 2>/dev/null || true

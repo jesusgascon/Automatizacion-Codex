@@ -126,6 +126,8 @@ Se usa el directorio original de la sesion para:
 - respetar el entorno del proyecto,
 - evitar que Codex interprete la sesion desde otra carpeta.
 
+Antes de resumir se valida que `cwd` siga existiendo. Si el proyecto fue movido o borrado, la operación se cancela con un mensaje explícito.
+
 ### Separacion entre resumen y log
 
 El resumen limpio va a `.txt`.
@@ -161,6 +163,8 @@ Antes de archivar o desarchivar, el script crea:
 ```
 
 Esto refuerza la reversibilidad de la unica operación que modifica la base local de Codex.
+
+Por defecto se conservan los 10 backups más recientes. El número puede ajustarse con `MAX_BACKUPS`.
 
 ## 7. Reapertura interactiva
 

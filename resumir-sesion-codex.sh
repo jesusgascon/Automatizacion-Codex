@@ -51,6 +51,7 @@ DESKTOP_DIR="$(detect_desktop_dir)"
 OUT_DIR="$DESKTOP_DIR/Documentacion/Codex/Resumenes"
 LOG_DIR="$OUT_DIR/logs"
 BACKUP_DIR="$OUT_DIR/backups"
+MAX_BACKUPS="${MAX_BACKUPS:-10}"
 
 if [[ ! -x "$CODEX_BIN" ]]; then
   printf 'No se encuentra Codex en:\n%s\n' "$CODEX_BIN"
@@ -83,12 +84,12 @@ rows = con.execute(
     """
     select id, cwd, title, first_user_message, created_at, updated_at, tokens_used
     from threads
-    where cwd like ?
+    where (cwd = ? or cwd like ?)
       and archived = ?
       and source in ('cli', 'vscode')
     order by updated_at desc
     """,
-    (f"{home}%", archived_value),
+    (home, f"{home}/%", archived_value),
 ).fetchall()
 con.close()
 
@@ -132,6 +133,11 @@ show_session_table() {
 }
 
 generate_summary() {
+  if [[ ! -d "$cwd" ]]; then
+    printf '\nNo se puede generar el resumen porque ya no existe el directorio original:\n%s\n' "$cwd"
+    return 1
+  fi
+
   mkdir -p "$OUT_DIR" "$LOG_DIR"
   safe_stamp="$(date '+%Y%m%d-%H%M%S')"
   OUT="$OUT_DIR/resumen-codex-${sid}-${safe_stamp}.txt"
@@ -208,6 +214,16 @@ PY
   if [[ $backup_status -ne 0 ]]; then
     printf '\nNo se pudo crear el backup previo. Archivado cancelado.\n'
     return "$backup_status"
+  fi
+  if [[ "$MAX_BACKUPS" =~ ^[0-9]+$ ]] && (( MAX_BACKUPS > 0 )); then
+    mapfile -t backups_to_remove < <(
+      find "$BACKUP_DIR" -maxdepth 1 -type f -name 'state-before-archive-*.sqlite' |
+        sort |
+        head -n "-$MAX_BACKUPS"
+    )
+    if [[ ${#backups_to_remove[@]} -gt 0 ]]; then
+      rm -f -- "${backups_to_remove[@]}"
+    fi
   fi
   STATE_DB="$STATE_DB" SID="$sid" NEW_VALUE="$new_value" python3 - <<'PY'
 import os

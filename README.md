@@ -15,6 +15,7 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 - Reabre sesiones interactivas para continuar trabajando.
 - Archiva y desarchiva sesiones sin borrarlas.
 - Crea un backup de la base local antes de cambiar el estado de archivado.
+- Rota backups antiguos y conserva por defecto los 10 más recientes.
 - Detecta automáticamente el binario `codex`, la base `state_*.sqlite` y el Escritorio del usuario.
 - Instala un lanzador `.desktop` que respeta el terminal predeterminado mediante `xdg-terminal-exec`.
 
@@ -138,6 +139,7 @@ Automatizacion-Codex/
 - Las sesiones con títulos pobres no se ocultan; se distinguen por ruta, fechas y tokens.
 - `codex exec --ephemeral` permite resumir sin contaminar el historial con otra sesión persistente.
 - Los resúmenes nuevos incluyen `session_id` en el nombre para asociarlos sin ambigüedad.
+- El filtrado por `HOME` distingue la ruta exacta de subrutas válidas y evita coincidencias solo por prefijo textual.
 
 ## Limitaciones conocidas
 
@@ -146,6 +148,13 @@ Automatizacion-Codex/
 - El archivado toca la base local de Codex de forma directa; es reversible, pero conviene mantener copias de seguridad del perfil.
 - El proyecto crea backups previos al archivado, pero no sustituye una política general de copias de seguridad del perfil.
 - Los resúmenes antiguos creados sin `session_id` no pueden vincularse automáticamente con certeza.
+
+## Tests
+
+```bash
+bash -n resumir-sesion-codex.sh instalar.sh
+python3 -m unittest discover -s tests -v
+```
 
 ## Licencia
 

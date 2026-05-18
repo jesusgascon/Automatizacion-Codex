@@ -14,3 +14,7 @@
 - Instalador y plantilla de lanzador `.desktop`.
 - Documentacion tecnica completa y paquete de instrucciones para GPT personalizado.
 - Avisos de dependencias y marcado de confianza del lanzador durante la instalacion.
+- Validacion de `cwd` antes de generar resumenes.
+- Rotacion configurable de backups con `MAX_BACKUPS`.
+- Filtro de rutas bajo `$HOME` mas estricto.
+- Tests automatizados de regresion.

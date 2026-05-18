@@ -16,6 +16,7 @@
 - Python 3.
 - Módulo estándar `sqlite3`.
 - Base local de Codex con tabla `threads`.
+- El filtro de sesiones acepta el `$HOME` exacto o subdirectorios reales bajo `$HOME`.
 
 ## Supuestos actuales sobre Codex
 

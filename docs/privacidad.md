@@ -36,6 +36,7 @@
 
 - Se archiva en lugar de borrar.
 - Antes de modificar el estado de archivado se crea un backup local de la base SQLite.
+- Por defecto se conservan solo los 10 backups más recientes para reducir acumulación de copias sensibles.
 - Los resúmenes se guardan fuera del repositorio, bajo el Escritorio del usuario.
 - La asociación resumen-sesión se hace por ID solo en el nombre del archivo local.
 - El repositorio publica código y documentación, no datos de uso.

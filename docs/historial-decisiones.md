@@ -148,3 +148,29 @@ Motivo:
 - convertir la reversibilidad en una garantía práctica,
 - reducir el riesgo de una modificación manual futura,
 - mantener la filosofía conservadora del proyecto.
+
+## 13. Rotar backups
+
+Decision:
+
+- conservar por defecto solo los 10 backups más recientes.
+
+Motivo:
+
+- evitar crecimiento indefinido,
+- reducir acumulación de copias sensibles,
+- mantener suficiente margen de recuperación operativa.
+
+## 14. Endurecer rutas y despliegue
+
+Decision:
+
+- validar `cwd` antes de resumir,
+- filtrar sesiones por `$HOME` exacto o subrutas,
+- generar el `.desktop` sin sustituciones frágiles con `sed`.
+
+Motivo:
+
+- reducir fallos tardíos,
+- evitar coincidencias ambiguas,
+- soportar rutas con caracteres especiales.
