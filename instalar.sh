@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_PATH="$SCRIPT_DIR/resumir-sesion-codex.sh"
 TEMPLATE="$SCRIPT_DIR/plantillas/resumir-sesion-codex.desktop.template"
+ICON_PATH="$SCRIPT_DIR/assets/logo.svg"
 
 detect_desktop_dir() {
   local desktop_dir
@@ -40,12 +41,16 @@ fi
 
 mkdir -p "$OUT_DIR"
 chmod +x "$SCRIPT_PATH"
-TEMPLATE="$TEMPLATE" SCRIPT_PATH="$SCRIPT_PATH" LAUNCHER="$LAUNCHER" python3 - <<'PY'
+TEMPLATE="$TEMPLATE" SCRIPT_PATH="$SCRIPT_PATH" ICON_PATH="$ICON_PATH" LAUNCHER="$LAUNCHER" python3 - <<'PY'
 import os
 from pathlib import Path
 
 template = Path(os.environ["TEMPLATE"]).read_text()
-launcher = template.replace("__SCRIPT_PATH__", os.environ["SCRIPT_PATH"])
+launcher = (
+    template
+    .replace("__SCRIPT_PATH__", os.environ["SCRIPT_PATH"])
+    .replace("__ICON_PATH__", os.environ["ICON_PATH"])
+)
 Path(os.environ["LAUNCHER"]).write_text(launcher)
 PY
 chmod +x "$LAUNCHER"

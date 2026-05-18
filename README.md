@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.svg" alt="Logo de Automatizacion-Codex" width="128">
+</p>
+
 # Automatizacion-Codex
 
 Utilidad local para Linux que permite explorar sesiones de Codex, generar resúmenes técnicos, reabrir conversaciones y archivar sesiones desde un único lanzador de escritorio.
@@ -136,6 +140,7 @@ Automatizacion-Codex/
 ├── CONTRIBUTING.md
 ├── SECURITY.md
 ├── manual-completo.html
+├── assets/
 ├── resumir-sesion-codex.sh
 ├── instalar.sh
 ├── docs/

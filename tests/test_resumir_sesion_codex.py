@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "resumir-sesion-codex.sh"
 INSTALLER = ROOT / "instalar.sh"
 TEMPLATE = ROOT / "plantillas" / "resumir-sesion-codex.desktop.template"
+ICON = ROOT / "assets" / "logo.svg"
 
 
 class CodexSessionScriptTests(unittest.TestCase):
@@ -146,6 +147,9 @@ class CodexSessionScriptTests(unittest.TestCase):
         installer_copy.write_text(INSTALLER.read_text())
         installer_copy.chmod(0o755)
         (template_dir / TEMPLATE.name).write_text(TEMPLATE.read_text())
+        asset_dir = special_root / "assets"
+        asset_dir.mkdir()
+        (asset_dir / ICON.name).write_text(ICON.read_text())
 
         subprocess.run(
             [str(installer_copy)],
@@ -156,6 +160,7 @@ class CodexSessionScriptTests(unittest.TestCase):
         )
         launcher = self.desktop / "Resumir sesion de Codex.desktop"
         self.assertIn(str(script_copy), launcher.read_text())
+        self.assertIn(str(asset_dir / ICON.name), launcher.read_text())
 
 if __name__ == "__main__":
     unittest.main()
