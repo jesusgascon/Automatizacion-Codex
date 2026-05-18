@@ -27,3 +27,4 @@
 - Carpeta de salida configurable mediante `CODEX_SUMMARY_DIR`.
 - Instalador interactivo para elegir la carpeta de resumenes, logs y backups.
 - Correccion del prompt interactivo para que se muestre y no contamine la ruta elegida.
+- Entrada de aplicacion de usuario para GNOME en `~/.local/share/applications/`.

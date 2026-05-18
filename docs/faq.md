@@ -48,6 +48,10 @@ CODEX_SUMMARY_DIR="$HOME/Documentos/Codex/Resumenes" bash instalar.sh
 
 No durante la instalacion. El ejecutable, el logo y la documentacion forman parte del repositorio y permanecen en la carpeta donde lo clonaste. Si quieres otra ubicacion para la aplicacion, elige esa carpeta antes de ejecutar `git clone`.
 
+## Aparece en el lanzador de aplicaciones de GNOME?
+
+Si. `instalar.sh` crea `~/.local/share/applications/automatizacion-codex.desktop`, de modo que se puede buscar como `Resumir sesion de Codex` desde GNOME.
+
 ## Que debo hacer despues de actualizar desde GitHub?
 
 Ejecuta:

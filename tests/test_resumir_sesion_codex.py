@@ -159,8 +159,10 @@ class CodexSessionScriptTests(unittest.TestCase):
             check=True,
         )
         launcher = self.desktop / "Resumir sesion de Codex.desktop"
+        menu_launcher = self.home / ".local" / "share" / "applications" / "automatizacion-codex.desktop"
         self.assertIn(str(script_copy), launcher.read_text())
         self.assertIn(str(asset_dir / ICON.name), launcher.read_text())
+        self.assertIn(str(script_copy), menu_launcher.read_text())
 
     def test_custom_summary_dir_is_honored_by_installer(self):
         custom_dir = self.home / "Documentos" / "Codex" / "Resumenes"
@@ -173,6 +175,18 @@ class CodexSessionScriptTests(unittest.TestCase):
         )
         self.assertTrue(custom_dir.is_dir())
         self.assertIn(str(custom_dir), proc.stdout)
+
+    def test_installer_creates_user_application_launcher(self):
+        subprocess.run(
+            [str(INSTALLER)],
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        menu_launcher = self.home / ".local" / "share" / "applications" / "automatizacion-codex.desktop"
+        self.assertTrue(menu_launcher.is_file())
+        self.assertIn("Name=Resumir sesion de Codex", menu_launcher.read_text())
 
     def test_interactive_prompt_does_not_pollute_summary_path(self):
         install_text = INSTALLER.read_text()

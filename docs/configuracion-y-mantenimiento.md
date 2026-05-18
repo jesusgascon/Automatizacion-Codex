@@ -116,6 +116,11 @@ conviene volver a ejecutar:
 bash instalar.sh
 ```
 
+El instalador actualiza dos accesos:
+
+- el lanzador visible del Escritorio,
+- la entrada de aplicaciones del usuario en `~/.local/share/applications/automatizacion-codex.desktop`.
+
 ## Criterios para futuras modificaciones
 
 Antes de introducir cambios nuevos, comprobar:

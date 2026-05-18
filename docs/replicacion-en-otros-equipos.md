@@ -43,7 +43,7 @@ bash instalar.sh
 4. Cuando pregunte por la carpeta de resumenes:
    - pulsar `Enter` para usar la ruta predeterminada,
    - o escribir una ruta personalizada, por ejemplo `~/Documentos/Codex/Resumenes`.
-5. Verificar que aparezca un lanzador en el Escritorio.
+5. Verificar que aparezca un lanzador en el Escritorio y que `Resumir sesion de Codex` se pueda buscar desde GNOME.
 
 ## Resumen rapido para instalar en casa
 
@@ -78,6 +78,7 @@ El instalador adapta automaticamente:
 - el binario de Codex disponible,
 - la base local de sesiones de ese equipo,
 - la ruta donde se guardan los resumenes.
+- una entrada de aplicacion del usuario en `~/.local/share/applications/`.
 
 Durante una instalacion interactiva pregunta donde guardar resumenes, logs y backups. La aplicacion, el ejecutable y la documentacion permanecen en la carpeta donde se clono el repositorio; esa carpeta se elige antes, al hacer `git clone`.
 
@@ -97,6 +98,7 @@ No hace falta tocar rutas manualmente salvo que:
 - avisa si faltan `python3`, `xdg-terminal-exec` o `codex`,
 - crea la carpeta de salida de resumenes.
 - pregunta de forma interactiva donde guardar resumenes, logs y backups cuando no se fuerza `CODEX_SUMMARY_DIR`.
+- crea una entrada para el menu de aplicaciones del usuario en `~/.local/share/applications/automatizacion-codex.desktop`.
 
 ## Alternativa con GitHub CLI
 

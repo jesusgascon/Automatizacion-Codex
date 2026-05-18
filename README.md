@@ -23,6 +23,7 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 - Rota backups antiguos y conserva por defecto los 10 más recientes.
 - Detecta automáticamente el binario `codex`, la base `state_*.sqlite` y el Escritorio del usuario.
 - Instala un lanzador `.desktop` que respeta el terminal predeterminado mediante `xdg-terminal-exec`.
+- Registra tambien una aplicacion de usuario para lanzarla desde GNOME.
 
 ## Vista rápida
 
@@ -60,7 +61,8 @@ El instalador:
 2. pregunta dónde guardar resúmenes, logs y backups si se ejecuta de forma interactiva,
 3. crea la carpeta de salida elegida,
 4. genera el lanzador `Resumir sesion de Codex.desktop`,
-5. marca como ejecutables los archivos necesarios.
+5. registra `automatizacion-codex.desktop` en el menu de aplicaciones del usuario,
+6. marca como ejecutables los archivos necesarios.
 
 La aplicación y su documentación permanecen en la carpeta donde se clona el repositorio. Esa ubicación se decide antes de instalar, al elegir dónde ejecutar `git clone`.
 

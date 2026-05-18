@@ -62,6 +62,8 @@ choose_summary_dir() {
 
 DESKTOP_DIR="$(detect_desktop_dir)"
 LAUNCHER="$DESKTOP_DIR/Resumir sesion de Codex.desktop"
+APPLICATIONS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+MENU_LAUNCHER="$APPLICATIONS_DIR/automatizacion-codex.desktop"
 DEFAULT_OUT_DIR="$DESKTOP_DIR/Documentacion/Codex/Resumenes"
 OUT_DIR="$(choose_summary_dir "$DEFAULT_OUT_DIR")"
 
@@ -77,9 +79,9 @@ if ! command -v codex >/dev/null 2>&1 && [[ ! -d "$HOME/.nvm/versions/node" ]]; 
   printf 'Aviso: no se ha detectado Codex en PATH ni bajo ~/.nvm. Instala Codex antes de usar el lanzador.\n'
 fi
 
-mkdir -p "$OUT_DIR"
+mkdir -p "$OUT_DIR" "$APPLICATIONS_DIR"
 chmod +x "$SCRIPT_PATH"
-TEMPLATE="$TEMPLATE" SCRIPT_PATH="$SCRIPT_PATH" ICON_PATH="$ICON_PATH" LAUNCHER="$LAUNCHER" python3 - <<'PY'
+TEMPLATE="$TEMPLATE" SCRIPT_PATH="$SCRIPT_PATH" ICON_PATH="$ICON_PATH" LAUNCHER="$LAUNCHER" MENU_LAUNCHER="$MENU_LAUNCHER" python3 - <<'PY'
 import os
 from pathlib import Path
 
@@ -90,8 +92,9 @@ launcher = (
     .replace("__ICON_PATH__", os.environ["ICON_PATH"])
 )
 Path(os.environ["LAUNCHER"]).write_text(launcher)
+Path(os.environ["MENU_LAUNCHER"]).write_text(launcher)
 PY
-chmod +x "$LAUNCHER"
+chmod +x "$LAUNCHER" "$MENU_LAUNCHER"
 if command -v gio >/dev/null 2>&1; then
   gio set "$LAUNCHER" metadata::trusted true 2>/dev/null || true
 fi
@@ -99,4 +102,5 @@ fi
 printf 'Instalacion completada.\n'
 printf 'Aplicacion y documentacion: %s\n' "$SCRIPT_DIR"
 printf 'Lanzador: %s\n' "$LAUNCHER"
+printf 'Aplicacion GNOME: %s\n' "$MENU_LAUNCHER"
 printf 'Resumenes: %s\n' "$OUT_DIR"
