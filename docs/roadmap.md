@@ -3,7 +3,7 @@
 ## Posibles mejoras futuras
 
 - Exportar resumenes a Markdown ademas de texto plano.
-- Permitir filtros por ruta, fecha o estado de resumen.
+- Ampliar filtros con fecha o estado de resumen.
 - Añadir deteccion de terminales sin `xdg-terminal-exec`.
 - Permitir abrir directamente el fichero de resumen en el editor predeterminado.
 - Añadir pruebas automatizadas para el formateo del menu y consultas SQLite.

@@ -94,6 +94,12 @@ Opciones:
 La pantalla inicial permite entrar en sesiones activas o archivadas. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
 Desde el listado de sesiones, `0` vuelve al menu inicial. Desde el menu inicial, `q` sale del lanzador.
 
+Desde el listado tambien se puede:
+
+- pulsar `f` para filtrar por texto,
+- buscar sobre ID, ruta, titulo o primer mensaje,
+- pulsar `l` para limpiar el filtro activo.
+
 Archivar:
 
 - crea antes un backup local de la base SQLite,

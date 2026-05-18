@@ -9,6 +9,7 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 ## Funcionalidades
 
 - Lista sesiones activas y archivadas de Codex en una tabla legible.
+- Filtra sesiones por texto usando ID, ruta, título o primer mensaje.
 - Muestra fecha de actualización, fecha de inicio, tokens, ruta y estado de resumen.
 - Genera resúmenes técnicos asociados al `session_id`.
 - Permite consultar el último resumen existente sin regenerarlo.
@@ -87,6 +88,11 @@ Después abre el lanzador y confirma que:
    - `4`: archivar o desarchivar,
    - `5`: ver el último resumen guardado,
    - `0`: volver.
+
+Desde el listado:
+
+- `f`: filtrar por texto,
+- `l`: limpiar el filtro activo.
 
 ## Dónde guarda los datos
 

@@ -60,6 +60,7 @@ class CodexSessionScriptTests(unittest.TestCase):
             """,
             [
                 ("inside", str(self.project_dir), ".", ".", 100, 200, 1234, 0, None, "cli"),
+                ("calendar", str(self.project_dir / "calendar"), "calendario vacaciones", "crear calendario", 100, 250, 2222, 0, None, "cli"),
                 ("outside", str(self.other_home / "project"), ".", ".", 100, 300, 4321, 0, None, "cli"),
             ],
         )
@@ -102,6 +103,18 @@ class CodexSessionScriptTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("No se puede generar el resumen porque ya no existe el directorio original", proc.stdout)
+
+    def test_text_filter_searches_visible_session_metadata(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\nf\ncalendario\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Filtro activo: calendario", proc.stdout)
+        self.assertIn("calendario vacaciones", proc.stdout)
 
     def test_backup_rotation_keeps_latest_n(self):
         backup_dir = self.desktop / "Documentacion" / "Codex" / "Resumenes" / "backups"

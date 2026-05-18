@@ -28,6 +28,10 @@ Porque aun no existe un resumen asociado por ID de sesion. Selecciona la sesion 
 
 Si. Selecciona la sesion y usa `5) Ver ultimo resumen guardado`.
 
+## Como encuentro una sesion cuando hay muchas?
+
+Desde el listado pulsa `f` y escribe texto de la ruta, del titulo, del primer mensaje o del ID. Para volver al listado completo, pulsa `l`.
+
 ## Donde se guardan los backups?
 
 En `<Escritorio>/Documentacion/Codex/Resumenes/backups/`. Se crean antes de archivar o desarchivar y por defecto se conservan los 10 mas recientes.

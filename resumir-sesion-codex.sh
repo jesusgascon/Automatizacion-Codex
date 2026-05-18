@@ -69,7 +69,7 @@ fi
 
 load_sessions() {
   mapfile -t sessions < <(
-  HOME_DIR="$HOME" STATE_DB="$STATE_DB" OUT_DIR="$OUT_DIR" ARCHIVED_VALUE="$ARCHIVED_VALUE" python3 - <<'PY'
+  HOME_DIR="$HOME" STATE_DB="$STATE_DB" OUT_DIR="$OUT_DIR" ARCHIVED_VALUE="$ARCHIVED_VALUE" SESSION_FILTER="$SESSION_FILTER" python3 - <<'PY'
 import os
 import sqlite3
 from datetime import datetime
@@ -79,6 +79,7 @@ db = os.environ["STATE_DB"]
 home = os.environ["HOME_DIR"]
 out_dir = Path(os.environ["OUT_DIR"])
 archived_value = int(os.environ["ARCHIVED_VALUE"])
+session_filter = os.environ["SESSION_FILTER"].strip().casefold()
 con = sqlite3.connect(db)
 rows = con.execute(
     """
@@ -94,10 +95,13 @@ rows = con.execute(
 con.close()
 
 for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in rows:
-    when = datetime.fromtimestamp(updated_at).strftime("%Y-%m-%d %H:%M")
-    started = datetime.fromtimestamp(created_at).strftime("%Y-%m-%d %H:%M")
     raw_title = (title or "").strip()
     raw_first = (first_user_message or "").strip()
+    haystack = "\n".join((sid, cwd, raw_title, raw_first)).casefold()
+    if session_filter and session_filter not in haystack:
+        continue
+    when = datetime.fromtimestamp(updated_at).strftime("%Y-%m-%d %H:%M")
+    started = datetime.fromtimestamp(created_at).strftime("%Y-%m-%d %H:%M")
     low_signal = {"", ".", "exit"}
     if raw_title in low_signal:
         clean_title = "Sesion sin titulo util"
@@ -123,6 +127,9 @@ show_session_table() {
     printf '\nSesiones archivadas de Codex\n\n'
   else
     printf '\nSesiones activas de Codex\n\n'
+  fi
+  if [[ -n "$SESSION_FILTER" ]]; then
+    printf 'Filtro activo: %s\n\n' "$SESSION_FILTER"
   fi
   printf '%-3s %-16s %-16s %-12s %-8s %-34s %s\n' 'N' 'Actualizada' 'Iniciada' 'Tokens' 'Resumen' 'Ruta' 'Descripcion'
   printf '%-3s %-16s %-16s %-12s %-8s %-34s %s\n' '---' '----------------' '----------------' '------------' '--------' '----------------------------------' '----------------------------------------------------------'
@@ -280,6 +287,7 @@ while true; do
       ;;
   esac
 
+  SESSION_FILTER=""
   load_sessions
 
   if [[ ${#sessions[@]} -eq 0 ]]; then
@@ -294,6 +302,10 @@ while true; do
   while true; do
     show_session_table
     printf '\n 0) Volver al menu inicial\n'
+    printf ' f) Filtrar por texto\n'
+    if [[ -n "$SESSION_FILTER" ]]; then
+      printf ' l) Limpiar filtro\n'
+    fi
     printf '\nNumero de sesion: '
     if ! read -r choice; then
       exit 0
@@ -301,6 +313,24 @@ while true; do
 
     if [[ "$choice" == "0" ]]; then
       break
+    fi
+
+    if [[ "$choice" == "f" || "$choice" == "F" ]]; then
+      printf '\nTexto a buscar en ID, ruta, titulo o primer mensaje: '
+      if ! read -r SESSION_FILTER; then
+        exit 0
+      fi
+      load_sessions
+      if [[ ${#sessions[@]} -eq 0 ]]; then
+        printf '\nNo hay sesiones que coincidan con el filtro actual.\n'
+      fi
+      continue
+    fi
+
+    if [[ "$choice" == "l" || "$choice" == "L" ]]; then
+      SESSION_FILTER=""
+      load_sessions
+      continue
     fi
 
     if ! [[ "$choice" =~ ^[0-9]+$ ]] || (( choice < 1 || choice > ${#sessions[@]} )); then
