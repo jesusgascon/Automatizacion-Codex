@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.1.0 - 2026-05-18
+
+### Added
+
+- Filtro textual de sesiones por ID, ruta, titulo o primer mensaje.
+- Logo vectorial propio e integracion visual en README, manual y lanzador.
+- Seccion de creditos del proyecto.
+- Carpeta de salida configurable mediante `CODEX_SUMMARY_DIR`.
+- Instalador interactivo para elegir la carpeta de resumenes, logs y backups.
+- Entrada de aplicacion de usuario para GNOME en `~/.local/share/applications/`.
+- Limpieza confirmada con `x` de sesiones con rutas inexistentes.
+
+### Changed
+
+- Deteccion ampliada de Codex en rutas npm/locales habituales.
+- Documentacion actualizada para distinguir entre carpeta de salida elegida y ruta predeterminada.
+
+### Fixed
+
+- Prompt interactivo del instalador para que se muestre y no contamine la ruta elegida.
+
 ## 1.0.0 - 2026-05-18
 
 ### Added
@@ -21,12 +42,3 @@
 - Documento de configuracion y mantenimiento.
 - Ampliacion del README, FAQ, manual y guias operativas para reflejar la version endurecida.
 - Guia de instalacion actualizada para distribucion publica.
-- Filtro textual de sesiones por ID, ruta, titulo o primer mensaje.
-- Logo vectorial propio e integracion visual en README, manual y lanzador.
-- Seccion de creditos del proyecto.
-- Carpeta de salida configurable mediante `CODEX_SUMMARY_DIR`.
-- Instalador interactivo para elegir la carpeta de resumenes, logs y backups.
-- Correccion del prompt interactivo para que se muestre y no contamine la ruta elegida.
-- Entrada de aplicacion de usuario para GNOME en `~/.local/share/applications/`.
-- Deteccion ampliada de Codex en rutas npm/locales habituales y diagnostico mas util.
-- Ocultacion por defecto de sesiones con rutas inexistentes y limpieza confirmada con `x`.

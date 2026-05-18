@@ -108,11 +108,13 @@ Desde el listado:
 ## Dónde guarda los datos
 
 ```text
-<Escritorio>/Documentacion/Codex/Resumenes/
+<Carpeta-de-salidas-elegida>/
 ├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
 └── logs/
     └── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.log
 ```
+
+Por defecto, si durante la instalación pulsas `Enter`, `<Carpeta-de-salidas-elegida>` será `<Escritorio>/Documentacion/Codex/Resumenes/`. Si escribes otra ruta, se usará esa.
 
 ## Privacidad y seguridad
 

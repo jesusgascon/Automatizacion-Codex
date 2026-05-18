@@ -38,7 +38,7 @@ Si borraste o moviste la carpeta original, la sesion se oculta por defecto para 
 
 ## Donde se guardan los backups?
 
-En `<Escritorio>/Documentacion/Codex/Resumenes/backups/`. Se crean antes de archivar o desarchivar y por defecto se conservan los 10 mas recientes.
+En `<Carpeta-de-salidas-elegida>/backups/`. Si durante la instalacion pulsaste `Enter`, esa carpeta queda bajo `<Escritorio>/Documentacion/Codex/Resumenes/backups/`. Se crean antes de archivar, desarchivar o limpiar sesiones y por defecto se conservan los 10 mas recientes.
 
 ## Puedo guardar los resumenes en otra carpeta?
 

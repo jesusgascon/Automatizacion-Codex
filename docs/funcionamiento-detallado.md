@@ -48,7 +48,7 @@ Orden de prioridad:
 Orden de prioridad:
 
 1. Variable `CODEX_SUMMARY_DIR`, si se define.
-2. `<Escritorio>/Documentacion/Codex/Resumenes/`.
+2. Ruta elegida durante `instalar.sh`; si se pulsa `Enter`, `<Escritorio>/Documentacion/Codex/Resumenes/`.
 
 ## 3. Lectura del historial de sesiones
 
@@ -181,7 +181,7 @@ Los resumenes antiguos creados antes de esta convencion pueden existir en disco,
 Antes de archivar o desarchivar, el script crea:
 
 ```text
-<Escritorio>/Documentacion/Codex/Resumenes/backups/state-before-archive-YYYYMMDD-HHMMSS.sqlite
+<Carpeta-de-salidas-elegida>/backups/state-before-archive-YYYYMMDD-HHMMSS.sqlite
 ```
 
 Esto refuerza la reversibilidad de la unica operación que modifica la base local de Codex.
@@ -218,7 +218,7 @@ Casos tratados:
 Ejemplo:
 
 ```text
-Documentacion/Codex/Resumenes/
+<Carpeta-de-salidas-elegida>/
 ├── resumen-codex-<session_id>-20260518-104807.txt
 ├── logs/
 │   └── resumen-codex-<session_id>-20260518-104807.log

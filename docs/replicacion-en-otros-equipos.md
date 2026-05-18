@@ -161,11 +161,11 @@ python3 -m unittest discover -s tests -v
    - opcion `3` para el flujo completo,
    - opcion `5` para leer un resumen existente,
    - opcion `0` para volver sin cerrar la ventana.
-6. Confirmar que existen:
+6. Confirmar que existen dentro de la carpeta elegida durante la instalacion:
 
 ```text
-<Escritorio>/Documentacion/Codex/Resumenes/
-<Escritorio>/Documentacion/Codex/Resumenes/logs/
+<Carpeta-de-salidas-elegida>/
+<Carpeta-de-salidas-elegida>/logs/
 ```
 
 ## Migracion de un equipo a otro

@@ -144,7 +144,7 @@ Secuencia:
 Ruta:
 
 ```text
-<Escritorio>/Documentacion/Codex/Resumenes/
+<Carpeta-de-salidas-elegida>/
 ```
 
 Formato:
@@ -158,7 +158,7 @@ resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
 Ruta:
 
 ```text
-<Escritorio>/Documentacion/Codex/Resumenes/logs/
+<Carpeta-de-salidas-elegida>/logs/
 ```
 
 Formato:
@@ -172,7 +172,7 @@ resumen-codex-<session_id>-YYYYMMDD-HHMMSS.log
 Ruta:
 
 ```text
-<Escritorio>/Documentacion/Codex/Resumenes/backups/
+<Carpeta-de-salidas-elegida>/backups/
 ```
 
 Formato:

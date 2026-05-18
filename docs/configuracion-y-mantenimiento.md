@@ -40,7 +40,7 @@ MAX_BACKUPS=20 \
 bash resumir-sesion-codex.sh
 ```
 
-Por defecto, si `CODEX_SUMMARY_DIR` no se define, se usa:
+Por defecto, si `CODEX_SUMMARY_DIR` no se define y durante la instalacion se pulsa `Enter`, se usa:
 
 ```text
 <Escritorio>/Documentacion/Codex/Resumenes/
@@ -78,10 +78,10 @@ Revisar:
 
 ## Gestion de salidas
 
-El proyecto escribe fuera del repositorio:
+El proyecto escribe fuera del repositorio, dentro de la carpeta de salidas elegida durante la instalacion:
 
 ```text
-<Escritorio>/Documentacion/Codex/Resumenes/
+<Carpeta-de-salidas-elegida>/
 ├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
 ├── logs/
 │   └── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.log
