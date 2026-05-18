@@ -70,10 +70,10 @@ detect_desktop_dir() {
 
 expand_user_path() {
   case "$1" in
-    "~")
+    \~)
       printf '%s\n' "$HOME"
       ;;
-    "~/"*)
+    \~/*)
       printf '%s/%s\n' "$HOME" "${1#~/}"
       ;;
     *)
@@ -123,8 +123,8 @@ fi
 DETECTED_CODEX_BIN="$(detect_codex_bin)"
 if [[ -z "$DETECTED_CODEX_BIN" ]]; then
   printf 'Aviso: no se ha detectado Codex automaticamente.\n'
-  printf 'Si `command -v codex` funciona en tu terminal, puedes reinstalar con:\n'
-  printf '  CODEX_BIN=\"$(command -v codex)\" bash instalar.sh\n'
+  printf "Si \`command -v codex\` funciona en tu terminal, puedes reinstalar con:\n"
+  printf "  CODEX_BIN=\"\$(command -v codex)\" bash instalar.sh\n"
 else
   printf 'Codex detectado en: %s\n' "$DETECTED_CODEX_BIN"
 fi
