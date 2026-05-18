@@ -9,6 +9,9 @@
 | Codex instalado en `PATH` | Alta | Detección directa con `command -v codex`. |
 | Codex instalado mediante `nvm` | Alta | Se buscan ejecutables bajo `~/.nvm/versions/node/*/bin/codex`. |
 | Codex en rutas npm/locales habituales | Alta | Se prueban `~/.local/bin`, `~/.npm-global/bin` y `~/node_modules/.bin`. |
+| Codex con prefijo npm personalizado | Alta | Se consulta `npm prefix -g` y se prueba `<prefijo>/bin/codex`. |
+| Codex visible solo en shell de login | Alta | Se consulta `type -P codex` en el shell de login del usuario. |
+| Codex instalado a nivel de sistema | Alta | Se prueban `/usr/local/bin/codex` y `/usr/bin/codex`. |
 | KDE, XFCE u otros escritorios | Media | Puede requerir adaptar el lanzador si falta `xdg-terminal-exec`. |
 
 ## Requisitos funcionales

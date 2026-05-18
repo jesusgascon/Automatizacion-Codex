@@ -22,11 +22,15 @@ Orden de prioridad:
 
 1. Variable de entorno `CODEX_BIN`, si existe y apunta a un ejecutable.
 2. `command -v codex`.
-3. Rutas frecuentes:
+3. Shell de login del usuario con `type -P codex`.
+4. Prefijo global real de npm mediante `npm prefix -g`.
+5. Rutas frecuentes:
    - `~/.local/bin/codex`,
    - `~/.npm-global/bin/codex`,
-   - `~/node_modules/.bin/codex`.
-4. Ultimo ejecutable hallado bajo `~/.nvm/versions/node/*/bin/codex`, incluyendo enlaces simbolicos.
+   - `~/node_modules/.bin/codex`,
+   - `/usr/local/bin/codex`,
+   - `/usr/bin/codex`.
+6. Ultimo ejecutable hallado bajo `~/.nvm/versions/node/*/bin/codex`, incluyendo enlaces simbolicos.
 
 ### Base de sesiones
 

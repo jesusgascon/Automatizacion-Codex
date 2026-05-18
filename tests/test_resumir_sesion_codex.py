@@ -109,6 +109,16 @@ class CodexSessionScriptTests(unittest.TestCase):
         )
         self.assertIn("~/project", proc.stdout)
 
+    def test_installer_reports_detected_codex_path(self):
+        proc = subprocess.run(
+            [str(INSTALLER)],
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn(f"Codex detectado en: {self.codex_bin}", proc.stdout)
+
     def test_missing_cwd_blocks_summary_generation(self):
         self.project_dir.rmdir()
         proc = subprocess.run(

@@ -14,7 +14,7 @@
 
 ### Changed
 
-- Deteccion ampliada de Codex en rutas npm/locales habituales.
+- Deteccion ampliada de Codex usando `PATH`, shell de login, `npm prefix -g`, rutas habituales, instalaciones de sistema y `nvm`.
 - Documentacion actualizada para distinguir entre carpeta de salida elegida y ruta predeterminada.
 
 ### Fixed

@@ -28,7 +28,9 @@ Comprobar:
 
 ```bash
 command -v codex
+npm prefix -g 2>/dev/null
 ls -l "$HOME/.local/bin/codex" "$HOME/.npm-global/bin/codex" "$HOME/node_modules/.bin/codex" 2>/dev/null
+ls -l /usr/local/bin/codex /usr/bin/codex 2>/dev/null
 find "$HOME/.nvm/versions/node" -path '*/bin/codex' -executable 2>/dev/null
 ```
 

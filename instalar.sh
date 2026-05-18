@@ -6,6 +6,51 @@ SCRIPT_PATH="$SCRIPT_DIR/resumir-sesion-codex.sh"
 TEMPLATE="$SCRIPT_DIR/plantillas/resumir-sesion-codex.desktop.template"
 ICON_PATH="$SCRIPT_DIR/assets/logo.svg"
 
+detect_codex_bin() {
+  local candidate login_shell_path npm_prefix
+  if [[ -n "${CODEX_BIN:-}" && -x "${CODEX_BIN:-}" ]]; then
+    printf '%s\n' "$CODEX_BIN"
+    return 0
+  fi
+
+  if command -v codex >/dev/null 2>&1; then
+    command -v codex
+    return 0
+  fi
+
+  if [[ -n "${SHELL:-}" && -x "${SHELL:-}" ]]; then
+    login_shell_path="$("$SHELL" -lc 'type -P codex 2>/dev/null' 2>/dev/null || true)"
+    if [[ -n "$login_shell_path" && -x "$login_shell_path" ]]; then
+      printf '%s\n' "$login_shell_path"
+      return 0
+    fi
+  fi
+
+  if command -v npm >/dev/null 2>&1; then
+    npm_prefix="$(npm prefix -g 2>/dev/null || true)"
+    if [[ -n "$npm_prefix" && -x "$npm_prefix/bin/codex" ]]; then
+      printf '%s\n' "$npm_prefix/bin/codex"
+      return 0
+    fi
+  fi
+
+  for candidate in \
+    "$HOME/.local/bin/codex" \
+    "$HOME/.npm-global/bin/codex" \
+    "$HOME/node_modules/.bin/codex" \
+    "/usr/local/bin/codex" \
+    "/usr/bin/codex"; do
+    if [[ -x "$candidate" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  find "$HOME/.nvm/versions/node" -path '*/bin/codex' -executable 2>/dev/null |
+    sort -V |
+    tail -n 1
+}
+
 detect_desktop_dir() {
   local desktop_dir
   if command -v xdg-user-dir >/dev/null 2>&1; then
@@ -75,14 +120,13 @@ if ! command -v xdg-terminal-exec >/dev/null 2>&1; then
   printf 'Aviso: no se encuentra xdg-terminal-exec. Puede que debas adaptar el lanzador manualmente.\n'
 fi
 
-if ! command -v codex >/dev/null 2>&1 &&
-  [[ ! -x "$HOME/.local/bin/codex" ]] &&
-  [[ ! -x "$HOME/.npm-global/bin/codex" ]] &&
-  [[ ! -x "$HOME/node_modules/.bin/codex" ]] &&
-  [[ ! -d "$HOME/.nvm/versions/node" ]]; then
-  printf 'Aviso: no se ha detectado Codex en PATH ni bajo rutas habituales.\n'
+DETECTED_CODEX_BIN="$(detect_codex_bin)"
+if [[ -z "$DETECTED_CODEX_BIN" ]]; then
+  printf 'Aviso: no se ha detectado Codex automaticamente.\n'
   printf 'Si `command -v codex` funciona en tu terminal, puedes reinstalar con:\n'
   printf '  CODEX_BIN=\"$(command -v codex)\" bash instalar.sh\n'
+else
+  printf 'Codex detectado en: %s\n' "$DETECTED_CODEX_BIN"
 fi
 
 mkdir -p "$OUT_DIR" "$APPLICATIONS_DIR"

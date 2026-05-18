@@ -2,7 +2,7 @@
 set -u
 
 detect_codex_bin() {
-  local candidate
+  local candidate login_shell_path npm_prefix
   if [[ -n "${CODEX_BIN:-}" && -x "${CODEX_BIN:-}" ]]; then
     printf '%s\n' "$CODEX_BIN"
     return 0
@@ -13,10 +13,28 @@ detect_codex_bin() {
     return 0
   fi
 
+  if [[ -n "${SHELL:-}" && -x "${SHELL:-}" ]]; then
+    login_shell_path="$("$SHELL" -lc 'type -P codex 2>/dev/null' 2>/dev/null || true)"
+    if [[ -n "$login_shell_path" && -x "$login_shell_path" ]]; then
+      printf '%s\n' "$login_shell_path"
+      return 0
+    fi
+  fi
+
+  if command -v npm >/dev/null 2>&1; then
+    npm_prefix="$(npm prefix -g 2>/dev/null || true)"
+    if [[ -n "$npm_prefix" && -x "$npm_prefix/bin/codex" ]]; then
+      printf '%s\n' "$npm_prefix/bin/codex"
+      return 0
+    fi
+  fi
+
   for candidate in \
     "$HOME/.local/bin/codex" \
     "$HOME/.npm-global/bin/codex" \
-    "$HOME/node_modules/.bin/codex"; do
+    "$HOME/node_modules/.bin/codex" \
+    "/usr/local/bin/codex" \
+    "/usr/bin/codex"; do
     if [[ -x "$candidate" ]]; then
       printf '%s\n' "$candidate"
       return 0

@@ -22,7 +22,7 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 - Archiva y desarchiva sesiones sin borrarlas.
 - Crea un backup de la base local antes de cambiar el estado de archivado.
 - Rota backups antiguos y conserva por defecto los 10 más recientes.
-- Detecta automáticamente el binario `codex`, la base `state_*.sqlite` y el Escritorio del usuario, incluyendo varias rutas habituales de npm.
+- Detecta automáticamente el binario `codex`, la base `state_*.sqlite` y el Escritorio del usuario, combinando `PATH`, shell de login, prefijo global de npm, rutas habituales y `nvm`.
 - Instala un lanzador `.desktop` que respeta el terminal predeterminado mediante `xdg-terminal-exec`.
 - Registra tambien una aplicacion de usuario para lanzarla desde GNOME.
 
