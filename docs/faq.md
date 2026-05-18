@@ -34,7 +34,7 @@ Desde el listado pulsa `f` y escribe texto de la ruta, del titulo, del primer me
 
 ## Por que veo pocas sesiones?
 
-El lanzador no recorre carpetas de proyectos; lee las sesiones registradas por Codex y muestra solo las que cumplen los criterios visibles. Desde la vista inicial pulsa `d` para ver cuantas sesiones hay realmente, cuantas estan bajo tu `HOME`, cuantas tienen carpeta existente y cuantas se descartan por `source` o archivado.
+El lanzador no recorre carpetas de proyectos; lee las sesiones registradas por Codex y muestra solo las que cumplen los criterios visibles. Desde la vista inicial pulsa `d` para ver un resumen claro de activas, archivadas, carpetas borradas y sesiones tecnicas internas.
 
 ## Por que ya no aparece una sesion antigua?
 

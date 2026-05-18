@@ -108,7 +108,7 @@ Opciones:
 0) Volver al listado de sesiones
 ```
 
-La pantalla inicial permite entrar en sesiones activas, archivadas o abrir un diagnostico de cobertura con `d`. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
+La pantalla inicial permite entrar en sesiones activas, archivadas o abrir un resumen explicativo con `d`. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
 Desde el listado de sesiones, `0` vuelve al menu inicial. Desde el menu inicial, `q` sale del lanzador.
 
 Desde el listado tambien se puede:
@@ -118,13 +118,13 @@ Desde el listado tambien se puede:
 - pulsar `l` para limpiar el filtro activo,
 - pulsar `x` para limpiar sesiones con ruta inexistente.
 
-El diagnostico informa:
+El resumen explicativo informa:
 
 - cuantas sesiones hay en la base,
 - cuantas estan bajo `$HOME`,
 - cuantas conservan carpeta existente,
 - cuantas quedan visibles en activas y archivadas,
-- que valores de `source` existen bajo `$HOME`.
+- cuantas sesiones tecnicas internas se ocultan.
 
 Archivar:
 

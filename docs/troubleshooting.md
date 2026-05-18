@@ -69,7 +69,7 @@ El selector muestra solo:
 
 Si una sesion no aparece, revisar esos criterios antes de asumir perdida de datos.
 
-Para ver los conteos reales en el propio lanzador, elegir `d) Diagnostico de sesiones` desde la vista inicial.
+Para ver una explicacion resumida en el propio lanzador, elegir `d) Resumen de sesiones` desde la vista inicial.
 
 ## Se ven muchas sesiones `Sesion sin titulo util`
 

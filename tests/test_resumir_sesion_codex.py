@@ -128,9 +128,9 @@ class CodexSessionScriptTests(unittest.TestCase):
             env=self._env(),
             check=True,
         )
-        self.assertIn("Diagnostico de sesiones de Codex", proc.stdout)
-        self.assertIn("Sesiones bajo HOME:", proc.stdout)
-        self.assertIn("Criterios de visibilidad:", proc.stdout)
+        self.assertIn("Resumen de sesiones", proc.stdout)
+        self.assertIn("Activas que puedes abrir ahora:", proc.stdout)
+        self.assertIn("Que significa", proc.stdout)
 
     def test_missing_cwd_blocks_summary_generation(self):
         self.project_dir.rmdir()

@@ -368,7 +368,6 @@ show_session_diagnostics() {
   HOME_DIR="$HOME" STATE_DB="$STATE_DB" python3 - <<'PY'
 import os
 import sqlite3
-from collections import Counter
 from pathlib import Path
 
 db = os.environ["STATE_DB"]
@@ -381,25 +380,30 @@ under_home = [row for row in rows if row[0] == home or row[0].startswith(f"{home
 existing = [row for row in under_home if Path(row[0]).is_dir()]
 visible_active = [row for row in existing if row[1] == 0 and row[2] in ("cli", "vscode")]
 visible_archived = [row for row in existing if row[1] == 1 and row[2] in ("cli", "vscode")]
-sources = Counter(row[2] for row in under_home)
+missing = len(under_home) - len(existing)
+technical = len([row for row in existing if row[2] not in ("cli", "vscode")])
+outside_home = len(rows) - len(under_home)
 
-print("\nDiagnostico de sesiones de Codex")
-print(f" Base local: {db}")
-print(f" Sesiones totales en la base: {len(rows)}")
-print(f" Sesiones bajo HOME: {len(under_home)}")
-print(f" Con carpeta existente: {len(existing)}")
-print(f" Con ruta inexistente: {len(under_home) - len(existing)}")
-print(f" Visibles en activas: {len(visible_active)}")
-print(f" Visibles en archivadas: {len(visible_archived)}")
-print("\n Fuentes bajo HOME:")
-for source, count in sources.most_common():
-    label = source if len(source) <= 70 else source[:67] + "..."
-    print(f"  - {label}: {count}")
-print("\n Criterios de visibilidad:")
-print("  - cwd dentro de HOME")
-print("  - carpeta cwd existente")
-print("  - source cli o vscode")
-print("  - archived segun la vista elegida")
+print("\nResumen de sesiones")
+print(f" Activas que puedes abrir ahora:      {len(visible_active)}")
+print(f" Archivadas que puedes recuperar:     {len(visible_archived)}")
+print(f" Antiguas con carpeta ya borrada:     {missing}")
+print(f" Tecnicas internas que se ocultan:    {technical}")
+if outside_home:
+    print(f" Fuera de tu carpeta personal:        {outside_home}")
+
+print("\nQue significa")
+print(" - Activas: aparecen al pulsar Enter.")
+print(" - Archivadas: aparecen al pulsar a y se pueden desarchivar.")
+print(" - Carpeta borrada: no se muestran para evitar errores al abrirlas.")
+print(" - Tecnicas internas: Codex las crea para tareas auxiliares; no son sesiones normales de trabajo.")
+
+print("\nAcciones utiles")
+print(" - Pulsa a en el menu inicial para ver archivadas.")
+print(" - Pulsa x en un listado para limpiar sesiones con carpeta borrada.")
+
+print("\nDetalle tecnico")
+print(f" Base local usada: {db}")
 PY
 }
 
@@ -407,7 +411,7 @@ while true; do
   printf '\nVista inicial:\n'
   printf ' [Enter] Sesiones activas\n'
   printf ' a       Sesiones archivadas\n'
-  printf ' d       Diagnostico de sesiones\n'
+  printf ' d       Resumen de sesiones\n'
   printf ' q       Salir\n'
   printf '\nOpcion: '
   if ! read -r view_choice; then
