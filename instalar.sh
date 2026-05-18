@@ -75,8 +75,14 @@ if ! command -v xdg-terminal-exec >/dev/null 2>&1; then
   printf 'Aviso: no se encuentra xdg-terminal-exec. Puede que debas adaptar el lanzador manualmente.\n'
 fi
 
-if ! command -v codex >/dev/null 2>&1 && [[ ! -d "$HOME/.nvm/versions/node" ]]; then
-  printf 'Aviso: no se ha detectado Codex en PATH ni bajo ~/.nvm. Instala Codex antes de usar el lanzador.\n'
+if ! command -v codex >/dev/null 2>&1 &&
+  [[ ! -x "$HOME/.local/bin/codex" ]] &&
+  [[ ! -x "$HOME/.npm-global/bin/codex" ]] &&
+  [[ ! -x "$HOME/node_modules/.bin/codex" ]] &&
+  [[ ! -d "$HOME/.nvm/versions/node" ]]; then
+  printf 'Aviso: no se ha detectado Codex en PATH ni bajo rutas habituales.\n'
+  printf 'Si `command -v codex` funciona en tu terminal, puedes reinstalar con:\n'
+  printf '  CODEX_BIN=\"$(command -v codex)\" bash instalar.sh\n'
 fi
 
 mkdir -p "$OUT_DIR" "$APPLICATIONS_DIR"

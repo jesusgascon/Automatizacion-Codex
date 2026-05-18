@@ -93,6 +93,22 @@ class CodexSessionScriptTests(unittest.TestCase):
         self.assertIn("~/project", proc.stdout)
         self.assertNotIn("home2/project", proc.stdout)
 
+    def test_codex_detection_finds_local_bin(self):
+        local_bin = self.home / ".local" / "bin"
+        local_bin.mkdir(parents=True)
+        local_codex = local_bin / "codex"
+        local_codex.write_text("#!/usr/bin/env bash\nexit 0\n")
+        local_codex.chmod(0o755)
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(CODEX_BIN=""),
+            check=True,
+        )
+        self.assertIn("~/project", proc.stdout)
+
     def test_missing_cwd_blocks_summary_generation(self):
         self.project_dir.rmdir()
         proc = subprocess.run(

@@ -22,7 +22,11 @@ Orden de prioridad:
 
 1. Variable de entorno `CODEX_BIN`, si existe y apunta a un ejecutable.
 2. `command -v codex`.
-3. Ultimo ejecutable hallado bajo `~/.nvm/versions/node/*/bin/codex`, incluyendo enlaces simbolicos.
+3. Rutas frecuentes:
+   - `~/.local/bin/codex`,
+   - `~/.npm-global/bin/codex`,
+   - `~/node_modules/.bin/codex`.
+4. Ultimo ejecutable hallado bajo `~/.nvm/versions/node/*/bin/codex`, incluyendo enlaces simbolicos.
 
 ### Base de sesiones
 

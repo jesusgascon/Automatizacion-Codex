@@ -28,6 +28,7 @@ Comprobar:
 
 ```bash
 command -v codex
+ls -l "$HOME/.local/bin/codex" "$HOME/.npm-global/bin/codex" "$HOME/node_modules/.bin/codex" 2>/dev/null
 find "$HOME/.nvm/versions/node" -path '*/bin/codex' -executable 2>/dev/null
 ```
 
@@ -35,7 +36,12 @@ Soluciones posibles:
 
 - instalar Codex CLI,
 - asegurar que el binario sea ejecutable,
-- exportar `CODEX_BIN=/ruta/al/codex` para una prueba puntual.
+- exportar `CODEX_BIN=/ruta/al/codex` para una prueba puntual,
+- si `command -v codex` funciona en una terminal normal pero el lanzador no, reinstalar con:
+
+```bash
+CODEX_BIN="$(command -v codex)" bash instalar.sh
+```
 
 ## Aparece `No se encuentra la base local de sesiones`
 

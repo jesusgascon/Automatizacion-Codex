@@ -28,3 +28,4 @@
 - Instalador interactivo para elegir la carpeta de resumenes, logs y backups.
 - Correccion del prompt interactivo para que se muestre y no contamine la ruta elegida.
 - Entrada de aplicacion de usuario para GNOME en `~/.local/share/applications/`.
+- Deteccion ampliada de Codex en rutas npm/locales habituales y diagnostico mas util.

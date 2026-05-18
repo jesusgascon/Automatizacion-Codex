@@ -2,6 +2,7 @@
 set -u
 
 detect_codex_bin() {
+  local candidate
   if [[ -n "${CODEX_BIN:-}" && -x "${CODEX_BIN:-}" ]]; then
     printf '%s\n' "$CODEX_BIN"
     return 0
@@ -11,6 +12,16 @@ detect_codex_bin() {
     command -v codex
     return 0
   fi
+
+  for candidate in \
+    "$HOME/.local/bin/codex" \
+    "$HOME/.npm-global/bin/codex" \
+    "$HOME/node_modules/.bin/codex"; do
+    if [[ -x "$candidate" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
 
   find "$HOME/.nvm/versions/node" -path '*/bin/codex' -executable 2>/dev/null |
     sort -V |
@@ -54,7 +65,11 @@ BACKUP_DIR="$OUT_DIR/backups"
 MAX_BACKUPS="${MAX_BACKUPS:-10}"
 
 if [[ ! -x "$CODEX_BIN" ]]; then
-  printf 'No se encuentra Codex en:\n%s\n' "$CODEX_BIN"
+  printf 'No se encuentra Codex automaticamente.\n'
+  printf 'Prueba en una terminal normal:\n'
+  printf '  command -v codex\n'
+  printf 'Si devuelve una ruta, reinstala con:\n'
+  printf '  CODEX_BIN=\"/ruta/que/devuelva/command-v\" bash instalar.sh\n'
   printf 'Pulsa Enter para cerrar...'
   read -r
   exit 1

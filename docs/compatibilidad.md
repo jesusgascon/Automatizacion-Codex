@@ -8,6 +8,7 @@
 | GNOME con Ptyxis o GNOME Terminal | Alta | El lanzador respeta el terminal predeterminado. |
 | Codex instalado en `PATH` | Alta | Detección directa con `command -v codex`. |
 | Codex instalado mediante `nvm` | Alta | Se buscan ejecutables bajo `~/.nvm/versions/node/*/bin/codex`. |
+| Codex en rutas npm/locales habituales | Alta | Se prueban `~/.local/bin`, `~/.npm-global/bin` y `~/node_modules/.bin`. |
 | KDE, XFCE u otros escritorios | Media | Puede requerir adaptar el lanzador si falta `xdg-terminal-exec`. |
 
 ## Requisitos funcionales
