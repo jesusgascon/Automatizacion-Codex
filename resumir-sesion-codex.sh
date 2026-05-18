@@ -82,8 +82,24 @@ LOG_DIR="$OUT_DIR/logs"
 BACKUP_DIR="$OUT_DIR/backups"
 MAX_BACKUPS="${MAX_BACKUPS:-10}"
 
+if [[ "${LC_ALL:-${LC_CTYPE:-${LANG:-}}}" == *UTF-8* || "${LC_ALL:-${LC_CTYPE:-${LANG:-}}}" == *utf8* ]]; then
+  RULE_CHAR='─'
+else
+  RULE_CHAR='-'
+fi
+
+clear_screen() {
+  if [[ -t 1 ]]; then
+    printf '\033[2J\033[H'
+  fi
+}
+
 print_rule() {
-  printf '%s\n' '-------------------------------------------------------------------------------'
+  if [[ "$RULE_CHAR" == '─' ]]; then
+    printf '%s\n' '───────────────────────────────────────────────────────────────────────────────'
+  else
+    printf '%s\n' '-------------------------------------------------------------------------------'
+  fi
 }
 
 print_title() {
@@ -99,7 +115,7 @@ print_option() {
 
 print_subtitle() {
   printf '\n%s\n' "$1"
-  printf '%s\n' '-------------------------------------------------------------------------------'
+  print_rule
 }
 
 if [[ ! -x "$CODEX_BIN" ]]; then
@@ -385,7 +401,7 @@ PY
 }
 
 show_session_diagnostics() {
-  HOME_DIR="$HOME" STATE_DB="$STATE_DB" python3 - <<'PY'
+  RULE_CHAR="$RULE_CHAR" HOME_DIR="$HOME" STATE_DB="$STATE_DB" python3 - <<'PY'
 import os
 import sqlite3
 from pathlib import Path
@@ -403,10 +419,11 @@ visible_archived = [row for row in existing if row[1] == 1 and row[2] in ("cli",
 missing = len(under_home) - len(existing)
 technical = len([row for row in existing if row[2] not in ("cli", "vscode")])
 outside_home = len(rows) - len(under_home)
+rule = os.environ["RULE_CHAR"] * 79
 
-print("\n-------------------------------------------------------------------------------")
+print(f"\n{rule}")
 print("Resumen de sesiones")
-print("-------------------------------------------------------------------------------")
+print(rule)
 print(f"  Activas que puedes abrir ahora      {len(visible_active)}")
 print(f"  Archivadas que puedes recuperar     {len(visible_archived)}")
 print(f"  Antiguas con carpeta ya borrada     {missing}")
@@ -415,24 +432,25 @@ if outside_home:
     print(f"  Fuera de tu carpeta personal        {outside_home}")
 
 print("\nQue significa")
-print("-------------------------------------------------------------------------------")
+print(rule)
 print("  Activas              aparecen al pulsar Enter")
 print("  Archivadas           aparecen al pulsar a y se pueden desarchivar")
 print("  Carpeta borrada      no se muestran para evitar errores al abrirlas")
 print("  Tecnicas internas    tareas auxiliares de Codex, no sesiones normales")
 
 print("\nAcciones utiles")
-print("-------------------------------------------------------------------------------")
+print(rule)
 print("  a    Ver archivadas")
 print("  x    Limpiar sesiones con carpeta borrada desde un listado")
 
 print("\nDetalle tecnico")
-print("-------------------------------------------------------------------------------")
+print(rule)
 print(f" Base local usada: {db}")
 PY
 }
 
 while true; do
+  clear_screen
   print_title 'Automatizacion-Codex'
   printf 'Selecciona una opcion:\n'
   print_option '[Enter]' 'Sesiones activas'
@@ -449,6 +467,7 @@ while true; do
       exit 0
       ;;
     d|D)
+      clear_screen
       show_session_diagnostics
       printf '\nPulsa Enter para volver al menu inicial...'
       read -r
@@ -468,6 +487,7 @@ while true; do
   load_sessions
 
   while true; do
+    clear_screen
     if [[ ${#sessions[@]} -eq 0 ]]; then
       if [[ "$VIEW_MODE" == "archived" ]]; then
         printf '\nNo hay sesiones archivadas que mostrar bajo %s.\n' "$HOME"
@@ -525,6 +545,7 @@ while true; do
     IFS=$'\t' read -r sid when started tokens has_summary cwd short_cwd title <<< "${sessions[$((choice - 1))]}"
 
     while true; do
+      clear_screen
       print_title 'Acciones de la sesion'
       printf '%s\n' "$title"
       printf '%s\n' "$cwd"
