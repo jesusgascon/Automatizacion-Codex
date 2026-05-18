@@ -113,13 +113,13 @@ class CodexSessionScriptTests(unittest.TestCase):
         self.project_dir.rmdir()
         proc = subprocess.run(
             [str(SCRIPT)],
-            input="\nr\n1\n1\n\n0\nq\n",
+            input="\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(),
             check=True,
         )
-        self.assertIn("No se puede generar el resumen porque ya no existe el directorio original", proc.stdout)
+        self.assertNotIn("~/project", proc.stdout)
 
     def test_missing_cwd_is_hidden_by_default(self):
         self.project_dir.rmdir()
@@ -133,18 +133,21 @@ class CodexSessionScriptTests(unittest.TestCase):
         )
         self.assertNotIn("~/project", proc.stdout)
 
-    def test_missing_cwd_can_be_shown_on_demand(self):
+    def test_missing_cwd_can_be_removed_with_cleanup(self):
         self.project_dir.rmdir()
         proc = subprocess.run(
             [str(SCRIPT)],
-            input="\nr\n0\nq\n",
+            input="\nx\nLIMPIAR\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(),
             check=True,
         )
-        self.assertIn("Incluyendo sesiones con ruta inexistente", proc.stdout)
-        self.assertIn("[NO EXISTE]", proc.stdout)
+        self.assertIn("Limpieza completada", proc.stdout)
+        con = sqlite3.connect(self.state_db)
+        rows = con.execute("select id from threads where id = 'inside'").fetchall()
+        con.close()
+        self.assertEqual(rows, [])
 
     def test_text_filter_searches_visible_session_metadata(self):
         proc = subprocess.run(

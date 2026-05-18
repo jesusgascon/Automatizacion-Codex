@@ -14,7 +14,7 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 
 - Lista sesiones activas y archivadas de Codex en una tabla legible.
 - Filtra sesiones por texto usando ID, ruta, título o primer mensaje.
-- Oculta por defecto sesiones cuya carpeta original ya no existe, con opción para mostrarlas bajo demanda.
+- Oculta por defecto sesiones cuya carpeta original ya no existe y permite limpiarlas desde el menú con backup previo.
 - Muestra fecha de actualización, fecha de inicio, tokens, ruta y estado de resumen.
 - Genera resúmenes técnicos asociados al `session_id`.
 - Permite consultar el último resumen existente sin regenerarlo.
@@ -103,7 +103,7 @@ Desde el listado:
 
 - `f`: filtrar por texto,
 - `l`: limpiar el filtro activo,
-- `r`: mostrar u ocultar rutas inexistentes.
+- `x`: limpiar sesiones con ruta inexistente.
 
 ## Dónde guarda los datos
 

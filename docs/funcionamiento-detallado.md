@@ -83,7 +83,7 @@ Cada sesion muestra:
 
 Si el titulo original no aporta informacion, el selector mantiene `Sesion sin titulo util`, pero la tabla muestra aparte fecha de inicio y tokens para distinguir mejor sesiones reales de aperturas accidentales.
 
-Las sesiones cuyo directorio original ya no existe se ocultan por defecto. Desde el listado se puede pulsar `r` para incluirlas temporalmente; en ese modo la ruta se marca con `[NO EXISTE]`.
+Las sesiones cuyo directorio original ya no existe se ocultan por defecto. Desde el listado se puede pulsar `x` para eliminarlas de la base local tras confirmacion explicita y backup previo.
 
 Ejemplo:
 
@@ -112,7 +112,7 @@ Desde el listado tambien se puede:
 - pulsar `f` para filtrar por texto,
 - buscar sobre ID, ruta, titulo o primer mensaje,
 - pulsar `l` para limpiar el filtro activo,
-- pulsar `r` para mostrar u ocultar rutas inexistentes.
+- pulsar `x` para limpiar sesiones con ruta inexistente.
 
 Archivar:
 

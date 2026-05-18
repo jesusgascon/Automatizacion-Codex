@@ -34,7 +34,7 @@ Desde el listado pulsa `f` y escribe texto de la ruta, del titulo, del primer me
 
 ## Por que ya no aparece una sesion antigua?
 
-Si borraste o moviste la carpeta original, la sesion se oculta por defecto para mantener limpio el listado. Pulsa `r` desde el listado para incluir temporalmente rutas inexistentes; apareceran marcadas con `[NO EXISTE]`.
+Si borraste o moviste la carpeta original, la sesion se oculta por defecto para mantener limpio el listado. Si quieres eliminar esas entradas antiguas de la base local, pulsa `x` desde el listado y confirma con `LIMPIAR`; antes se crea un backup.
 
 ## Donde se guardan los backups?
 

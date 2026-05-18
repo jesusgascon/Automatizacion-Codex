@@ -84,7 +84,7 @@ fi
 
 load_sessions() {
   mapfile -t sessions < <(
-  HOME_DIR="$HOME" STATE_DB="$STATE_DB" OUT_DIR="$OUT_DIR" ARCHIVED_VALUE="$ARCHIVED_VALUE" SESSION_FILTER="$SESSION_FILTER" SHOW_MISSING_PATHS="$SHOW_MISSING_PATHS" python3 - <<'PY'
+  HOME_DIR="$HOME" STATE_DB="$STATE_DB" OUT_DIR="$OUT_DIR" ARCHIVED_VALUE="$ARCHIVED_VALUE" SESSION_FILTER="$SESSION_FILTER" python3 - <<'PY'
 import os
 import sqlite3
 from datetime import datetime
@@ -95,7 +95,6 @@ home = os.environ["HOME_DIR"]
 out_dir = Path(os.environ["OUT_DIR"])
 archived_value = int(os.environ["ARCHIVED_VALUE"])
 session_filter = os.environ["SESSION_FILTER"].strip().casefold()
-show_missing_paths = os.environ["SHOW_MISSING_PATHS"] == "1"
 con = sqlite3.connect(db)
 rows = con.execute(
     """
@@ -111,8 +110,7 @@ rows = con.execute(
 con.close()
 
 for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in rows:
-    path_exists = Path(cwd).is_dir()
-    if not path_exists and not show_missing_paths:
+    if not Path(cwd).is_dir():
         continue
     raw_title = (title or "").strip()
     raw_first = (first_user_message or "").strip()
@@ -134,8 +132,6 @@ for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in 
     short_cwd = cwd.replace(home, "~", 1)
     if len(short_cwd) > 34:
         short_cwd = "..." + short_cwd[-31:]
-    if not path_exists:
-        short_cwd = f"{short_cwd} [NO EXISTE]"
     token_label = f"{tokens_used:,}".replace(",", ".")
     has_summary = "SI" if any(out_dir.glob(f"resumen-codex-{sid}-*.txt")) else "NO"
     print(f"{sid}\t{when}\t{started}\t{token_label}\t{has_summary}\t{cwd}\t{short_cwd}\t{clean_title}")
@@ -151,9 +147,6 @@ show_session_table() {
   fi
   if [[ -n "$SESSION_FILTER" ]]; then
     printf 'Filtro activo: %s\n\n' "$SESSION_FILTER"
-  fi
-  if [[ "$SHOW_MISSING_PATHS" == "1" ]]; then
-    printf 'Incluyendo sesiones con ruta inexistente.\n\n'
   fi
   printf '%-3s %-16s %-16s %-12s %-8s %-34s %s\n' 'N' 'Actualizada' 'Iniciada' 'Tokens' 'Resumen' 'Ruta' 'Descripcion'
   printf '%-3s %-16s %-16s %-12s %-8s %-34s %s\n' '---' '----------------' '----------------' '------------' '--------' '----------------------------------' '----------------------------------------------------------'
@@ -287,6 +280,72 @@ PY
   return "$archive_status"
 }
 
+create_state_backup() {
+  mkdir -p "$BACKUP_DIR"
+  backup_stamp="$(date '+%Y%m%d-%H%M%S')"
+  backup_path="$BACKUP_DIR/state-before-cleanup-${backup_stamp}.sqlite"
+  STATE_DB="$STATE_DB" BACKUP_PATH="$backup_path" python3 - <<'PY'
+import os
+import sqlite3
+
+source = sqlite3.connect(os.environ["STATE_DB"])
+target = sqlite3.connect(os.environ["BACKUP_PATH"])
+source.backup(target)
+target.close()
+source.close()
+PY
+}
+
+clean_missing_path_sessions() {
+  printf '\nSe eliminaran de la base local las sesiones cuyo directorio ya no existe.\n'
+  printf 'La operacion crea un backup previo y no borra carpetas del disco.\n'
+  printf 'Escribe LIMPIAR para confirmar: '
+  if ! read -r confirm; then
+    exit 0
+  fi
+  if [[ "$confirm" != "LIMPIAR" ]]; then
+    printf 'Limpieza cancelada.\n'
+    return 1
+  fi
+
+  create_state_backup
+  backup_status=$?
+  if [[ $backup_status -ne 0 ]]; then
+    printf '\nNo se pudo crear el backup previo. Limpieza cancelada.\n'
+    return "$backup_status"
+  fi
+
+  removed_count="$(STATE_DB="$STATE_DB" HOME_DIR="$HOME" python3 - <<'PY'
+import os
+import sqlite3
+from pathlib import Path
+
+db = os.environ["STATE_DB"]
+home = os.environ["HOME_DIR"]
+
+con = sqlite3.connect(db)
+rows = con.execute(
+    """
+    select id, cwd
+    from threads
+    where (cwd = ? or cwd like ?)
+      and source in ('cli', 'vscode')
+    """,
+    (home, f"{home}/%"),
+).fetchall()
+missing_ids = [sid for sid, cwd in rows if not Path(cwd).is_dir()]
+if missing_ids:
+    con.executemany("delete from threads where id = ?", [(sid,) for sid in missing_ids])
+    con.commit()
+con.close()
+print(len(missing_ids))
+PY
+)"
+  printf '\nLimpieza completada.\n'
+  printf 'Backup previo guardado en: %s\n' "$backup_path"
+  printf 'Sesiones eliminadas: %s\n' "$removed_count"
+}
+
 while true; do
   printf '\nVista inicial:\n'
   printf ' [Enter] Sesiones activas\n'
@@ -312,7 +371,6 @@ while true; do
   esac
 
   SESSION_FILTER=""
-  SHOW_MISSING_PATHS=0
   load_sessions
 
   while true; do
@@ -327,11 +385,7 @@ while true; do
     fi
     printf '\n 0) Volver al menu inicial\n'
     printf ' f) Filtrar por texto\n'
-    if [[ "$SHOW_MISSING_PATHS" == "1" ]]; then
-      printf ' r) Ocultar rutas inexistentes\n'
-    else
-      printf ' r) Mostrar rutas inexistentes\n'
-    fi
+    printf ' x) Limpiar sesiones con ruta inexistente\n'
     if [[ -n "$SESSION_FILTER" ]]; then
       printf ' l) Limpiar filtro\n'
     fi
@@ -362,12 +416,8 @@ while true; do
       continue
     fi
 
-    if [[ "$choice" == "r" || "$choice" == "R" ]]; then
-      if [[ "$SHOW_MISSING_PATHS" == "1" ]]; then
-        SHOW_MISSING_PATHS=0
-      else
-        SHOW_MISSING_PATHS=1
-      fi
+    if [[ "$choice" == "x" || "$choice" == "X" ]]; then
+      clean_missing_path_sessions
       load_sessions
       continue
     fi
