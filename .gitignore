@@ -1,0 +1,11 @@
+# Runtime outputs
+*.log
+*.tmp
+
+# Local generated summaries if the project is executed from inside the repo
+Documentacion/
+
+# Local tooling
+.DS_Store
+.idea/
+.vscode/

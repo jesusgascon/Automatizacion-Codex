@@ -1,0 +1,197 @@
+# Funcionamiento detallado
+
+## 1. Inicio
+
+El usuario ejecuta el lanzador:
+
+```text
+Resumir sesion de Codex.desktop
+```
+
+El lanzador abre:
+
+```bash
+gnome-terminal -- /ruta/al/proyecto/resumir-sesion-codex.sh
+```
+
+## 2. Deteccion automatica
+
+### Binario de Codex
+
+Orden de prioridad:
+
+1. Variable de entorno `CODEX_BIN`, si existe y apunta a un ejecutable.
+2. `command -v codex`.
+3. Ultimo ejecutable hallado bajo `~/.nvm/versions/node/*/bin/codex`, incluyendo enlaces simbolicos.
+
+### Base de sesiones
+
+Orden de prioridad:
+
+1. Variable de entorno `STATE_DB`, si existe y apunta a un fichero.
+2. Ultimo fichero `state_*.sqlite` encontrado en `~/.codex`.
+
+### Carpeta de Escritorio
+
+Orden de prioridad:
+
+1. `xdg-user-dir DESKTOP`.
+2. `~/Escritorio`.
+3. `~/Desktop`.
+
+## 3. Lectura del historial de sesiones
+
+La base SQLite se consulta desde Python porque:
+
+- `sqlite3` forma parte de la libreria estandar,
+- se evita depender del binario externo `sqlite3`,
+- el formateo de fechas y titulos queda centralizado.
+
+Consulta logica:
+
+```sql
+select id, cwd, title, first_user_message, created_at, updated_at, tokens_used
+from threads
+where cwd like "$HOME%"
+  and archived = 0
+  and source in ('cli', 'vscode')
+order by updated_at desc;
+```
+
+## 4. Presentacion del selector
+
+Cada sesion muestra:
+
+- numero de opcion,
+- fecha y hora de ultima actualizacion,
+- directorio de trabajo,
+- si existe resumen asociado,
+- titulo normalizado.
+
+Si el titulo original no aporta informacion, el selector mantiene `Sesion sin titulo util`, pero la tabla muestra aparte fecha de inicio y tokens para distinguir mejor sesiones reales de aperturas accidentales.
+
+Ejemplo:
+
+```text
+1   2026-05-18 11:03  2026-05-18 08:48  23.072.099  NO  ~/Escritorio  Sesion sin titulo util
+```
+
+## 5. Seleccion de accion
+
+Opciones:
+
+```text
+1) Generar resumen
+2) Abrir sesion para continuar
+3) Generar resumen y despues abrir sesion
+4) Archivar sesion
+5) Ver ultimo resumen guardado
+0) Volver al listado de sesiones
+```
+
+La pantalla inicial permite entrar en sesiones activas o archivadas. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
+Desde el listado de sesiones, `0` vuelve al menu inicial. Desde el menu inicial, `q` sale del lanzador.
+
+Archivar:
+
+- modifica `archived = 1`,
+- rellena `archived_at`,
+- oculta la sesion del listado activo,
+- no elimina la conversacion ni sus ficheros de rollout.
+
+## 6. Generacion del resumen
+
+### Por que `exec resume`
+
+Se usa `exec resume` porque:
+
+- trabaja de forma no interactiva,
+- permite mandar un prompt concreto,
+- permite capturar la ultima respuesta en un archivo con `-o`.
+
+### Por que `--ephemeral`
+
+Se usa `--ephemeral` porque:
+
+- el objetivo es documentar una sesion ya existente,
+- no interesa crear otra sesion nueva solo por resumir,
+- se reduce ruido en el historial.
+
+### Por que `-C "$cwd"`
+
+Se usa el directorio original de la sesion para:
+
+- mantener contexto coherente,
+- respetar el entorno del proyecto,
+- evitar que Codex interprete la sesion desde otra carpeta.
+
+### Separacion entre resumen y log
+
+El resumen limpio va a `.txt`.
+
+La salida tecnica completa de Codex va a `.log`.
+
+Ventajas:
+
+- la terminal queda legible,
+- el usuario recibe una vista previa inmediata,
+- si algo falla, queda traza suficiente para diagnosticar.
+
+### Asociacion entre sesion y resumen
+
+Los resumenes nuevos se nombran asi:
+
+```text
+resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
+```
+
+Eso permite que el listado marque `SI` o `NO` en la columna `Resumen`.
+
+Cuando una sesion ya tiene resumen, la opcion `5` muestra el ultimo resumen asociado sin regenerarlo.
+
+Los resumenes antiguos creados antes de esta convencion pueden existir en disco, pero no se consideran asociados automaticamente porque no contienen el ID de sesion.
+
+## 7. Reapertura interactiva
+
+Cuando se elige abrir:
+
+1. el script hace `cd "$cwd"`,
+2. ejecuta `codex resume "$sid"`,
+3. usa `exec` para sustituir el proceso Bash por Codex.
+
+Resultado:
+
+- la terminal pasa directamente a la sesion real,
+- no queda un proceso intermedio innecesario.
+
+## 8. Codigos de error
+
+Casos tratados:
+
+- binario ausente,
+- base ausente,
+- lista vacia,
+- seleccion invalida,
+- opcion invalida,
+- error al generar resumen,
+- directorio original inaccesible.
+
+## 9. Salidas creadas
+
+Ejemplo:
+
+```text
+Documentacion/Codex/Resumenes/
+├── resumen-codex-20260518-104807.txt
+└── logs/
+    └── resumen-codex-20260518-104807.log
+```
+
+## 10. Que no hace
+
+- No borra sesiones.
+- No exporta conversaciones completas.
+- No modifica configuracion de Codex.
+- No sincroniza entre equipos.
+- No reemplaza un sistema de backup.
+- No deduce proyectos si el `cwd` ya no existe.

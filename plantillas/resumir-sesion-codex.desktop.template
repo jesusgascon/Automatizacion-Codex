@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Resumir sesion de Codex
+Comment=Permite elegir una sesion de Codex, resumirla o abrirla para continuar
+Exec=xdg-terminal-exec -- __SCRIPT_PATH__
+Icon=utilities-terminal
+Terminal=false
+Categories=Utility;

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Automatizacion-Codex - Manual completo</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: #fffaf2;
+      --ink: #241f1a;
+      --muted: #6f655c;
+      --line: #d9cdbd;
+      --accent: #9a3412;
+      --accent-soft: #f4dfd3;
+      --code: #2c241f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(154, 52, 18, 0.12), transparent 28rem),
+        linear-gradient(180deg, #fbf6ef 0%, var(--bg) 100%);
+      color: var(--ink);
+      font-family: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", serif;
+      line-height: 1.6;
+    }
+
+    main {
+      width: min(1040px, calc(100% - 32px));
+      margin: 32px auto 56px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 60px rgba(36, 31, 26, 0.12);
+    }
+
+    header {
+      padding: 34px 38px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1, h2, h3 {
+      line-height: 1.2;
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      margin-top: 34px;
+      margin-bottom: 14px;
+      font-size: 1.45rem;
+      color: var(--accent);
+    }
+
+    h3 {
+      margin-top: 22px;
+      margin-bottom: 8px;
+      font-size: 1.08rem;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 760px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.88rem;
+    }
+
+    article {
+      padding: 0 38px 36px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin: 18px 0;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.55);
+      padding: 16px;
+    }
+
+    ul, ol {
+      padding-left: 22px;
+    }
+
+    code, pre {
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+    }
+
+    code {
+      background: #efe5d7;
+      padding: 0.12rem 0.3rem;
+      border-radius: 4px;
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 16px;
+      color: #f9f2e8;
+      background: var(--code);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--accent);
+    }
+
+    .note {
+      margin-top: 20px;
+      border-left: 4px solid var(--accent);
+      background: #fff4ea;
+      padding: 14px 16px;
+    }
+
+    @media (max-width: 700px) {
+      main {
+        width: calc(100% - 16px);
+        margin: 8px auto 24px;
+      }
+
+      header, article {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Automatizacion-Codex</h1>
+      <p class="lead">
+        Sistema local para seleccionar sesiones de Codex, documentarlas mediante resumenes tecnicos
+        y reabrirlas para continuar trabajando desde un unico lanzador de escritorio.
+      </p>
+      <div class="meta">
+        <span class="tag">Linux</span>
+        <span class="tag">Bash</span>
+        <span class="tag">Codex CLI</span>
+        <span class="tag">SQLite</span>
+        <span class="tag">Lanzador .desktop</span>
+      </div>
+    </header>
+
+    <article>
+      <h2>1. Que resuelve</h2>
+      <div class="grid">
+        <section class="card">
+          <h3>Recuperacion</h3>
+          <p>Permite localizar sesiones antiguas por fecha, ruta y titulo sin recordar UUIDs.</p>
+        </section>
+        <section class="card">
+          <h3>Documentacion</h3>
+          <p>Genera un resumen reutilizable de cada sesion con objetivo, trabajo, decisiones y riesgos.</p>
+        </section>
+        <section class="card">
+          <h3>Continuidad</h3>
+          <p>Reabre la sesion real para seguir trabajando sin empezar desde cero.</p>
+        </section>
+      </div>
+
+      <h2>2. Donde vive cada cosa</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Elemento</th>
+            <th>Ubicacion</th>
+            <th>Funcion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Lanzador visible</td>
+            <td><code>~/Escritorio/Resumir sesion de Codex.desktop</code></td>
+            <td>Punto de entrada grafico.</td>
+          </tr>
+          <tr>
+            <td>Script principal</td>
+            <td><code>~/Escritorio/Proyectos/Automatizacion-Codex/resumir-sesion-codex.sh</code></td>
+            <td>Seleccion, resumen y reapertura.</td>
+          </tr>
+          <tr>
+            <td>Resumenes</td>
+            <td><code>~/Escritorio/Documentacion/Codex/Resumenes/</code></td>
+            <td>Salida limpia para consulta posterior.</td>
+          </tr>
+          <tr>
+            <td>Logs</td>
+            <td><code>~/Escritorio/Documentacion/Codex/Resumenes/logs/</code></td>
+            <td>Trazas tecnicas de ejecucion.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>3. Flujo de funcionamiento</h2>
+      <ol>
+        <li>El usuario abre el lanzador del Escritorio.</li>
+        <li>El script detecta automaticamente el binario de Codex, la base SQLite y la carpeta de Escritorio.</li>
+        <li>Consulta la tabla <code>threads</code> de la base local de Codex.</li>
+        <li>Muestra las sesiones principales bajo <code>$HOME</code>, ordenadas por fecha reciente.</li>
+        <li>El usuario elige una sesion.</li>
+        <li>El usuario elige entre resumir, abrir o resumir y abrir.</li>
+      </ol>
+
+      <h2>4. Acciones disponibles</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Opcion</th>
+            <th>Accion</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>1</code></td>
+            <td>Generar resumen</td>
+            <td>Crea <code>.txt</code> y <code>.log</code>, muestra vista previa y cierra.</td>
+          </tr>
+          <tr>
+            <td><code>2</code></td>
+            <td>Abrir sesion</td>
+            <td>Ejecuta <code>codex resume &lt;id&gt;</code> y continua la sesion.</td>
+          </tr>
+          <tr>
+            <td><code>3</code></td>
+            <td>Resumir y abrir</td>
+            <td>Documenta primero y reabre despues la sesion elegida.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>5. Deteccion automatica</h2>
+      <h3>Binario Codex</h3>
+      <ol>
+        <li>Variable <code>CODEX_BIN</code> si se define manualmente.</li>
+        <li><code>command -v codex</code>.</li>
+        <li>Ultimo binario localizado bajo <code>~/.nvm/versions/node/*/bin/codex</code>.</li>
+      </ol>
+
+      <h3>Base de sesiones</h3>
+      <ol>
+        <li>Variable <code>STATE_DB</code> si se define manualmente.</li>
+        <li>Ultimo fichero <code>state_*.sqlite</code> localizado en <code>~/.codex</code>.</li>
+      </ol>
+
+      <h3>Carpeta de Escritorio</h3>
+      <ol>
+        <li><code>xdg-user-dir DESKTOP</code>.</li>
+        <li><code>~/Escritorio</code>.</li>
+        <li><code>~/Desktop</code>.</li>
+      </ol>
+
+      <h2>6. Consulta SQLite</h2>
+      <pre><code>select id, cwd, title, first_user_message, updated_at
+from threads
+where cwd like "$HOME%"
+  and archived = 0
+  and source in ('cli', 'vscode')
+order by updated_at desc;</code></pre>
+      <p>
+        Se excluyen ejecuciones internas para que el selector muestre sesiones de uso real.
+        Los titulos vacios, <code>.</code> o <code>exit</code> se presentan como
+        <code>Sesion sin titulo util</code>, sin ocultarlos.
+      </p>
+
+      <h2>7. Seguridad</h2>
+      <ul>
+        <li>No borra sesiones.</li>
+        <li>No modifica la base SQLite.</li>
+        <li>No cambia permisos de proyectos.</li>
+        <li>No crea nuevas sesiones persistentes al resumir gracias a <code>--ephemeral</code>.</li>
+        <li>Separa resumen limpio y log tecnico para facilitar auditoria.</li>
+      </ul>
+
+      <h2>8. Replicacion</h2>
+      <p>El proyecto incluye:</p>
+      <ul>
+        <li><code>instalar.sh</code> para desplegar el lanzador en otro equipo.</li>
+        <li><code>plantillas/resumir-sesion-codex.desktop.template</code> para generar el acceso directo.</li>
+        <li>Documentacion tecnica completa en <code>docs/</code>.</li>
+      </ul>
+      <pre><code>cd Automatizacion-Codex
+bash instalar.sh</code></pre>
+
+      <h2>9. GPT personalizado asociado</h2>
+      <p>
+        El proyecto incorpora una especificacion completa para crear un GPT personalizado orientado a
+        documentar automatizaciones locales, scripts y lanzadores de Linux con el mismo nivel de detalle.
+      </p>
+      <p>
+        Archivo: <code>docs/gpt-personalizado-documentador.md</code>
+      </p>
+
+      <div class="note">
+        Este sistema nacio de una necesidad practica: cerrar sesiones tecnicas largas sin perder el contexto,
+        dejar un resumen operativo y poder retomarlas dias despues sin friccion.
+      </div>
+    </article>
+  </main>
+</body>
+</html>

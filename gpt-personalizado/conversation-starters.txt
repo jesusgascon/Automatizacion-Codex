@@ -1,0 +1,4 @@
+Documenta este script Bash y genera un README completo.
+Convierte esta automatizacion local en un paquete documental replicable.
+Analiza este lanzador .desktop y explica como instalarlo en otros equipos.
+Genera arquitectura, funcionamiento, instalacion y troubleshooting para esta utilidad.
