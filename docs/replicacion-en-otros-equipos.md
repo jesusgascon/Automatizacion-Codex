@@ -42,6 +42,46 @@ bash instalar.sh
 
 4. Verificar que aparezca un lanzador en el Escritorio.
 
+## Resumen rapido para instalar en casa
+
+En el equipo nuevo:
+
+```bash
+mkdir -p "$HOME/Proyectos"
+cd "$HOME/Proyectos"
+git clone https://github.com/jesusgascon/Automatizacion-Codex.git
+cd Automatizacion-Codex
+bash instalar.sh
+```
+
+Despues comprobar:
+
+```bash
+bash -n resumir-sesion-codex.sh instalar.sh
+python3 -m unittest discover -s tests -v
+```
+
+Y despues:
+
+1. mirar en el Escritorio el lanzador `Resumir sesion de Codex.desktop`,
+2. abrirlo,
+3. si Codex ya esta instalado y autenticado en ese equipo, apareceran las sesiones locales de ese ordenador,
+4. si aun no hay sesiones locales, usar primero Codex alli para que exista `~/.codex/state_*.sqlite`.
+
+El instalador adapta automaticamente:
+
+- el `$HOME` del usuario actual,
+- la carpeta de Escritorio real,
+- el binario de Codex disponible,
+- la base local de sesiones de ese equipo,
+- la ruta donde se guardan los resumenes.
+
+No hace falta tocar rutas manualmente salvo que:
+
+- Codex no este en `PATH`,
+- no exista `xdg-terminal-exec`,
+- o se quiera forzar una base concreta con `STATE_DB`.
+
 ## Que hace `instalar.sh`
 
 - detecta la carpeta de Escritorio,
