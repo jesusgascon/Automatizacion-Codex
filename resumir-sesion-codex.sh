@@ -84,8 +84,28 @@ MAX_BACKUPS="${MAX_BACKUPS:-10}"
 
 if [[ "${LC_ALL:-${LC_CTYPE:-${LANG:-}}}" == *UTF-8* || "${LC_ALL:-${LC_CTYPE:-${LANG:-}}}" == *utf8* ]]; then
   RULE_CHAR='─'
+  BOX_TOP_LEFT='┌'
+  BOX_TOP_RIGHT='┐'
+  BOX_BOTTOM_LEFT='└'
+  BOX_BOTTOM_RIGHT='┘'
+  BOX_VERTICAL='│'
 else
   RULE_CHAR='-'
+  BOX_TOP_LEFT='+'
+  BOX_TOP_RIGHT='+'
+  BOX_BOTTOM_LEFT='+'
+  BOX_BOTTOM_RIGHT='+'
+  BOX_VERTICAL='|'
+fi
+
+if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+  STYLE_TITLE=$'\033[1;36m'
+  STYLE_LABEL=$'\033[1m'
+  STYLE_RESET=$'\033[0m'
+else
+  STYLE_TITLE=''
+  STYLE_LABEL=''
+  STYLE_RESET=''
 fi
 
 clear_screen() {
@@ -104,18 +124,45 @@ print_rule() {
 
 print_title() {
   printf '\n'
-  print_rule
-  printf '%s\n' "$1"
-  print_rule
+  print_box_top
+  print_box_line "$1" "$STYLE_TITLE"
+  print_box_bottom
 }
 
 print_option() {
-  printf '  %-8s %s\n' "$1" "$2"
+  printf '  %s%-8s%s %s\n' "$STYLE_LABEL" "$1" "$STYLE_RESET" "$2"
 }
 
 print_subtitle() {
-  printf '\n%s\n' "$1"
+  printf '\n%s%s%s\n' "$STYLE_LABEL" "$1" "$STYLE_RESET"
   print_rule
+}
+
+print_box_top() {
+  printf '%s' "$BOX_TOP_LEFT"
+  print_rule | tr -d '\n'
+  printf '%s\n' "$BOX_TOP_RIGHT"
+}
+
+print_box_bottom() {
+  printf '%s' "$BOX_BOTTOM_LEFT"
+  print_rule | tr -d '\n'
+  printf '%s\n' "$BOX_BOTTOM_RIGHT"
+}
+
+print_box_line() {
+  local text="$1"
+  local style="${2:-}"
+  printf '%s %s%-77s%s %s\n' "$BOX_VERTICAL" "$style" "$text" "$STYLE_RESET" "$BOX_VERTICAL"
+}
+
+print_option_panel() {
+  print_box_top
+  while (( "$#" )); do
+    print_box_line "$1"
+    shift
+  done
+  print_box_bottom
 }
 
 if [[ ! -x "$CODEX_BIN" ]]; then
@@ -200,7 +247,7 @@ show_session_table() {
     print_title 'Sesiones activas de Codex'
   fi
   if [[ -n "$SESSION_FILTER" ]]; then
-    printf 'Filtro activo: %s\n\n' "$SESSION_FILTER"
+    printf '%sFiltro activo:%s %s\n\n' "$STYLE_LABEL" "$STYLE_RESET" "$SESSION_FILTER"
   fi
   printf '%-3s %-16s %-16s %-12s %-8s %-34s %s\n' 'N' 'Actualizada' 'Iniciada' 'Tokens' 'Resumen' 'Ruta' 'Descripcion'
   printf '%-3s %-16s %-16s %-12s %-8s %-34s %s\n' '---' '----------------' '----------------' '------------' '--------' '----------------------------------' '----------------------------------------------------------'
@@ -401,7 +448,7 @@ PY
 }
 
 show_session_diagnostics() {
-  RULE_CHAR="$RULE_CHAR" HOME_DIR="$HOME" STATE_DB="$STATE_DB" python3 - <<'PY'
+  RULE_CHAR="$RULE_CHAR" BOX_TOP_LEFT="$BOX_TOP_LEFT" BOX_TOP_RIGHT="$BOX_TOP_RIGHT" BOX_BOTTOM_LEFT="$BOX_BOTTOM_LEFT" BOX_BOTTOM_RIGHT="$BOX_BOTTOM_RIGHT" BOX_VERTICAL="$BOX_VERTICAL" HOME_DIR="$HOME" STATE_DB="$STATE_DB" python3 - <<'PY'
 import os
 import sqlite3
 from pathlib import Path
@@ -420,10 +467,13 @@ missing = len(under_home) - len(existing)
 technical = len([row for row in existing if row[2] not in ("cli", "vscode")])
 outside_home = len(rows) - len(under_home)
 rule = os.environ["RULE_CHAR"] * 79
+top = f"{os.environ['BOX_TOP_LEFT']}{rule}{os.environ['BOX_TOP_RIGHT']}"
+bottom = f"{os.environ['BOX_BOTTOM_LEFT']}{rule}{os.environ['BOX_BOTTOM_RIGHT']}"
+vertical = os.environ["BOX_VERTICAL"]
 
-print(f"\n{rule}")
-print("Resumen de sesiones")
-print(rule)
+print(f"\n{top}")
+print(f"{vertical} {'Resumen de sesiones':<75} {vertical}")
+print(bottom)
 print(f"  Activas que puedes abrir ahora      {len(visible_active)}")
 print(f"  Archivadas que puedes recuperar     {len(visible_archived)}")
 print(f"  Antiguas con carpeta ya borrada     {missing}")
@@ -452,11 +502,12 @@ PY
 while true; do
   clear_screen
   print_title 'Automatizacion-Codex'
-  printf 'Selecciona una opcion:\n'
-  print_option '[Enter]' 'Sesiones activas'
-  print_option 'a' 'Sesiones archivadas'
-  print_option 'd' 'Resumen de sesiones'
-  print_option 'q' 'Salir'
+  printf '%sSelecciona una opcion%s\n\n' "$STYLE_LABEL" "$STYLE_RESET"
+  print_option_panel \
+    '[Enter]  Sesiones activas' \
+    'a        Sesiones archivadas' \
+    'd        Resumen de sesiones' \
+    'q        Salir'
   printf '\nOpcion: '
   if ! read -r view_choice; then
     exit 0
@@ -498,9 +549,10 @@ while true; do
       show_session_table
     fi
     print_subtitle 'Acciones del listado'
-    print_option '0' 'Volver al menu inicial'
-    print_option 'f' 'Filtrar por texto'
-    print_option 'x' 'Limpiar sesiones con ruta inexistente'
+    print_option_panel \
+      '0        Volver al menu inicial' \
+      'f        Filtrar por texto' \
+      'x        Limpiar sesiones con ruta inexistente'
     if [[ -n "$SESSION_FILTER" ]]; then
       print_option 'l' 'Limpiar filtro'
     fi
@@ -547,18 +599,22 @@ while true; do
     while true; do
       clear_screen
       print_title 'Acciones de la sesion'
-      printf '%s\n' "$title"
-      printf '%s\n' "$cwd"
-      print_option '1' 'Generar resumen'
-      print_option '2' 'Abrir sesion para continuar'
-      print_option '3' 'Generar resumen y despues abrir sesion'
+      print_option_panel \
+        "Sesion: $title" \
+        "Ruta:   $cwd"
+      print_subtitle 'Acciones disponibles'
       if [[ "$VIEW_MODE" == "archived" ]]; then
-        print_option '4' 'Desarchivar sesion'
+        archive_action='4        Desarchivar sesion'
       else
-        print_option '4' 'Archivar sesion'
+        archive_action='4        Archivar sesion'
       fi
-      print_option '5' 'Ver ultimo resumen guardado'
-      print_option '0' 'Volver al listado de sesiones'
+      print_option_panel \
+        '1        Generar resumen' \
+        '2        Abrir sesion para continuar' \
+        '3        Generar resumen y despues abrir sesion' \
+        "$archive_action" \
+        '5        Ver ultimo resumen guardado' \
+        '0        Volver al listado de sesiones'
       printf '\nOpcion: '
       if ! read -r action; then
         exit 0
