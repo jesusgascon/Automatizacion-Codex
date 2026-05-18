@@ -26,3 +26,4 @@
 - Seccion de creditos del proyecto.
 - Carpeta de salida configurable mediante `CODEX_SUMMARY_DIR`.
 - Instalador interactivo para elegir la carpeta de resumenes, logs y backups.
+- Correccion del prompt interactivo para que se muestre y no contamine la ruta elegida.

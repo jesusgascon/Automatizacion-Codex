@@ -174,5 +174,11 @@ class CodexSessionScriptTests(unittest.TestCase):
         self.assertTrue(custom_dir.is_dir())
         self.assertIn(str(custom_dir), proc.stdout)
 
+    def test_interactive_prompt_does_not_pollute_summary_path(self):
+        install_text = INSTALLER.read_text()
+        self.assertIn("printf 'Carpeta para resumenes, logs y backups:\\n' >&2", install_text)
+        self.assertIn("printf ' [Enter] %s\\n' \"$default_dir\" >&2", install_text)
+        self.assertIn("printf ' Ruta personalizada: ' >&2", install_text)
+
 if __name__ == "__main__":
     unittest.main()

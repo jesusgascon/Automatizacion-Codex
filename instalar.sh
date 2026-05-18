@@ -47,9 +47,9 @@ choose_summary_dir() {
   fi
 
   if [[ -t 0 ]]; then
-    printf 'Carpeta para resumenes, logs y backups:\n'
-    printf ' [Enter] %s\n' "$default_dir"
-    printf ' Ruta personalizada: '
+    printf 'Carpeta para resumenes, logs y backups:\n' >&2
+    printf ' [Enter] %s\n' "$default_dir" >&2
+    printf ' Ruta personalizada: ' >&2
     read -r chosen_dir
     if [[ -n "$chosen_dir" ]]; then
       expand_user_path "$chosen_dir"
