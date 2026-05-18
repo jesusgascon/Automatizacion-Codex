@@ -32,6 +32,10 @@ Si. Selecciona la sesion y usa `5) Ver ultimo resumen guardado`.
 
 Desde el listado pulsa `f` y escribe texto de la ruta, del titulo, del primer mensaje o del ID. Para volver al listado completo, pulsa `l`.
 
+## Por que veo pocas sesiones?
+
+El lanzador no recorre carpetas de proyectos; lee las sesiones registradas por Codex y muestra solo las que cumplen los criterios visibles. Desde la vista inicial pulsa `d` para ver cuantas sesiones hay realmente, cuantas estan bajo tu `HOME`, cuantas tienen carpeta existente y cuantas se descartan por `source` o archivado.
+
 ## Por que ya no aparece una sesion antigua?
 
 Si borraste o moviste la carpeta original, la sesion se oculta por defecto para mantener limpio el listado. Si quieres eliminar esas entradas antiguas de la base local, pulsa `x` desde el listado y confirma con `LIMPIAR`; antes se crea un backup.

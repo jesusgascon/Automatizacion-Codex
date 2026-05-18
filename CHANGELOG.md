@@ -16,6 +16,7 @@
 
 - Deteccion ampliada de Codex usando `PATH`, shell de login, `npm prefix -g`, rutas habituales, instalaciones de sistema y `nvm`.
 - Documentacion actualizada para distinguir entre carpeta de salida elegida y ruta predeterminada.
+- Diagnostico interactivo de cobertura de sesiones desde la vista inicial.
 
 ### Fixed
 

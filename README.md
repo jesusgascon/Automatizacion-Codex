@@ -89,6 +89,7 @@ Después abre el lanzador y confirma que:
 2. En la pantalla inicial:
    - `Enter`: sesiones activas,
    - `a`: sesiones archivadas,
+   - `d`: diagnóstico de sesiones,
    - `q`: salir.
 3. Selecciona una sesión.
 4. Elige una acción:

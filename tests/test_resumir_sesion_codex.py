@@ -119,6 +119,19 @@ class CodexSessionScriptTests(unittest.TestCase):
         )
         self.assertIn(f"Codex detectado en: {self.codex_bin}", proc.stdout)
 
+    def test_diagnostics_explain_session_visibility(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="d\n\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Diagnostico de sesiones de Codex", proc.stdout)
+        self.assertIn("Sesiones bajo HOME:", proc.stdout)
+        self.assertIn("Criterios de visibilidad:", proc.stdout)
+
     def test_missing_cwd_blocks_summary_generation(self):
         self.project_dir.rmdir()
         proc = subprocess.run(
