@@ -1,0 +1,38 @@
+name: Bug report
+description: Reporta un fallo reproducible
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Antes de abrir el issue, revisa `docs/troubleshooting.md`.
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción
+      description: Qué ha fallado y qué esperabas que ocurriera.
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducir
+      placeholder: |
+        1. Abrir el lanzador
+        2. Elegir ...
+        3. Ver ...
+    validations:
+      required: true
+  - type: textarea
+    id: entorno
+    attributes:
+      label: Entorno
+      description: Distribución, terminal, versión de Codex y forma de instalación.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o salida relevante
+      description: Elimina credenciales y datos privados antes de pegar nada.

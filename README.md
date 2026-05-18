@@ -1,118 +1,150 @@
 # Automatizacion-Codex
 
-Proyecto local para seleccionar sesiones de Codex, resumirlas y reabrirlas desde un unico lanzador de escritorio.
+Utilidad local para Linux que permite explorar sesiones de Codex, generar resúmenes técnicos, reabrir conversaciones y archivar sesiones desde un único lanzador de escritorio.
 
-## Objetivo
+## Por qué existe
 
-Resolver tres necesidades operativas:
+Codex conserva sesiones útiles, pero retomarlas días después no siempre es cómodo: hay que recordar rutas, distinguir conversaciones con títulos pobres y documentar manualmente lo que ya se hizo. Este proyecto convierte ese historial local en un flujo operativo más claro.
 
-1. Ver las sesiones de Codex disponibles en el equipo sin tener que recordar rutas ni UUID.
-2. Generar un resumen tecnico reutilizable de una sesion cerrada.
-3. Reabrir una sesion concreta para continuar trabajando desde el mismo punto.
-4. Archivar sesiones para limpiar el listado sin borrarlas.
+## Funcionalidades
 
-## Componentes
+- Lista sesiones activas y archivadas de Codex en una tabla legible.
+- Muestra fecha de actualización, fecha de inicio, tokens, ruta y estado de resumen.
+- Genera resúmenes técnicos asociados al `session_id`.
+- Permite consultar el último resumen existente sin regenerarlo.
+- Reabre sesiones interactivas para continuar trabajando.
+- Archiva y desarchiva sesiones sin borrarlas.
+- Crea un backup de la base local antes de cambiar el estado de archivado.
+- Detecta automáticamente el binario `codex`, la base `state_*.sqlite` y el Escritorio del usuario.
+- Instala un lanzador `.desktop` que respeta el terminal predeterminado mediante `xdg-terminal-exec`.
 
-- `resumir-sesion-codex.sh`
-  Script principal. Lee la base local de Codex, presenta el selector y ejecuta la accion elegida.
-- `Resumir sesion de Codex.desktop`
-  Lanzador grafico ubicado en el Escritorio. Abre el script con `xdg-terminal-exec`, respetando el terminal predeterminado del sistema.
-- `Documentacion/Codex/Resumenes/`
-  Carpeta de salida de los resumenes.
-- `Documentacion/Codex/Resumenes/logs/`
-  Carpeta de trazas tecnicas de cada ejecucion.
-- `docs/`
-  Documentacion tecnica y de despliegue del proyecto.
-- `plantillas/`
-  Archivos base reutilizables para instalar el sistema en otros equipos.
+## Vista rápida
 
-## Flujo de uso
-
-1. El usuario abre `Resumir sesion de Codex.desktop`.
-2. El script detecta:
-   - binario de Codex,
-   - base SQLite de sesiones,
-   - carpeta de Escritorio del usuario.
-3. Se listan las sesiones principales encontradas bajo `$HOME`.
-4. El usuario elige una sesion.
-5. El usuario elige una accion:
-   - generar resumen,
-   - abrir sesion,
-   - generar resumen y despues abrir sesion,
-   - archivar o desarchivar,
-   - consultar el ultimo resumen guardado.
-6. La navegacion permite volver atras con `0` y salir desde el menu inicial con `q`.
-7. Si se genera resumen:
-   - el resultado limpio se guarda como `.txt`,
-   - la salida tecnica completa se guarda como `.log`,
-   - se muestra una vista previa en pantalla.
-8. La tabla indica si una sesion ya tiene resumen asociado mediante la columna `Resumen`.
-
-## Estado actual
-
-- Funcional en Linux con terminal compatible con `xdg-terminal-exec` y Codex CLI.
-- Preparado para instalaciones con Codex en `PATH` o bajo `~/.nvm/versions/node/*/bin/codex`.
-- Detecta automaticamente el fichero `state_*.sqlite` mas reciente dentro de `~/.codex`.
-- Usa `xdg-user-dir DESKTOP` cuando esta disponible, con fallback a `~/Escritorio` o `~/Desktop`.
+```text
+N   Actualizada      Iniciada         Tokens       Resumen  Ruta                               Descripcion
+--- ---------------- ---------------- ------------ -------- ---------------------------------- ------------------------
+1   2026-05-18 15:38 2026-05-18 08:48 27.954.698   SI       ~/Escritorio                       Sesion sin titulo util
+2   2026-05-08 09:56 2026-05-08 09:17 656.896      NO       ~/Escritorio/calendario-vacaciones $graphify .
+```
 
 ## Requisitos
 
+- Linux.
 - Bash.
-- Python 3 con modulo estandar `sqlite3`.
+- Python 3 con el módulo estándar `sqlite3`.
 - Codex CLI instalado y autenticado.
-- Un emulador de terminal configurado como predeterminado para `xdg-terminal-exec`.
-- Base local de Codex en `~/.codex/state_*.sqlite`.
+- Sesiones locales de Codex disponibles en `~/.codex/state_*.sqlite`.
+- `xdg-terminal-exec` recomendado para abrir el terminal predeterminado.
 
-## Estructura recomendada
+## Instalación rápida
+
+```bash
+git clone https://github.com/jesusgascon/Automatizacion-Codex.git
+cd Automatizacion-Codex
+bash instalar.sh
+```
+
+El instalador:
+
+1. detecta la carpeta de Escritorio,
+2. crea la carpeta de salida de resúmenes,
+3. genera el lanzador `Resumir sesion de Codex.desktop`,
+4. marca como ejecutables los archivos necesarios.
+
+## Uso
+
+1. Abre el lanzador del Escritorio.
+2. En la pantalla inicial:
+   - `Enter`: sesiones activas,
+   - `a`: sesiones archivadas,
+   - `q`: salir.
+3. Selecciona una sesión.
+4. Elige una acción:
+   - `1`: generar resumen,
+   - `2`: abrir sesión,
+   - `3`: resumir y abrir,
+   - `4`: archivar o desarchivar,
+   - `5`: ver el último resumen guardado,
+   - `0`: volver.
+
+## Dónde guarda los datos
+
+```text
+<Escritorio>/Documentacion/Codex/Resumenes/
+├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
+└── logs/
+    └── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.log
+```
+
+## Privacidad y seguridad
+
+- El proyecto no sube sesiones ni resúmenes a ningún servicio.
+- La lectura del historial se hace sobre la base local de Codex.
+- El archivado usa `archived` y `archived_at`; no elimina conversaciones.
+- Antes de archivar o desarchivar se guarda una copia local de la base SQLite.
+- Los resúmenes personales, bases SQLite y logs no forman parte del repositorio.
+- Antes de publicar este repositorio se retiraron rutas concretas, IDs reales y datos de uso personal.
+
+Consulta [Privacidad](docs/privacidad.md) y [Security Policy](SECURITY.md) para más detalle.
+
+## Compatibilidad
+
+| Componente | Estado |
+| --- | --- |
+| Ubuntu moderno con `xdg-terminal-exec` | Compatible |
+| Codex en `PATH` | Compatible |
+| Codex instalado mediante `nvm` | Compatible |
+| Otros escritorios Linux | Compatible con posible ajuste del lanzador |
+| Borrado destructivo de sesiones | Fuera de alcance |
+
+Consulta [Compatibilidad](docs/compatibilidad.md) para más detalle.
+
+## Estructura del proyecto
 
 ```text
 Automatizacion-Codex/
 ├── README.md
+├── CHANGELOG.md
+├── LICENSE
+├── CONTRIBUTING.md
+├── SECURITY.md
 ├── manual-completo.html
 ├── resumir-sesion-codex.sh
 ├── instalar.sh
 ├── docs/
-│   ├── arquitectura.md
-│   ├── funcionamiento-detallado.md
-│   ├── historial-decisiones.md
-│   ├── replicacion-en-otros-equipos.md
-│   ├── troubleshooting.md
-│   └── gpt-personalizado-documentador.md
 ├── gpt-personalizado/
-│   ├── README.md
-│   ├── instructions.txt
-│   ├── welcome-message.txt
-│   ├── conversation-starters.txt
-│   └── knowledge-files.txt
 └── plantillas/
-    └── resumir-sesion-codex.desktop.template
 ```
 
-## Decisiones de diseno
-
-- Se usa SQLite directamente porque Codex ya mantiene ahi el catalogo de sesiones.
-- Se filtran solo sesiones de origen `cli` y `vscode` para evitar mostrar ejecuciones internas o subagentes.
-- No se ocultan las sesiones con titulo pobre; se renombran visualmente como `Sesion sin titulo util` y se acompanan de columnas de inicio y tokens para no perder acceso a datos validos.
-- El resumen usa `codex exec resume --ephemeral` para no generar nuevas sesiones persistentes solo por documentar una antigua.
-- Los resumenes nuevos incluyen el ID de sesion en el nombre para poder asociarlos de forma exacta desde el menu.
-- La salida detallada de Codex se redirige a logs para mantener limpia la experiencia del usuario.
-- La apertura para continuar usa `codex resume <id>` y no un resumen, para recuperar la sesion real.
-- El archivado usa los campos locales `archived` y `archived_at`; oculta la sesion del listado activo, pero no la borra.
-
-## Limites conocidos
-
-- La estructura interna de la base SQLite de Codex podria cambiar en versiones futuras.
-- Si Codex deja de usar `state_*.sqlite`, habra que adaptar la deteccion.
-- El lanzador usa `xdg-terminal-exec`; si el sistema no lo ofrece, habra que sustituirlo por el terminal disponible.
-- El orden depende de `updated_at`, por lo que las sesiones mas recientes aparecen primero aunque tengan titulos poco descriptivos.
-
-## Documentacion ampliada
+## Documentación
 
 - [Arquitectura](docs/arquitectura.md)
 - [Funcionamiento detallado](docs/funcionamiento-detallado.md)
-- [Replicacion en otros equipos](docs/replicacion-en-otros-equipos.md)
+- [Instalación y réplica](docs/replicacion-en-otros-equipos.md)
+- [Privacidad](docs/privacidad.md)
+- [Compatibilidad](docs/compatibilidad.md)
 - [Troubleshooting](docs/troubleshooting.md)
-- [Historial de decisiones](docs/historial-decisiones.md)
 - [FAQ](docs/faq.md)
 - [Roadmap](docs/roadmap.md)
+- [Historial de decisiones](docs/historial-decisiones.md)
 - [GPT personalizado documentador](docs/gpt-personalizado-documentador.md)
+
+## Diseño técnico
+
+- SQLite se usa porque Codex ya mantiene ahí el catálogo local de sesiones.
+- Solo se listan sesiones de origen `cli` y `vscode` para evitar ruido interno.
+- Las sesiones con títulos pobres no se ocultan; se distinguen por ruta, fechas y tokens.
+- `codex exec --ephemeral` permite resumir sin contaminar el historial con otra sesión persistente.
+- Los resúmenes nuevos incluyen `session_id` en el nombre para asociarlos sin ambigüedad.
+
+## Limitaciones conocidas
+
+- La estructura interna de Codex puede cambiar en versiones futuras.
+- El proyecto depende de que exista una base `state_*.sqlite` compatible.
+- El archivado toca la base local de Codex de forma directa; es reversible, pero conviene mantener copias de seguridad del perfil.
+- El proyecto crea backups previos al archivado, pero no sustituye una política general de copias de seguridad del perfil.
+- Los resúmenes antiguos creados sin `session_id` no pueden vincularse automáticamente con certeza.
+
+## Licencia
+
+MIT. Consulta [LICENSE](LICENSE).

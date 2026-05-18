@@ -50,6 +50,7 @@ STATE_DB="$(detect_state_db)"
 DESKTOP_DIR="$(detect_desktop_dir)"
 OUT_DIR="$DESKTOP_DIR/Documentacion/Codex/Resumenes"
 LOG_DIR="$OUT_DIR/logs"
+BACKUP_DIR="$OUT_DIR/backups"
 
 if [[ ! -x "$CODEX_BIN" ]]; then
   printf 'No se encuentra Codex en:\n%s\n' "$CODEX_BIN"
@@ -190,6 +191,24 @@ open_session() {
 set_archive_state() {
   local new_value="$1"
   local verb="$2"
+  mkdir -p "$BACKUP_DIR"
+  backup_stamp="$(date '+%Y%m%d-%H%M%S')"
+  backup_path="$BACKUP_DIR/state-before-archive-${backup_stamp}.sqlite"
+  STATE_DB="$STATE_DB" BACKUP_PATH="$backup_path" python3 - <<'PY'
+import os
+import sqlite3
+
+source = sqlite3.connect(os.environ["STATE_DB"])
+target = sqlite3.connect(os.environ["BACKUP_PATH"])
+source.backup(target)
+target.close()
+source.close()
+PY
+  backup_status=$?
+  if [[ $backup_status -ne 0 ]]; then
+    printf '\nNo se pudo crear el backup previo. Archivado cancelado.\n'
+    return "$backup_status"
+  fi
   STATE_DB="$STATE_DB" SID="$sid" NEW_VALUE="$new_value" python3 - <<'PY'
 import os
 import sqlite3
@@ -214,6 +233,7 @@ PY
   archive_status=$?
   if [[ $archive_status -eq 0 ]]; then
     printf '\nSesion %s correctamente.\n' "$verb"
+    printf 'Backup previo guardado en: %s\n' "$backup_path"
   else
     printf '\nNo se pudo cambiar el estado de archivado.\n'
   fi

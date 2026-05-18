@@ -150,7 +150,7 @@ Ruta:
 Formato:
 
 ```text
-resumen-codex-YYYYMMDD-HHMMSS.txt
+resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
 ```
 
 ### Logs
@@ -164,13 +164,28 @@ Ruta:
 Formato:
 
 ```text
-resumen-codex-YYYYMMDD-HHMMSS.log
+resumen-codex-<session_id>-YYYYMMDD-HHMMSS.log
+```
+
+### Backups previos al archivado
+
+Ruta:
+
+```text
+<Escritorio>/Documentacion/Codex/Resumenes/backups/
+```
+
+Formato:
+
+```text
+state-before-archive-YYYYMMDD-HHMMSS.sqlite
 ```
 
 ## Seguridad y reversibilidad
 
 - No borra sesiones.
-- No modifica la base SQLite.
+- Solo modifica `archived` y `archived_at` cuando el usuario lo confirma.
+- Crea backup antes de cambiar estado de archivado.
 - Solo lee metadatos y lanza comandos oficiales de Codex.
 - No altera proyectos origen.
 - Los resumenes son salidas nuevas, separadas del historial real.

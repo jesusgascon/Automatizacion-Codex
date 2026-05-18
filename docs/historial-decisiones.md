@@ -136,3 +136,15 @@ Motivo:
 - `SI` confirma que existe, pero no permite consultarlo,
 - regenerar solo para leerlo seria innecesario,
 - mejora el uso diario del lanzador como indice de sesiones.
+
+## 12. Backup antes de archivar
+
+Decision:
+
+- crear una copia SQLite antes de cambiar `archived` o `archived_at`.
+
+Motivo:
+
+- convertir la reversibilidad en una garantía práctica,
+- reducir el riesgo de una modificación manual futura,
+- mantener la filosofía conservadora del proyecto.

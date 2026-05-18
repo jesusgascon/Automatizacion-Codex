@@ -94,6 +94,7 @@ Desde el listado de sesiones, `0` vuelve al menu inicial. Desde el menu inicial,
 
 Archivar:
 
+- crea antes un backup local de la base SQLite,
 - modifica `archived = 1`,
 - rellena `archived_at`,
 - oculta la sesion del listado activo,
@@ -151,6 +152,16 @@ Cuando una sesion ya tiene resumen, la opcion `5` muestra el ultimo resumen asoc
 
 Los resumenes antiguos creados antes de esta convencion pueden existir en disco, pero no se consideran asociados automaticamente porque no contienen el ID de sesion.
 
+### Backups antes de archivar
+
+Antes de archivar o desarchivar, el script crea:
+
+```text
+<Escritorio>/Documentacion/Codex/Resumenes/backups/state-before-archive-YYYYMMDD-HHMMSS.sqlite
+```
+
+Esto refuerza la reversibilidad de la unica operación que modifica la base local de Codex.
+
 ## 7. Reapertura interactiva
 
 Cuando se elige abrir:
@@ -182,9 +193,11 @@ Ejemplo:
 
 ```text
 Documentacion/Codex/Resumenes/
-├── resumen-codex-20260518-104807.txt
-└── logs/
-    └── resumen-codex-20260518-104807.log
+├── resumen-codex-<session_id>-20260518-104807.txt
+├── logs/
+│   └── resumen-codex-<session_id>-20260518-104807.log
+└── backups/
+    └── state-before-archive-20260518-104807.sqlite
 ```
 
 ## 10. Que no hace

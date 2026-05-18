@@ -270,6 +270,16 @@
             <td>Resumir y abrir</td>
             <td>Documenta primero y reabre despues la sesion elegida.</td>
           </tr>
+          <tr>
+            <td><code>4</code></td>
+            <td>Archivar o desarchivar</td>
+            <td>Oculta o recupera una sesion sin borrarla.</td>
+          </tr>
+          <tr>
+            <td><code>5</code></td>
+            <td>Ver ultimo resumen</td>
+            <td>Muestra el ultimo resumen guardado sin regenerarlo.</td>
+          </tr>
         </tbody>
       </table>
 
@@ -310,7 +320,8 @@ order by updated_at desc;</code></pre>
       <h2>7. Seguridad</h2>
       <ul>
         <li>No borra sesiones.</li>
-        <li>No modifica la base SQLite.</li>
+        <li>Solo modifica el estado de archivado cuando el usuario lo confirma.</li>
+        <li>Crea un backup local de la base SQLite antes de archivar o desarchivar.</li>
         <li>No cambia permisos de proyectos.</li>
         <li>No crea nuevas sesiones persistentes al resumir gracias a <code>--ephemeral</code>.</li>
         <li>Separa resumen limpio y log tecnico para facilitar auditoria.</li>
