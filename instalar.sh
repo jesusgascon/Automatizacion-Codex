@@ -25,7 +25,7 @@ detect_desktop_dir() {
 
 DESKTOP_DIR="$(detect_desktop_dir)"
 LAUNCHER="$DESKTOP_DIR/Resumir sesion de Codex.desktop"
-OUT_DIR="$DESKTOP_DIR/Documentacion/Codex/Resumenes"
+OUT_DIR="${CODEX_SUMMARY_DIR:-$DESKTOP_DIR/Documentacion/Codex/Resumenes}"
 
 if ! command -v python3 >/dev/null 2>&1; then
   printf 'Aviso: no se encuentra python3. El lanzador no funcionara sin Python 3.\n'

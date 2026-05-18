@@ -36,6 +36,14 @@ Desde el listado pulsa `f` y escribe texto de la ruta, del titulo, del primer me
 
 En `<Escritorio>/Documentacion/Codex/Resumenes/backups/`. Se crean antes de archivar o desarchivar y por defecto se conservan los 10 mas recientes.
 
+## Puedo guardar los resumenes en otra carpeta?
+
+Si. Define `CODEX_SUMMARY_DIR` antes de ejecutar el instalador o el script, por ejemplo:
+
+```bash
+CODEX_SUMMARY_DIR="$HOME/Documentos/Codex/Resumenes" bash instalar.sh
+```
+
 ## Que debo hacer despues de actualizar desde GitHub?
 
 Ejecuta:

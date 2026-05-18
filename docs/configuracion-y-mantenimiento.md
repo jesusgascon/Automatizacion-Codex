@@ -25,6 +25,7 @@ El script detecta:
 | --- | --- | --- |
 | `CODEX_BIN` | Ruta absoluta a un ejecutable | Diagnosticar instalaciones de Codex no detectadas automaticamente. |
 | `STATE_DB` | Ruta absoluta a una base `state_*.sqlite` | Probar una base concreta si existen varias. |
+| `CODEX_SUMMARY_DIR` | Ruta absoluta a una carpeta | Cambiar la ubicacion de resumenes, logs y backups. |
 | `MAX_BACKUPS` | Entero positivo | Cambiar la retencion de copias previas al archivado. |
 
 Ejemplo:
@@ -32,8 +33,15 @@ Ejemplo:
 ```bash
 CODEX_BIN="$HOME/.nvm/versions/node/v24.0.0/bin/codex" \
 STATE_DB="$HOME/.codex/state_1.sqlite" \
+CODEX_SUMMARY_DIR="$HOME/Documentos/Codex/Resumenes" \
 MAX_BACKUPS=20 \
 bash resumir-sesion-codex.sh
+```
+
+Por defecto, si `CODEX_SUMMARY_DIR` no se define, se usa:
+
+```text
+<Escritorio>/Documentacion/Codex/Resumenes/
 ```
 
 ## Mantenimiento recomendado

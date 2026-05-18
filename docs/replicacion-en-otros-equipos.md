@@ -125,13 +125,15 @@ El script permite forzar rutas si hiciera falta:
 ```bash
 CODEX_BIN="/ruta/al/codex" \
 STATE_DB="$HOME/.codex/state_X.sqlite" \
+CODEX_SUMMARY_DIR="$HOME/Documentos/Codex/Resumenes" \
 bash resumir-sesion-codex.sh
 ```
 
 Uso recomendado:
 
 - solo para diagnostico,
-- solo si la autodeteccion no encuentra el recurso correcto.
+- solo si la autodeteccion no encuentra el recurso correcto,
+- o si se quiere guardar la documentacion fuera de la ruta predeterminada del Escritorio.
 
 ## Pruebas tras instalar
 

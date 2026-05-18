@@ -162,5 +162,17 @@ class CodexSessionScriptTests(unittest.TestCase):
         self.assertIn(str(script_copy), launcher.read_text())
         self.assertIn(str(asset_dir / ICON.name), launcher.read_text())
 
+    def test_custom_summary_dir_is_honored_by_installer(self):
+        custom_dir = self.home / "Documentos" / "Codex" / "Resumenes"
+        proc = subprocess.run(
+            [str(INSTALLER)],
+            text=True,
+            capture_output=True,
+            env=self._env(CODEX_SUMMARY_DIR=str(custom_dir)),
+            check=True,
+        )
+        self.assertTrue(custom_dir.is_dir())
+        self.assertIn(str(custom_dir), proc.stdout)
+
 if __name__ == "__main__":
     unittest.main()

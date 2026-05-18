@@ -39,6 +39,13 @@ Orden de prioridad:
 2. `~/Escritorio`.
 3. `~/Desktop`.
 
+### Carpeta de salidas
+
+Orden de prioridad:
+
+1. Variable `CODEX_SUMMARY_DIR`, si se define.
+2. `<Escritorio>/Documentacion/Codex/Resumenes/`.
+
 ## 3. Lectura del historial de sesiones
 
 La base SQLite se consulta desde Python porque:

@@ -179,6 +179,7 @@ Variables opcionales:
 | --- | --- |
 | `CODEX_BIN` | Fuerza la ruta al ejecutable de Codex. |
 | `STATE_DB` | Fuerza la base SQLite que debe leer el script. |
+| `CODEX_SUMMARY_DIR` | Cambia la carpeta donde se guardan resúmenes, logs y backups. |
 | `MAX_BACKUPS` | Ajusta cuántos backups previos al archivado se conservan. |
 
 Ejemplo de diagnóstico puntual:
@@ -186,6 +187,7 @@ Ejemplo de diagnóstico puntual:
 ```bash
 CODEX_BIN="$HOME/.nvm/versions/node/v24.0.0/bin/codex" \
 STATE_DB="$HOME/.codex/state_1.sqlite" \
+CODEX_SUMMARY_DIR="$HOME/Documentos/Codex/Resumenes" \
 MAX_BACKUPS=20 \
 bash resumir-sesion-codex.sh
 ```

@@ -48,7 +48,7 @@ detect_desktop_dir() {
 CODEX_BIN="$(detect_codex_bin)"
 STATE_DB="$(detect_state_db)"
 DESKTOP_DIR="$(detect_desktop_dir)"
-OUT_DIR="$DESKTOP_DIR/Documentacion/Codex/Resumenes"
+OUT_DIR="${CODEX_SUMMARY_DIR:-$DESKTOP_DIR/Documentacion/Codex/Resumenes}"
 LOG_DIR="$OUT_DIR/logs"
 BACKUP_DIR="$OUT_DIR/backups"
 MAX_BACKUPS="${MAX_BACKUPS:-10}"

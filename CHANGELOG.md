@@ -24,3 +24,4 @@
 - Filtro textual de sesiones por ID, ruta, titulo o primer mensaje.
 - Logo vectorial propio e integracion visual en README, manual y lanzador.
 - Seccion de creditos del proyecto.
+- Carpeta de salida configurable mediante `CODEX_SUMMARY_DIR`.
