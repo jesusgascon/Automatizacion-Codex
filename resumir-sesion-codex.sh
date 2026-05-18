@@ -82,6 +82,26 @@ LOG_DIR="$OUT_DIR/logs"
 BACKUP_DIR="$OUT_DIR/backups"
 MAX_BACKUPS="${MAX_BACKUPS:-10}"
 
+print_rule() {
+  printf '%s\n' '-------------------------------------------------------------------------------'
+}
+
+print_title() {
+  printf '\n'
+  print_rule
+  printf '%s\n' "$1"
+  print_rule
+}
+
+print_option() {
+  printf '  %-8s %s\n' "$1" "$2"
+}
+
+print_subtitle() {
+  printf '\n%s\n' "$1"
+  printf '%s\n' '-------------------------------------------------------------------------------'
+}
+
 if [[ ! -x "$CODEX_BIN" ]]; then
   printf 'No se encuentra Codex automaticamente.\n'
   printf 'Prueba en una terminal normal:\n'
@@ -159,9 +179,9 @@ PY
 
 show_session_table() {
   if [[ "$VIEW_MODE" == "archived" ]]; then
-    printf '\nSesiones archivadas de Codex\n\n'
+    print_title 'Sesiones archivadas de Codex'
   else
-    printf '\nSesiones activas de Codex\n\n'
+    print_title 'Sesiones activas de Codex'
   fi
   if [[ -n "$SESSION_FILTER" ]]; then
     printf 'Filtro activo: %s\n\n' "$SESSION_FILTER"
@@ -384,35 +404,41 @@ missing = len(under_home) - len(existing)
 technical = len([row for row in existing if row[2] not in ("cli", "vscode")])
 outside_home = len(rows) - len(under_home)
 
-print("\nResumen de sesiones")
-print(f" Activas que puedes abrir ahora:      {len(visible_active)}")
-print(f" Archivadas que puedes recuperar:     {len(visible_archived)}")
-print(f" Antiguas con carpeta ya borrada:     {missing}")
-print(f" Tecnicas internas que se ocultan:    {technical}")
+print("\n-------------------------------------------------------------------------------")
+print("Resumen de sesiones")
+print("-------------------------------------------------------------------------------")
+print(f"  Activas que puedes abrir ahora      {len(visible_active)}")
+print(f"  Archivadas que puedes recuperar     {len(visible_archived)}")
+print(f"  Antiguas con carpeta ya borrada     {missing}")
+print(f"  Tecnicas internas que se ocultan    {technical}")
 if outside_home:
-    print(f" Fuera de tu carpeta personal:        {outside_home}")
+    print(f"  Fuera de tu carpeta personal        {outside_home}")
 
 print("\nQue significa")
-print(" - Activas: aparecen al pulsar Enter.")
-print(" - Archivadas: aparecen al pulsar a y se pueden desarchivar.")
-print(" - Carpeta borrada: no se muestran para evitar errores al abrirlas.")
-print(" - Tecnicas internas: Codex las crea para tareas auxiliares; no son sesiones normales de trabajo.")
+print("-------------------------------------------------------------------------------")
+print("  Activas              aparecen al pulsar Enter")
+print("  Archivadas           aparecen al pulsar a y se pueden desarchivar")
+print("  Carpeta borrada      no se muestran para evitar errores al abrirlas")
+print("  Tecnicas internas    tareas auxiliares de Codex, no sesiones normales")
 
 print("\nAcciones utiles")
-print(" - Pulsa a en el menu inicial para ver archivadas.")
-print(" - Pulsa x en un listado para limpiar sesiones con carpeta borrada.")
+print("-------------------------------------------------------------------------------")
+print("  a    Ver archivadas")
+print("  x    Limpiar sesiones con carpeta borrada desde un listado")
 
 print("\nDetalle tecnico")
+print("-------------------------------------------------------------------------------")
 print(f" Base local usada: {db}")
 PY
 }
 
 while true; do
-  printf '\nVista inicial:\n'
-  printf ' [Enter] Sesiones activas\n'
-  printf ' a       Sesiones archivadas\n'
-  printf ' d       Resumen de sesiones\n'
-  printf ' q       Salir\n'
+  print_title 'Automatizacion-Codex'
+  printf 'Selecciona una opcion:\n'
+  print_option '[Enter]' 'Sesiones activas'
+  print_option 'a' 'Sesiones archivadas'
+  print_option 'd' 'Resumen de sesiones'
+  print_option 'q' 'Salir'
   printf '\nOpcion: '
   if ! read -r view_choice; then
     exit 0
@@ -451,11 +477,12 @@ while true; do
     else
       show_session_table
     fi
-    printf '\n 0) Volver al menu inicial\n'
-    printf ' f) Filtrar por texto\n'
-    printf ' x) Limpiar sesiones con ruta inexistente\n'
+    print_subtitle 'Acciones del listado'
+    print_option '0' 'Volver al menu inicial'
+    print_option 'f' 'Filtrar por texto'
+    print_option 'x' 'Limpiar sesiones con ruta inexistente'
     if [[ -n "$SESSION_FILTER" ]]; then
-      printf ' l) Limpiar filtro\n'
+      print_option 'l' 'Limpiar filtro'
     fi
     printf '\nNumero de sesion: '
     if ! read -r choice; then
@@ -498,17 +525,19 @@ while true; do
     IFS=$'\t' read -r sid when started tokens has_summary cwd short_cwd title <<< "${sessions[$((choice - 1))]}"
 
     while true; do
-      printf '\nQue quieres hacer con esta sesion?\n'
-      printf ' 1) Generar resumen\n'
-      printf ' 2) Abrir sesion para continuar\n'
-      printf ' 3) Generar resumen y despues abrir sesion\n'
+      print_title 'Acciones de la sesion'
+      printf '%s\n' "$title"
+      printf '%s\n' "$cwd"
+      print_option '1' 'Generar resumen'
+      print_option '2' 'Abrir sesion para continuar'
+      print_option '3' 'Generar resumen y despues abrir sesion'
       if [[ "$VIEW_MODE" == "archived" ]]; then
-        printf ' 4) Desarchivar sesion\n'
+        print_option '4' 'Desarchivar sesion'
       else
-        printf ' 4) Archivar sesion\n'
+        print_option '4' 'Archivar sesion'
       fi
-      printf ' 5) Ver ultimo resumen guardado\n'
-      printf ' 0) Volver al listado de sesiones\n'
+      print_option '5' 'Ver ultimo resumen guardado'
+      print_option '0' 'Volver al listado de sesiones'
       printf '\nOpcion: '
       if ! read -r action; then
         exit 0

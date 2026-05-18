@@ -129,7 +129,7 @@ class CodexSessionScriptTests(unittest.TestCase):
             check=True,
         )
         self.assertIn("Resumen de sesiones", proc.stdout)
-        self.assertIn("Activas que puedes abrir ahora:", proc.stdout)
+        self.assertIn("Activas que puedes abrir ahora", proc.stdout)
         self.assertIn("Que significa", proc.stdout)
 
     def test_missing_cwd_blocks_summary_generation(self):
