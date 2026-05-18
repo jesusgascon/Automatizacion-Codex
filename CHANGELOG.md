@@ -20,3 +20,4 @@
 - Tests automatizados de regresion.
 - Documento de configuracion y mantenimiento.
 - Ampliacion del README, FAQ, manual y guias operativas para reflejar la version endurecida.
+- Guia de instalacion actualizada para distribucion publica.

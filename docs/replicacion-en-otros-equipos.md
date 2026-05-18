@@ -20,12 +20,12 @@ Instalar el mismo sistema en cualquier equipo Linux con Codex CLI para disponer 
 
 ## Instalacion recomendada
 
-1. Clonar el repositorio privado desde GitHub:
+1. Clonar el repositorio publico desde GitHub:
 
 ```bash
 mkdir -p "$HOME/Proyectos"
 cd "$HOME/Proyectos"
-gh repo clone jesusgascon/Automatizacion-Codex
+git clone https://github.com/jesusgascon/Automatizacion-Codex.git
 ```
 
 2. Entrar al proyecto:
@@ -52,21 +52,15 @@ bash instalar.sh
 - avisa si faltan `python3`, `xdg-terminal-exec` o `codex`,
 - crea la carpeta de salida de resumenes.
 
-## Si el repositorio sigue siendo privado
+## Alternativa con GitHub CLI
 
-Antes de clonar en el equipo nuevo:
-
-```bash
-gh auth login -h github.com
-```
-
-Después:
+Si ya usas `gh`, tambien puedes clonar con:
 
 ```bash
 gh repo clone jesusgascon/Automatizacion-Codex
 ```
 
-Si prefieres `git clone` por HTTPS, el equipo debe tener credenciales válidas para acceder al repositorio privado.
+Al ser publico, no hace falta iniciar sesion para clonar por HTTPS.
 
 ## Si el equipo no tiene `xdg-terminal-exec`
 
