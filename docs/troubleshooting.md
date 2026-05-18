@@ -16,6 +16,12 @@ grep '^Exec=' "$HOME/Escritorio/Resumir sesion de Codex.desktop"
 xdg-terminal-exec --print-id
 ```
 
+Si GNOME lo muestra como archivo normal o pide confianza:
+
+```bash
+gio set "$HOME/Escritorio/Resumir sesion de Codex.desktop" metadata::trusted true
+```
+
 ## Aparece `No se encuentra Codex`
 
 Comprobar:

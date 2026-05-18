@@ -39,10 +39,12 @@ N   Actualizada      Iniciada         Tokens       Resumen  Ruta                
 ## Instalación rápida
 
 ```bash
-git clone https://github.com/jesusgascon/Automatizacion-Codex.git
+gh repo clone jesusgascon/Automatizacion-Codex
 cd Automatizacion-Codex
 bash instalar.sh
 ```
+
+Como el repositorio es privado, `gh repo clone` es la ruta más cómoda si ya tienes `gh auth login` configurado. También puedes usar `git clone` por HTTPS si tu equipo ya tiene credenciales de GitHub válidas.
 
 El instalador:
 

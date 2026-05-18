@@ -26,10 +26,25 @@ DESKTOP_DIR="$(detect_desktop_dir)"
 LAUNCHER="$DESKTOP_DIR/Resumir sesion de Codex.desktop"
 OUT_DIR="$DESKTOP_DIR/Documentacion/Codex/Resumenes"
 
+if ! command -v python3 >/dev/null 2>&1; then
+  printf 'Aviso: no se encuentra python3. El lanzador no funcionara sin Python 3.\n'
+fi
+
+if ! command -v xdg-terminal-exec >/dev/null 2>&1; then
+  printf 'Aviso: no se encuentra xdg-terminal-exec. Puede que debas adaptar el lanzador manualmente.\n'
+fi
+
+if ! command -v codex >/dev/null 2>&1 && [[ ! -d "$HOME/.nvm/versions/node" ]]; then
+  printf 'Aviso: no se ha detectado Codex en PATH ni bajo ~/.nvm. Instala Codex antes de usar el lanzador.\n'
+fi
+
 mkdir -p "$OUT_DIR"
 chmod +x "$SCRIPT_PATH"
 sed "s|__SCRIPT_PATH__|$SCRIPT_PATH|g" "$TEMPLATE" > "$LAUNCHER"
 chmod +x "$LAUNCHER"
+if command -v gio >/dev/null 2>&1; then
+  gio set "$LAUNCHER" metadata::trusted true 2>/dev/null || true
+fi
 
 printf 'Instalacion completada.\n'
 printf 'Lanzador: %s\n' "$LAUNCHER"

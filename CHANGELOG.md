@@ -13,3 +13,4 @@
 - Deteccion portable de Codex, base SQLite y carpeta de Escritorio.
 - Instalador y plantilla de lanzador `.desktop`.
 - Documentacion tecnica completa y paquete de instrucciones para GPT personalizado.
+- Avisos de dependencias y marcado de confianza del lanzador durante la instalacion.
