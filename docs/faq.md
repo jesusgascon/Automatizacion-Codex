@@ -32,6 +32,10 @@ Si. Selecciona la sesion y usa `5) Ver ultimo resumen guardado`.
 
 Desde el listado pulsa `f` y escribe texto de la ruta, del titulo, del primer mensaje o del ID. Para volver al listado completo, pulsa `l`.
 
+## Por que ya no aparece una sesion antigua?
+
+Si borraste o moviste la carpeta original, la sesion se oculta por defecto para mantener limpio el listado. Pulsa `r` desde el listado para incluir temporalmente rutas inexistentes; apareceran marcadas con `[NO EXISTE]`.
+
 ## Donde se guardan los backups?
 
 En `<Escritorio>/Documentacion/Codex/Resumenes/backups/`. Se crean antes de archivar o desarchivar y por defecto se conservan los 10 mas recientes.

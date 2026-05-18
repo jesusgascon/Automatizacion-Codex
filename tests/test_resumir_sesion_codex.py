@@ -61,7 +61,7 @@ class CodexSessionScriptTests(unittest.TestCase):
             """,
             [
                 ("inside", str(self.project_dir), ".", ".", 100, 200, 1234, 0, None, "cli"),
-                ("calendar", str(self.project_dir / "calendar"), "calendario vacaciones", "crear calendario", 100, 250, 2222, 0, None, "cli"),
+                ("calendar", str(self.project_dir), "calendario vacaciones", "crear calendario", 100, 250, 2222, 0, None, "cli"),
                 ("outside", str(self.other_home / "project"), ".", ".", 100, 300, 4321, 0, None, "cli"),
             ],
         )
@@ -113,13 +113,38 @@ class CodexSessionScriptTests(unittest.TestCase):
         self.project_dir.rmdir()
         proc = subprocess.run(
             [str(SCRIPT)],
-            input="\n1\n1\n\n0\nq\n",
+            input="\nr\n1\n1\n\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(),
             check=True,
         )
         self.assertIn("No se puede generar el resumen porque ya no existe el directorio original", proc.stdout)
+
+    def test_missing_cwd_is_hidden_by_default(self):
+        self.project_dir.rmdir()
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertNotIn("~/project", proc.stdout)
+
+    def test_missing_cwd_can_be_shown_on_demand(self):
+        self.project_dir.rmdir()
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\nr\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Incluyendo sesiones con ruta inexistente", proc.stdout)
+        self.assertIn("[NO EXISTE]", proc.stdout)
 
     def test_text_filter_searches_visible_session_metadata(self):
         proc = subprocess.run(
