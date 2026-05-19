@@ -179,6 +179,7 @@ Automatizacion-Codex/
 - [Historial de decisiones](docs/historial-decisiones.md)
 - [GPT personalizado documentador](docs/gpt-personalizado-documentador.md)
 - [Spec-Driven Development aplicado](docs/spec-driven-development.md)
+- [Recuperación desde backups SQLite](docs/recuperacion-backups.md)
 
 ## Diseño técnico
 
@@ -215,6 +216,7 @@ Variables opcionales:
 | `CODEX_SUMMARY_DIR` | Cambia la carpeta donde se guardan resúmenes, logs y backups. |
 | `MAX_BACKUPS` | Ajusta cuántos backups previos al archivado se conservan. |
 | `CODEX_READ_ONLY` | Si vale `1`, oculta acciones que modifican SQLite. |
+| `CODEX_SUMMARY_OPENER` | Fuerza el programa usado para abrir resúmenes. |
 
 Ejemplo de diagnóstico puntual:
 

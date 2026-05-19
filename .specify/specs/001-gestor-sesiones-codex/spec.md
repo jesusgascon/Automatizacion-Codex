@@ -81,6 +81,8 @@ El sistema debe crear salida en texto plano y una copia Markdown del mismo resum
 
 El usuario debe poder abrir la ultima version guardada de un resumen sin regenerarla.
 
+El usuario debe poder abrir el ultimo resumen en el editor o visor predeterminado sin buscar manualmente el fichero.
+
 ### Reabrir sesion
 
 El usuario debe poder continuar una sesion mediante `codex resume <session_id>` desde la ruta original de trabajo, siempre que exista.
@@ -109,7 +111,8 @@ El instalador debe:
 - preguntar carpeta de salidas en modo interactivo,
 - crear lanzador en Escritorio,
 - crear entrada de aplicacion GNOME,
-- respetar terminal predeterminado cuando sea posible.
+- respetar terminal predeterminado cuando sea posible,
+- usar terminales alternativos si no existe `xdg-terminal-exec`.
 
 ## Fuera de alcance
 
@@ -130,6 +133,8 @@ El instalador debe:
 - El menu se limpia entre pantallas en terminal interactiva.
 - El modo solo lectura oculta acciones que modifican SQLite.
 - La exportacion de diagnostico crea un fichero Markdown local.
+- La opcion de abrir resumen usa `xdg-open` o `CODEX_SUMMARY_OPENER`.
+- El instalador genera `Exec=` con fallback de terminal si falta `xdg-terminal-exec`.
 - El proyecto conserva tests automatizados sin dependencias externas.
 - README y documentacion explican rutas configurables y funcionamiento.
 

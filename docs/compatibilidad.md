@@ -5,7 +5,9 @@
 | Entorno | Compatibilidad | Notas |
 | --- | --- | --- |
 | Ubuntu reciente | Alta | `xdg-terminal-exec` disponible en versiones modernas. |
-| GNOME con Ptyxis o GNOME Terminal | Alta | El lanzador respeta el terminal predeterminado. |
+| GNOME con Ptyxis o GNOME Terminal | Alta | El lanzador respeta el terminal predeterminado si existe `xdg-terminal-exec`. |
+| GNOME Console `kgx` sin `xdg-terminal-exec` | Alta | El instalador lo usa como fallback. |
+| GNOME Terminal, Konsole, XFCE Terminal o xterm | Media | El instalador los usa como fallback si no existe `xdg-terminal-exec`. |
 | Codex instalado en `PATH` | Alta | Detección directa con `command -v codex`. |
 | Codex instalado mediante `nvm` | Alta | Se buscan ejecutables bajo `~/.nvm/versions/node/*/bin/codex`. |
 | Codex en rutas npm/locales habituales | Alta | Se prueban `~/.local/bin`, `~/.npm-global/bin` y `~/node_modules/.bin`. |
@@ -48,6 +50,7 @@ Si una versión futura cambia el esquema, habrá que adaptar la consulta SQL.
 - `grep`
 - `xdg-user-dir` opcional
 - `xdg-terminal-exec` recomendado
+- `kgx`, `gnome-terminal`, `konsole`, `xfce4-terminal` o `xterm` como fallback
 
 ## Fuera de alcance
 

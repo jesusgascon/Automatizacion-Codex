@@ -384,6 +384,29 @@ show_latest_summary() {
   return 0
 }
 
+open_latest_summary_file() {
+  latest_summary="$(find "$OUT_DIR" -maxdepth 1 -type f \( -name "resumen-codex-${sid}-*.md" -o -name "resumen-codex-${sid}-*.txt" \) 2>/dev/null | sort | tail -n 1)"
+  if [[ -z "$latest_summary" ]]; then
+    printf '\nNo hay resumen asociado a esta sesion.\n'
+    return 1
+  fi
+
+  if [[ -n "${CODEX_SUMMARY_OPENER:-}" ]]; then
+    "$CODEX_SUMMARY_OPENER" "$latest_summary"
+    return $?
+  fi
+
+  if command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$latest_summary" >/dev/null 2>&1 &
+    printf '\nResumen abierto con xdg-open:\n%s\n' "$latest_summary"
+    return 0
+  fi
+
+  printf '\nNo se encontro xdg-open para abrir el resumen automaticamente.\n'
+  printf 'Resumen disponible en:\n%s\n' "$latest_summary"
+  return 1
+}
+
 open_session() {
   printf '\nAbriendo sesion en Codex:\n%s\n%s\n\n' "$cwd" "$title"
   cd "$cwd" || {
@@ -765,6 +788,7 @@ while true; do
           '3        Generar resumen y despues abrir sesion' \
           "$archive_action" \
           '5        Ver ultimo resumen guardado' \
+          '6        Abrir resumen en editor predeterminado' \
           '0        Volver al listado de sesiones'
       else
         print_option_panel \
@@ -772,6 +796,7 @@ while true; do
           '2        Abrir sesion para continuar' \
           '3        Generar resumen y despues abrir sesion' \
           '5        Ver ultimo resumen guardado' \
+          '6        Abrir resumen en editor predeterminado' \
           '0        Volver al listado de sesiones'
         printf '\nModo solo lectura activo: archivado y limpieza deshabilitados.\n'
       fi
@@ -835,6 +860,11 @@ while true; do
           ;;
         5)
           show_latest_summary
+          printf '\nPulsa Enter para volver al menu de acciones...'
+          read -r
+          ;;
+        6)
+          open_latest_summary_file
           printf '\nPulsa Enter para volver al menu de acciones...'
           read -r
           ;;

@@ -68,6 +68,50 @@ detect_desktop_dir() {
   fi
 }
 
+desktop_exec_quote() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//\"/\\\"}"
+  printf '"%s"' "$value"
+}
+
+detect_terminal_command() {
+  local quoted_script
+  quoted_script="$(desktop_exec_quote "$SCRIPT_PATH")"
+
+  if command -v xdg-terminal-exec >/dev/null 2>&1; then
+    printf 'xdg-terminal-exec -- %s\n' "$quoted_script"
+    return 0
+  fi
+
+  if command -v kgx >/dev/null 2>&1; then
+    printf 'kgx -- %s\n' "$quoted_script"
+    return 0
+  fi
+
+  if command -v gnome-terminal >/dev/null 2>&1; then
+    printf 'gnome-terminal -- %s\n' "$quoted_script"
+    return 0
+  fi
+
+  if command -v konsole >/dev/null 2>&1; then
+    printf 'konsole -e %s\n' "$quoted_script"
+    return 0
+  fi
+
+  if command -v xfce4-terminal >/dev/null 2>&1; then
+    printf 'xfce4-terminal -e %s\n' "$quoted_script"
+    return 0
+  fi
+
+  if command -v xterm >/dev/null 2>&1; then
+    printf 'xterm -e %s\n' "$quoted_script"
+    return 0
+  fi
+
+  printf '%s\n' "$quoted_script"
+}
+
 expand_user_path() {
   case "$1" in
     \~)
@@ -117,7 +161,7 @@ if ! command -v python3 >/dev/null 2>&1; then
 fi
 
 if ! command -v xdg-terminal-exec >/dev/null 2>&1; then
-  printf 'Aviso: no se encuentra xdg-terminal-exec. Puede que debas adaptar el lanzador manualmente.\n'
+  printf 'Aviso: no se encuentra xdg-terminal-exec. Se usara un terminal alternativo si esta disponible.\n'
 fi
 
 DETECTED_CODEX_BIN="$(detect_codex_bin)"
@@ -131,7 +175,8 @@ fi
 
 mkdir -p "$OUT_DIR" "$APPLICATIONS_DIR"
 chmod +x "$SCRIPT_PATH"
-TEMPLATE="$TEMPLATE" SCRIPT_PATH="$SCRIPT_PATH" ICON_PATH="$ICON_PATH" LAUNCHER="$LAUNCHER" MENU_LAUNCHER="$MENU_LAUNCHER" python3 - <<'PY'
+TERMINAL_COMMAND="$(detect_terminal_command)"
+TEMPLATE="$TEMPLATE" SCRIPT_PATH="$SCRIPT_PATH" ICON_PATH="$ICON_PATH" TERMINAL_COMMAND="$TERMINAL_COMMAND" LAUNCHER="$LAUNCHER" MENU_LAUNCHER="$MENU_LAUNCHER" python3 - <<'PY'
 import os
 from pathlib import Path
 
@@ -140,6 +185,7 @@ launcher = (
     template
     .replace("__SCRIPT_PATH__", os.environ["SCRIPT_PATH"])
     .replace("__ICON_PATH__", os.environ["ICON_PATH"])
+    .replace("__TERMINAL_COMMAND__", os.environ["TERMINAL_COMMAND"])
 )
 Path(os.environ["LAUNCHER"]).write_text(launcher)
 Path(os.environ["MENU_LAUNCHER"]).write_text(launcher)
@@ -154,3 +200,4 @@ printf 'Aplicacion y documentacion: %s\n' "$SCRIPT_DIR"
 printf 'Lanzador: %s\n' "$LAUNCHER"
 printf 'Aplicacion GNOME: %s\n' "$MENU_LAUNCHER"
 printf 'Resumenes: %s\n' "$OUT_DIR"
+printf 'Terminal del lanzador: %s\n' "$TERMINAL_COMMAND"

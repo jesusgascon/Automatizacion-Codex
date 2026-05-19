@@ -2,6 +2,7 @@
 import os
 import sqlite3
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -335,6 +336,96 @@ exit 0
         self.assertIn("# Resumen de sesion Codex", md_content)
         self.assertIn("Resumen de prueba", md_content)
 
+    def test_open_latest_summary_uses_configured_opener(self):
+        summary_dir = self.home / "summaries"
+        summary_dir.mkdir()
+        summary_file = summary_dir / "resumen-codex-calendar-20260519-120000.md"
+        summary_file.write_text("# Resumen\n")
+        opener_log = self.home / "opener.log"
+        opener = self.bin_dir / "open-summary"
+        opener.write_text("#!/usr/bin/env bash\nprintf '%s\\n' \"$1\" > \"$OPENER_LOG\"\n")
+        opener.chmod(0o755)
+
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n1\n6\n\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(
+                CODEX_SUMMARY_DIR=str(summary_dir),
+                CODEX_SUMMARY_OPENER=str(opener),
+                OPENER_LOG=str(opener_log),
+            ),
+            check=True,
+        )
+        self.assertIn("Abrir resumen en editor predeterminado", proc.stdout)
+        self.assertEqual(opener_log.read_text().strip(), str(summary_file))
+
+    def test_session_title_sanitizes_tabs_and_newlines(self):
+        con = sqlite3.connect(self.state_db)
+        con.execute(
+            """
+            insert into threads
+            (id, cwd, title, first_user_message, created_at, updated_at, tokens_used, archived, archived_at, source)
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("weird", str(self.project_dir), "titulo\tcon\nsaltos", "mensaje", 100, 400, 10, 0, None, "cli"),
+        )
+        con.commit()
+        con.close()
+
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("titulo con saltos", proc.stdout)
+        self.assertNotIn("titulo\tcon", proc.stdout)
+
+    def test_state_db_detection_uses_latest_versioned_database(self):
+        newer_db = self.codex_dir / "state_2.sqlite"
+        con = sqlite3.connect(newer_db)
+        con.execute(
+            """
+            create table threads (
+                id text primary key,
+                cwd text not null,
+                title text not null,
+                first_user_message text not null,
+                created_at integer not null,
+                updated_at integer not null,
+                tokens_used integer not null,
+                archived integer not null default 0,
+                archived_at integer,
+                source text not null
+            )
+            """
+        )
+        con.execute(
+            """
+            insert into threads
+            (id, cwd, title, first_user_message, created_at, updated_at, tokens_used, archived, archived_at, source)
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("latestdb", str(self.project_dir), "base mas nueva", "mensaje", 100, 500, 10, 0, None, "cli"),
+        )
+        con.commit()
+        con.close()
+
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(STATE_DB=""),
+            check=True,
+        )
+        self.assertIn("base mas nueva", proc.stdout)
+        self.assertNotIn("calendario vacaciones", proc.stdout)
+
     def test_installer_preserves_special_path_characters(self):
         special_root = Path(self.tmp.name) / "a&b"
         special_root.mkdir()
@@ -363,6 +454,47 @@ exit 0
         self.assertIn(str(script_copy), launcher.read_text())
         self.assertIn(str(asset_dir / ICON.name), launcher.read_text())
         self.assertIn(str(script_copy), menu_launcher.read_text())
+
+    def test_installer_uses_terminal_fallback_when_xdg_terminal_exec_is_missing(self):
+        special_root = Path(self.tmp.name) / "fallback project"
+        special_root.mkdir()
+        script_copy = special_root / SCRIPT.name
+        template_dir = special_root / "plantillas"
+        template_dir.mkdir()
+        installer_copy = special_root / INSTALLER.name
+        script_copy.write_text(SCRIPT.read_text())
+        script_copy.chmod(0o755)
+        installer_copy.write_text(INSTALLER.read_text())
+        installer_copy.chmod(0o755)
+        (template_dir / TEMPLATE.name).write_text(TEMPLATE.read_text())
+        asset_dir = special_root / "assets"
+        asset_dir.mkdir()
+        (asset_dir / ICON.name).write_text(ICON.read_text())
+
+        tool_dir = self.home / "tools"
+        tool_dir.mkdir()
+        for name, target in {
+            "python3": sys.executable,
+            "dirname": "/usr/bin/dirname",
+            "chmod": "/usr/bin/chmod",
+            "mkdir": "/usr/bin/mkdir",
+        }.items():
+            (tool_dir / name).symlink_to(target)
+        kgx = tool_dir / "kgx"
+        kgx.write_text("#!/usr/bin/env bash\nexit 0\n")
+        kgx.chmod(0o755)
+
+        env = self._env(PATH=str(tool_dir))
+        subprocess.run(
+            ["/bin/bash", str(installer_copy)],
+            text=True,
+            capture_output=True,
+            env=env,
+            check=True,
+        )
+        launcher = self.desktop / "Resumir sesion de Codex.desktop"
+        self.assertIn("Exec=kgx --", launcher.read_text())
+        self.assertIn(f'"{script_copy}"', launcher.read_text())
 
     def test_custom_summary_dir_is_honored_by_installer(self):
         custom_dir = self.home / "Documentos" / "Codex" / "Resumenes"

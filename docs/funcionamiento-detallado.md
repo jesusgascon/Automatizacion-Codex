@@ -107,6 +107,7 @@ Opciones:
 3) Generar resumen y despues abrir sesion
 4) Archivar sesion
 5) Ver ultimo resumen guardado
+6) Abrir resumen en editor predeterminado
 0) Volver al listado de sesiones
 ```
 
@@ -119,6 +120,8 @@ Desde el listado tambien se puede:
 - buscar sobre ID, ruta, titulo o primer mensaje,
 - pulsar `l` para limpiar el filtro activo,
 - pulsar `x` para limpiar sesiones con ruta inexistente.
+
+La opcion `6` usa `CODEX_SUMMARY_OPENER` si esta definido; si no, intenta `xdg-open`.
 
 El resumen explicativo informa:
 

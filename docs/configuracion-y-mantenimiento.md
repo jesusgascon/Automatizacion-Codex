@@ -30,6 +30,7 @@ Durante una ejecucion interactiva de `instalar.sh`, el instalador pregunta donde
 | `CODEX_SUMMARY_DIR` | Ruta absoluta a una carpeta | Cambiar la ubicacion de resumenes, logs y backups. |
 | `MAX_BACKUPS` | Entero positivo | Cambiar la retencion de copias previas al archivado. |
 | `CODEX_READ_ONLY` | `1` | Ocultar acciones que escriben en la base local de Codex. |
+| `CODEX_SUMMARY_OPENER` | Ruta a ejecutable | Forzar el programa usado para abrir resumenes. |
 
 Ejemplo:
 
@@ -56,6 +57,14 @@ CODEX_READ_ONLY=1 bash resumir-sesion-codex.sh
 ```
 
 Este modo mantiene disponibles el listado, el filtrado, la generacion de resumenes, la consulta de resumenes y la exportacion de diagnostico. Solo oculta acciones que modifican SQLite.
+
+### Abrir resumenes
+
+La opcion `6` del menu de sesion abre el ultimo resumen asociado. Por defecto usa `xdg-open`. Para forzar un programa concreto:
+
+```bash
+CODEX_SUMMARY_OPENER="/usr/bin/gedit" bash resumir-sesion-codex.sh
+```
 
 ## Mantenimiento recomendado
 

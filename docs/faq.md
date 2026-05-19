@@ -58,6 +58,14 @@ En ese modo se ocultan archivado, desarchivado y limpieza de rutas inexistentes.
 
 Si. En el menu inicial pulsa `e`. Se generara un fichero `diagnostico-sesiones-codex-YYYYMMDD-HHMMSS.md` en la carpeta de salidas elegida.
 
+## Puedo abrir un resumen sin buscarlo en carpetas?
+
+Si. Selecciona la sesion y pulsa `6`. Se abrira el ultimo resumen asociado con `xdg-open` o con el programa definido en `CODEX_SUMMARY_OPENER`.
+
+## Como recupero una base si me equivoco archivando o limpiando?
+
+Consulta [Recuperacion desde backups SQLite](recuperacion-backups.md). La idea basica es cerrar Codex, copiar la base actual como seguridad y sustituirla por el backup elegido.
+
 ## Puedo guardar los resumenes en otra carpeta?
 
 Si. Durante `bash instalar.sh`, el instalador te pregunta la carpeta si lo ejecutas de forma interactiva. Tambien puedes definir `CODEX_SUMMARY_DIR` antes de ejecutar el instalador o el script, por ejemplo:

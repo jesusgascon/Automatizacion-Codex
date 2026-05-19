@@ -17,4 +17,8 @@ Cobertura actual:
 - modo solo lectura,
 - exportacion Markdown de resumenes,
 - exportacion Markdown del diagnostico de sesiones,
+- apertura de resumen con opener configurable,
+- deteccion de la base `state_*.sqlite` mas reciente,
+- normalizacion de titulos con tabs y saltos de linea,
+- fallback de terminales del instalador,
 - generación segura del lanzador con rutas que contienen caracteres especiales.

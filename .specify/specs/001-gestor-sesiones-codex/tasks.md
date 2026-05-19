@@ -24,10 +24,13 @@
 - [x] Exportar resumenes tambien como Markdown.
 - [x] Exportar diagnostico de sesiones a archivo local.
 - [x] Rotar tambien backups de limpieza de rutas inexistentes.
+- [x] Documentar procedimiento de recuperacion desde backup SQLite.
+- [x] Abrir ultimo resumen con editor o visor predeterminado.
+- [x] Anadir fallback de terminales cuando falta `xdg-terminal-exec`.
+- [x] Anadir tests SQLite para titulos con caracteres raros y deteccion de base mas reciente.
 
 ## Pendiente recomendado
 
-- [ ] Documentar procedimiento de recuperacion desde backup SQLite.
 - [ ] Crear workflow adicional de tests Python en GitHub Actions.
 - [ ] Anadir comprobacion de privacidad automatizada para patrones sensibles.
 

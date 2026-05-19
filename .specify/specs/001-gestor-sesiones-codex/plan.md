@@ -40,6 +40,7 @@ Se mantienen puntos de extension:
 - `CODEX_SUMMARY_DIR`,
 - `MAX_BACKUPS`,
 - `CODEX_READ_ONLY`,
+- `CODEX_SUMMARY_OPENER`,
 - `NO_COLOR`.
 
 ### Interfaz de consola
@@ -152,13 +153,52 @@ Estado:
 
 - implementado.
 
+### 8. Apertura directa de resumenes
+
+Permitir abrir el ultimo resumen asociado a una sesion con `xdg-open` o con un opener definido por `CODEX_SUMMARY_OPENER`.
+
+Valor:
+
+- reduce navegacion manual por carpetas,
+- mejora el uso diario del lanzador como indice documental.
+
+Estado:
+
+- implementado.
+
+### 9. Fallback de terminales
+
+Si falta `xdg-terminal-exec`, el instalador genera el lanzador con el primer terminal disponible entre `kgx`, `gnome-terminal`, `konsole`, `xfce4-terminal` y `xterm`.
+
+Valor:
+
+- mejora compatibilidad en escritorios sin portal de terminal predeterminado,
+- reduce ajustes manuales tras instalar.
+
+Estado:
+
+- implementado.
+
+### 10. Pruebas SQLite ampliadas
+
+Cubrir titulos con tabs/saltos de linea y seleccion automatica de la base `state_*.sqlite` mas reciente.
+
+Valor:
+
+- evita regresiones con metadatos reales de Codex,
+- refuerza portabilidad entre equipos con varias bases.
+
+Estado:
+
+- implementado.
+
 ## Plan de implementacion futura
 
-1. Documentar procedimiento de recuperacion desde backup SQLite.
-2. Crear workflow adicional de tests Python en GitHub Actions.
-3. Anadir comprobacion automatica de privacidad.
-4. Ampliar filtros por fecha o estado de resumen.
-5. Revisar release notes y GitHub Actions tras cada cambio.
+1. Crear workflow adicional de tests Python en GitHub Actions.
+2. Anadir comprobacion automatica de privacidad.
+3. Ampliar filtros por fecha o estado de resumen.
+4. Mejorar automatizacion de releases.
+5. Revisar compatibilidad con nuevas versiones de Codex CLI.
 
 ## Validacion obligatoria
 

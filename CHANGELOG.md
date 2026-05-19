@@ -14,6 +14,10 @@
 - Copia Markdown automatica de cada resumen generado.
 - Exportacion Markdown del diagnostico de sesiones desde el menu inicial.
 - Rotacion de backups de limpieza de rutas inexistentes.
+- Opcion para abrir el resumen en el editor o visor predeterminado.
+- Fallback de terminales en el instalador si no existe `xdg-terminal-exec`.
+- Procedimiento documentado de recuperacion desde backups SQLite.
+- Tests SQLite adicionales para titulos con caracteres raros y deteccion de la base mas reciente.
 
 ## 1.1.0 - 2026-05-18
 
