@@ -150,6 +150,7 @@ Automatizacion-Codex/
 ├── CONTRIBUTING.md
 ├── SECURITY.md
 ├── manual-completo.html
+├── .specify/
 ├── assets/
 ├── resumir-sesion-codex.sh
 ├── instalar.sh
@@ -171,6 +172,7 @@ Automatizacion-Codex/
 - [Roadmap](docs/roadmap.md)
 - [Historial de decisiones](docs/historial-decisiones.md)
 - [GPT personalizado documentador](docs/gpt-personalizado-documentador.md)
+- [Spec-Driven Development aplicado](docs/spec-driven-development.md)
 
 ## Diseño técnico
 
@@ -180,6 +182,21 @@ Automatizacion-Codex/
 - `codex exec --ephemeral` permite resumir sin contaminar el historial con otra sesión persistente.
 - Los resúmenes nuevos incluyen `session_id` en el nombre para asociarlos sin ambigüedad.
 - El filtrado por `HOME` distingue la ruta exacta de subrutas válidas y evita coincidencias solo por prefijo textual.
+
+## Flujo Spec-Driven Development
+
+El proyecto incorpora una capa documental inspirada en GitHub Spec Kit para que las mejoras no se implementen de forma improvisada. La fuente de verdad vive en:
+
+```text
+.specify/
+├── memory/constitution.md
+└── specs/001-gestor-sesiones-codex/
+    ├── spec.md
+    ├── plan.md
+    └── tasks.md
+```
+
+Antes de cambios relevantes, se recomienda actualizar especificacion, plan y tareas; despues implementar, validar y documentar. Consulta [Spec-Driven Development aplicado](docs/spec-driven-development.md).
 
 ## Configuración operativa
 

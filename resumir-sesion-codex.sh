@@ -183,6 +183,53 @@ if [[ ! -f "$STATE_DB" ]]; then
   exit 1
 fi
 
+validate_state_schema() {
+  STATE_DB="$STATE_DB" python3 - <<'PY'
+import os
+import sqlite3
+import sys
+
+required = {
+    "id",
+    "cwd",
+    "title",
+    "first_user_message",
+    "created_at",
+    "updated_at",
+    "tokens_used",
+    "archived",
+    "archived_at",
+    "source",
+}
+
+try:
+    con = sqlite3.connect(os.environ["STATE_DB"])
+    rows = con.execute("pragma table_info(threads)").fetchall()
+    con.close()
+except sqlite3.Error as exc:
+    print(f"No se pudo leer la base local de Codex: {exc}")
+    sys.exit(1)
+
+if not rows:
+    print("La base local de Codex no contiene la tabla esperada: threads")
+    sys.exit(1)
+
+columns = {row[1] for row in rows}
+missing = sorted(required - columns)
+if missing:
+    print("La base local de Codex no tiene el esquema esperado.")
+    print("Columnas que faltan: " + ", ".join(missing))
+    print("Puede que Codex haya cambiado su formato interno.")
+    sys.exit(1)
+PY
+}
+
+if ! validate_state_schema; then
+  printf 'Pulsa Enter para cerrar...'
+  read -r
+  exit 1
+fi
+
 load_sessions() {
   mapfile -t sessions < <(
   HOME_DIR="$HOME" STATE_DB="$STATE_DB" OUT_DIR="$OUT_DIR" ARCHIVED_VALUE="$ARCHIVED_VALUE" SESSION_FILTER="$SESSION_FILTER" python3 - <<'PY'

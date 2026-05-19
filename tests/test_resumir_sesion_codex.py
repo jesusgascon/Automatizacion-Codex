@@ -144,6 +144,25 @@ class CodexSessionScriptTests(unittest.TestCase):
         )
         self.assertNotIn("~/project", proc.stdout)
 
+    def test_state_schema_validation_reports_missing_columns(self):
+        broken_db = self.codex_dir / "broken-state.sqlite"
+        con = sqlite3.connect(broken_db)
+        con.execute("create table threads (id text primary key, cwd text not null)")
+        con.commit()
+        con.close()
+
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n",
+            text=True,
+            capture_output=True,
+            env=self._env(STATE_DB=str(broken_db)),
+            check=False,
+        )
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("La base local de Codex no tiene el esquema esperado", proc.stdout)
+        self.assertIn("Columnas que faltan", proc.stdout)
+
     def test_missing_cwd_is_hidden_by_default(self):
         self.project_dir.rmdir()
         proc = subprocess.run(

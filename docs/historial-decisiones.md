@@ -174,3 +174,19 @@ Motivo:
 - reducir fallos tardíos,
 - evitar coincidencias ambiguas,
 - soportar rutas con caracteres especiales.
+
+## 15. Adoptar una capa Spec-Driven Development
+
+Decision:
+
+- crear `.specify/memory/constitution.md`,
+- crear `.specify/specs/001-gestor-sesiones-codex/`,
+- enlazar el flujo desde README y roadmap,
+- no exigir instalar `specify` para usar la aplicacion.
+
+Motivo:
+
+- reducir cambios improvisados,
+- mejorar trazabilidad en GitHub,
+- documentar riesgos antes de tocar la base SQLite local,
+- mantener privacidad, portabilidad y reversibilidad como principios verificables.

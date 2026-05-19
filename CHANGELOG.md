@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Capa documental de Spec-Driven Development inspirada en GitHub Spec Kit.
+- Constitucion del proyecto con principios de privacidad, portabilidad, reversibilidad y validacion.
+- Especificacion funcional, plan tecnico y tareas trazables en `.specify/`.
+- Guia `docs/spec-driven-development.md` para aplicar el flujo `Spec -> Plan -> Tasks -> Implement`.
+- Validacion previa del esquema SQLite de Codex antes de listar sesiones.
+
 ## 1.1.0 - 2026-05-18
 
 ### Added

@@ -52,7 +52,8 @@ Responsabilidad:
 El script detiene la ejecucion si:
 
 - no existe el binario de Codex,
-- no existe ninguna base `state_*.sqlite`.
+- no existe ninguna base `state_*.sqlite`,
+- la base local no contiene la tabla `threads` con las columnas esperadas.
 
 Eso evita fallos posteriores mas ambiguos.
 
