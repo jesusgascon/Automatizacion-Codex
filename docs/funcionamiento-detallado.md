@@ -117,9 +117,12 @@ Desde el listado de sesiones, `0` vuelve al menu inicial. Desde el menu inicial,
 Tambien desde el menu inicial:
 
 - `p`: muestra sesiones agrupadas por carpeta/proyecto,
+- `l`: exporta el listado visible de sesiones a Markdown y CSV,
 - `o`: abre la carpeta de resumenes,
 - `b`: abre la carpeta de backups,
 - `r`: inicia restauracion asistida desde backup SQLite.
+
+La vista por proyecto agrupa por raiz Git cuando la carpeta de la sesion pertenece a un repositorio; si no hay `.git`, agrupa por carpeta exacta.
 
 Desde el listado tambien se puede:
 

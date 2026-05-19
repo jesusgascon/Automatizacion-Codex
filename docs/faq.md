@@ -72,6 +72,14 @@ Tambien puedes usar `r` desde el menu inicial para restaurar de forma asistida. 
 
 Si. Pulsa `p` en el menu inicial. La vista agrupa sesiones visibles por carpeta y muestra conteo y tokens acumulados.
 
+## Puedo exportar el listado de sesiones?
+
+Si. Pulsa `l` en el menu inicial. Se generaran ficheros `listado-sesiones-codex-YYYYMMDD-HHMMSS.md` y `.csv` en la carpeta de salidas.
+
+## Como evita el proyecto subir datos privados?
+
+Incluye `scripts/privacy_check.py` y un workflow `privacy`. Buscan rutas personales reales, bases SQLite, logs, resumenes generados e IDs de sesion con formato UUID.
+
 ## Puedo guardar los resumenes en otra carpeta?
 
 Si. Durante `bash instalar.sh`, el instalador te pregunta la carpeta si lo ejecutas de forma interactiva. Tambien puedes definir `CODEX_SUMMARY_DIR` antes de ejecutar el instalador o el script, por ejemplo:

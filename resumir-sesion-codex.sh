@@ -223,6 +223,7 @@ required = {
 try:
     con = sqlite3.connect(os.environ["STATE_DB"])
     rows = con.execute("pragma table_info(threads)").fetchall()
+    indexes = con.execute("pragma index_list(threads)").fetchall()
     con.close()
 except sqlite3.Error as exc:
     print(f"No se pudo leer la base local de Codex: {exc}")
@@ -239,6 +240,21 @@ if missing:
     print("Columnas que faltan: " + ", ".join(missing))
     print("Puede que Codex haya cambiado su formato interno.")
     sys.exit(1)
+
+recommended = {"id", "cwd", "updated_at", "archived", "source"}
+indexed_columns = set()
+try:
+    con = sqlite3.connect(os.environ["STATE_DB"])
+    for index in indexes:
+        index_name = index[1]
+        indexed_columns.update(row[2] for row in con.execute(f"pragma index_info({index_name!r})").fetchall())
+    con.close()
+except sqlite3.Error:
+    indexed_columns = set()
+
+missing_indexes = sorted(recommended - indexed_columns)
+if missing_indexes:
+    print("Aviso: no se detectaron indices para columnas recomendadas: " + ", ".join(missing_indexes))
 PY
 }
 
@@ -303,6 +319,83 @@ for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in 
     print(f"{sid}\t{when}\t{started}\t{token_label}\t{has_summary}\t{cwd}\t{short_cwd}\t{clean_title}")
 PY
   )
+}
+
+export_session_list() {
+  mkdir -p "$OUT_DIR"
+  export_stamp="$(date '+%Y%m%d-%H%M%S')"
+  md_path="$OUT_DIR/listado-sesiones-codex-${export_stamp}.md"
+  csv_path="$OUT_DIR/listado-sesiones-codex-${export_stamp}.csv"
+  HOME_DIR="$HOME" STATE_DB="$STATE_DB" OUT_DIR="$OUT_DIR" ARCHIVED_VALUE="$ARCHIVED_VALUE" SESSION_FILTER="$SESSION_FILTER" MD_PATH="$md_path" CSV_PATH="$csv_path" python3 - <<'PY'
+import csv
+import os
+import sqlite3
+from datetime import datetime
+from pathlib import Path
+
+db = os.environ["STATE_DB"]
+home = os.environ["HOME_DIR"]
+out_dir = Path(os.environ["OUT_DIR"])
+archived_value = int(os.environ["ARCHIVED_VALUE"])
+session_filter = os.environ["SESSION_FILTER"].strip().casefold()
+md_path = Path(os.environ["MD_PATH"])
+csv_path = Path(os.environ["CSV_PATH"])
+
+con = sqlite3.connect(db)
+rows = con.execute(
+    """
+    select id, cwd, title, first_user_message, created_at, updated_at, tokens_used
+    from threads
+    where (cwd = ? or cwd like ?)
+      and archived = ?
+      and source in ('cli', 'vscode')
+    order by updated_at desc
+    """,
+    (home, f"{home}/%", archived_value),
+).fetchall()
+con.close()
+
+items = []
+for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in rows:
+    if not Path(cwd).is_dir():
+        continue
+    raw_title = (title or "").strip()
+    raw_first = (first_user_message or "").strip()
+    haystack = "\n".join((sid, cwd, raw_title, raw_first)).casefold()
+    if session_filter and session_filter not in haystack:
+        continue
+    clean_title = raw_title if raw_title not in {"", ".", "exit"} else "Sesion sin titulo util"
+    clean_title = clean_title.replace("\t", " ").replace("\n", " ")
+    short_cwd = cwd.replace(home, "~", 1)
+    has_summary = "SI" if any(out_dir.glob(f"resumen-codex-{sid}-*.txt")) else "NO"
+    items.append(
+        {
+            "id": sid,
+            "updated": datetime.fromtimestamp(updated_at).strftime("%Y-%m-%d %H:%M"),
+            "started": datetime.fromtimestamp(created_at).strftime("%Y-%m-%d %H:%M"),
+            "tokens": tokens_used,
+            "summary": has_summary,
+            "path": short_cwd,
+            "title": clean_title,
+        }
+    )
+
+with csv_path.open("w", newline="", encoding="utf-8") as fh:
+    writer = csv.DictWriter(fh, fieldnames=["id", "updated", "started", "tokens", "summary", "path", "title"])
+    writer.writeheader()
+    writer.writerows(items)
+
+lines = ["# Listado de sesiones de Codex", ""]
+lines.append("| Actualizada | Iniciada | Tokens | Resumen | Ruta | Descripcion |")
+lines.append("| --- | --- | ---: | --- | --- | --- |")
+for item in items:
+    lines.append(
+        f"| {item['updated']} | {item['started']} | {item['tokens']} | {item['summary']} | `{item['path']}` | {item['title']} |"
+    )
+md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+print(md_path)
+print(csv_path)
+PY
 }
 
 show_session_table() {
@@ -620,6 +713,26 @@ restore_backup_interactive() {
   fi
 
   selected_backup="${restore_backups[$((backup_choice - 1))]}"
+  printf '\nResumen del backup seleccionado:\n'
+  STATE_DB="$selected_backup" HOME_DIR="$HOME" python3 - <<'PY'
+import os
+import sqlite3
+from pathlib import Path
+
+db = os.environ["STATE_DB"]
+home = os.environ["HOME_DIR"]
+con = sqlite3.connect(db)
+rows = con.execute("select cwd, archived, source from threads").fetchall()
+con.close()
+under_home = [row for row in rows if row[0] == home or row[0].startswith(f"{home}/")]
+existing = [row for row in under_home if Path(row[0]).is_dir()]
+active = [row for row in existing if row[1] == 0 and row[2] in ("cli", "vscode")]
+archived = [row for row in existing if row[1] == 1 and row[2] in ("cli", "vscode")]
+print(f"  Sesiones bajo HOME: {len(under_home)}")
+print(f"  Activas visibles: {len(active)}")
+print(f"  Archivadas visibles: {len(archived)}")
+print(f"  Rutas inexistentes: {len(under_home) - len(existing)}")
+PY
   printf '\nSe va a reemplazar la base actual por:\n%s\n' "$selected_backup"
   printf 'Cierra Codex antes de continuar si lo tienes abierto.\n'
   printf 'Escribe RESTAURAR para confirmar: '
@@ -665,18 +778,35 @@ rows = con.execute(
 ).fetchall()
 con.close()
 
-visible = [row for row in rows if Path(row[0]).is_dir()]
-if not visible:
+projects = {}
+for cwd, count, updated_at, tokens in rows:
+    path = Path(cwd)
+    if not path.is_dir():
+        continue
+    root = path
+    for parent in [path, *path.parents]:
+        if parent == Path(home).parent:
+            break
+        if (parent / ".git").is_dir():
+            root = parent
+            break
+    key = str(root)
+    current = projects.setdefault(key, {"count": 0, "updated": 0, "tokens": 0})
+    current["count"] += count
+    current["updated"] = max(current["updated"], updated_at)
+    current["tokens"] += tokens or 0
+
+if not projects:
     print("No hay proyectos visibles en esta vista.")
 else:
     print(f"{'Sesiones':<9} {'Tokens':<14} Ruta")
     print(f"{'--------':<9} {'--------------':<14} {'-' * 54}")
-    for cwd, count, _updated_at, tokens in visible:
+    for cwd, data in sorted(projects.items(), key=lambda item: item[1]["updated"], reverse=True):
         short_cwd = cwd.replace(home, "~", 1)
         if len(short_cwd) > 58:
             short_cwd = "..." + short_cwd[-55:]
-        token_label = f"{tokens or 0:,}".replace(",", ".")
-        print(f"{count:<9} {token_label:<14} {short_cwd}")
+        token_label = f"{data['tokens']:,}".replace(",", ".")
+        print(f"{data['count']:<9} {token_label:<14} {short_cwd}")
 PY
 }
 
@@ -797,6 +927,7 @@ while true; do
     'a        Sesiones archivadas' \
     'd        Resumen de sesiones' \
     'e        Exportar diagnostico' \
+    'l        Exportar listado' \
     'p        Vista por proyecto' \
     'o        Abrir carpeta de resumenes' \
     'b        Abrir carpeta de backups' \
@@ -823,6 +954,18 @@ while true; do
       print_title 'Exportar diagnostico'
       exported_path="$(export_session_diagnostics)"
       printf '\nDiagnostico guardado en:\n%s\n' "$exported_path"
+      printf '\nPulsa Enter para volver al menu inicial...'
+      read -r
+      continue
+      ;;
+    l|L)
+      clear_screen
+      print_title 'Exportar listado'
+      VIEW_MODE="active"
+      ARCHIVED_VALUE=0
+      SESSION_FILTER=""
+      exported_listing="$(export_session_list)"
+      printf '\nListado guardado en:\n%s\n' "$exported_listing"
       printf '\nPulsa Enter para volver al menu inicial...'
       read -r
       continue

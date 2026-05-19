@@ -24,5 +24,10 @@ Cobertura actual:
 - apertura de carpetas de resumenes y backups,
 - detalles tecnicos de sesion,
 - restauracion asistida desde backup,
+- resumen previo del backup antes de restaurar,
 - vista agrupada por proyecto,
+- agrupacion por raiz Git,
+- exportacion del listado a Markdown y CSV,
+- diagnostico de indices SQLite recomendados,
+- comprobacion automatica de privacidad,
 - generación segura del lanzador con rutas que contienen caracteres especiales.

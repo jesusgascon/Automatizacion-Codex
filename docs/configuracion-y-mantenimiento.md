@@ -83,6 +83,7 @@ Ejecutar:
 git pull --ff-only
 bash -n resumir-sesion-codex.sh instalar.sh
 python3 -m unittest discover -s tests -v
+python3 scripts/privacy_check.py
 bash instalar.sh
 ```
 
@@ -91,6 +92,7 @@ Motivo:
 - `git pull --ff-only` evita merges accidentales en una copia de uso personal,
 - `bash -n` valida sintaxis,
 - los tests cubren regresiones conocidas,
+- `privacy_check.py` evita subir rutas reales, bases SQLite, logs o identificadores reales,
 - volver a ejecutar el instalador actualiza el lanzador si cambia la ruta o la plantilla.
 
 ### Periodicamente

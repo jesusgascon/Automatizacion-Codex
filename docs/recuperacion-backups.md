@@ -67,9 +67,10 @@ El lanzador:
 
 1. muestra los ultimos backups disponibles,
 2. pide seleccionar uno,
-3. exige escribir `RESTAURAR`,
-4. crea un backup previo de la base que va a reemplazar,
-5. copia el backup elegido sobre la base activa.
+3. muestra un resumen del backup seleccionado,
+4. exige escribir `RESTAURAR`,
+5. crea un backup previo de la base que va a reemplazar,
+6. copia el backup elegido sobre la base activa.
 
 La restauracion asistida queda deshabilitada si ejecutas con:
 

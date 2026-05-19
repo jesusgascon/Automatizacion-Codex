@@ -170,6 +170,24 @@ exit 0
         self.assertIn("# Diagnostico de sesiones de Codex", content)
         self.assertIn("Activas que puedes abrir ahora", content)
 
+    def test_session_list_can_be_exported_to_markdown_and_csv(self):
+        summary_dir = self.home / "summaries"
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="l\n\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(CODEX_SUMMARY_DIR=str(summary_dir)),
+            check=True,
+        )
+        self.assertIn("Listado guardado en:", proc.stdout)
+        md_files = sorted(summary_dir.glob("listado-sesiones-codex-*.md"))
+        csv_files = sorted(summary_dir.glob("listado-sesiones-codex-*.csv"))
+        self.assertEqual(len(md_files), 1)
+        self.assertEqual(len(csv_files), 1)
+        self.assertIn("calendario vacaciones", md_files[0].read_text())
+        self.assertIn("calendar", csv_files[0].read_text())
+
     def test_console_render_uses_unicode_boxes_by_default(self):
         proc = subprocess.run(
             [str(SCRIPT)],
@@ -225,6 +243,17 @@ exit 0
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("La base local de Codex no tiene el esquema esperado", proc.stdout)
         self.assertIn("Columnas que faltan", proc.stdout)
+
+    def test_state_schema_diagnostics_warn_about_missing_recommended_indexes(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="q\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Aviso: no se detectaron indices para columnas recomendadas", proc.stdout)
 
     def test_missing_cwd_is_hidden_by_default(self):
         self.project_dir.rmdir()
@@ -409,6 +438,34 @@ exit 0
         self.assertIn("~/project", proc.stdout)
         self.assertIn("2", proc.stdout)
 
+    def test_project_view_groups_by_git_root(self):
+        nested = self.project_dir / "src" / "feature"
+        nested.mkdir(parents=True)
+        (self.project_dir / ".git").mkdir()
+        con = sqlite3.connect(self.state_db)
+        con.execute(
+            """
+            insert into threads
+            (id, cwd, title, first_user_message, created_at, updated_at, tokens_used, archived, archived_at, source)
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("nested", str(nested), "nested work", "mensaje", 100, 600, 10, 0, None, "cli"),
+        )
+        con.commit()
+        con.close()
+
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="p\n\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("~/project", proc.stdout)
+        self.assertIn("3", proc.stdout)
+        self.assertNotIn("~/project/src/feature", proc.stdout)
+
     def test_restore_backup_replaces_state_database_with_confirmation(self):
         backup_dir = self.desktop / "Documentacion" / "Codex" / "Resumenes" / "backups"
         backup_dir.mkdir(parents=True)
@@ -433,6 +490,8 @@ exit 0
             check=True,
         )
         self.assertIn("Restauracion completada", proc.stdout)
+        self.assertIn("Resumen del backup seleccionado", proc.stdout)
+        self.assertIn("Activas visibles", proc.stdout)
         con = sqlite3.connect(self.state_db)
         rows = con.execute("select id from threads where id = 'calendar'").fetchall()
         con.close()

@@ -33,10 +33,17 @@
 - [x] Restaurar backups SQLite de forma asistida con confirmacion.
 - [x] Agrupar sesiones visibles por proyecto/carpeta.
 - [x] Crear workflow Python formal con matriz de versiones.
+- [x] Anadir comprobacion automatica de privacidad.
+- [x] Exportar listado de sesiones a Markdown y CSV.
+- [x] Probar backup antes de restaurar mostrando resumen previo.
+- [x] Agrupar proyectos por raiz Git cuando existe.
+- [x] Ampliar diagnostico de esquema SQLite con indices recomendados.
 
 ## Pendiente recomendado
 
-- [ ] Anadir comprobacion de privacidad automatizada para patrones sensibles.
+- [ ] Ampliar filtros por fecha o estado de resumen.
+- [ ] Mejorar automatizacion de releases.
+- [ ] Exportar/importar configuracion.
 
 ## Criterios antes de cerrar una tarea
 

@@ -233,13 +233,53 @@ Estado:
 
 - implementado.
 
+### 16. Privacidad automatica
+
+Escanear el repositorio en local y CI para detectar rutas personales reales, bases SQLite, logs, resumenes generados e IDs de sesion.
+
+Estado:
+
+- implementado con `scripts/privacy_check.py` y workflow `privacy`.
+
+### 17. Exportacion de listado
+
+Exportar sesiones visibles a Markdown y CSV desde el menu inicial.
+
+Estado:
+
+- implementado.
+
+### 18. Prueba de backup antes de restaurar
+
+Mostrar resumen de sesiones del backup seleccionado antes de exigir confirmacion `RESTAURAR`.
+
+Estado:
+
+- implementado.
+
+### 19. Agrupacion por raiz Git
+
+La vista por proyecto usa la raiz Git cuando existe para agrupar subcarpetas de un mismo repositorio.
+
+Estado:
+
+- implementado.
+
+### 20. Diagnostico SQLite ampliado
+
+Ademas de columnas obligatorias, se avisa si no hay indices sobre columnas recomendadas para consultas frecuentes.
+
+Estado:
+
+- implementado.
+
 ## Plan de implementacion futura
 
-1. Anadir comprobacion automatica de privacidad.
-2. Ampliar filtros por fecha o estado de resumen.
-3. Mejorar automatizacion de releases.
-4. Revisar compatibilidad con nuevas versiones de Codex CLI.
-5. Exportar listado de sesiones a Markdown/CSV.
+1. Ampliar filtros por fecha o estado de resumen.
+2. Mejorar automatizacion de releases.
+3. Revisar compatibilidad con nuevas versiones de Codex CLI.
+4. Comparador de backups antes de restaurar.
+5. Exportar/importar configuracion.
 
 ## Validacion obligatoria
 

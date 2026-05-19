@@ -29,6 +29,9 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 - Muestra una vista agrupada por proyecto/carpeta.
 - Muestra detalles tecnicos completos de una sesion.
 - Permite restaurar backups SQLite desde el menu con confirmacion explicita.
+- Permite probar el contenido de un backup antes de restaurarlo mostrando resumen de sesiones.
+- Exporta el listado de sesiones visibles a Markdown y CSV.
+- Incluye comprobacion automatica de privacidad para evitar subir datos sensibles.
 - Detecta automáticamente el binario `codex`, la base `state_*.sqlite` y el Escritorio del usuario, combinando `PATH`, shell de login, prefijo global de npm, rutas habituales y `nvm`.
 - Instala un lanzador `.desktop` que respeta el terminal predeterminado mediante `xdg-terminal-exec`.
 - Registra tambien una aplicacion de usuario para lanzarla desde GNOME.
@@ -98,6 +101,7 @@ Después abre el lanzador y confirma que:
    - `a`: sesiones archivadas,
    - `d`: resumen de sesiones,
    - `e`: exportar diagnóstico de sesiones,
+   - `l`: exportar listado de sesiones,
    - `p`: vista por proyecto,
    - `o`: abrir carpeta de resúmenes,
    - `b`: abrir carpeta de backups,
@@ -260,6 +264,7 @@ Para uso normal no hace falta definirlas; la autodetección es la ruta recomenda
 ```bash
 bash -n resumir-sesion-codex.sh instalar.sh
 python3 -m unittest discover -s tests -v
+python3 scripts/privacy_check.py
 ```
 
 ## Licencia

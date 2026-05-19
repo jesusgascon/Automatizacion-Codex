@@ -103,6 +103,8 @@ El sistema debe ocultar por defecto sesiones cuya carpeta ya no existe y permiti
 
 El usuario debe poder exportar un diagnostico local de sesiones a Markdown desde el menu inicial.
 
+El usuario debe poder exportar el listado visible de sesiones a Markdown y CSV.
+
 ### Abrir carpetas operativas
 
 El usuario debe poder abrir la carpeta de resumenes y la carpeta de backups desde el menu inicial.
@@ -111,9 +113,13 @@ El usuario debe poder abrir la carpeta de resumenes y la carpeta de backups desd
 
 El usuario debe poder ver las sesiones agrupadas por carpeta/proyecto.
 
+Si una sesion vive dentro de un repositorio Git, debe agruparse por la raiz Git.
+
 ### Restauracion asistida
 
 El usuario debe poder restaurar un backup SQLite desde el menu con confirmacion explicita, manteniendo una copia previa de la base reemplazada.
+
+Antes de confirmar, el sistema debe mostrar un resumen del backup seleccionado.
 
 ### Modo solo lectura
 
@@ -153,6 +159,8 @@ El instalador debe:
 - El instalador genera `Exec=` con fallback de terminal si falta `xdg-terminal-exec`.
 - La restauracion asistida exige `RESTAURAR` y queda bloqueada en modo solo lectura.
 - La vista por proyecto solo incluye carpetas existentes bajo HOME.
+- La comprobacion de privacidad debe ejecutarse en CI.
+- El diagnostico de esquema debe avisar sobre indices recomendados si no existen.
 - El proyecto conserva tests automatizados sin dependencias externas.
 - README y documentacion explican rutas configurables y funcionamiento.
 

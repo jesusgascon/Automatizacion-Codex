@@ -23,7 +23,7 @@ La aplicacion debe funcionar en distintos equipos Linux sin rutas duras. Las rut
 
 Implicaciones:
 
-- no depender de `/home/jesus` ni de un nombre concreto de usuario,
+- no depender de rutas personales reales ni de un nombre concreto de usuario,
 - detectar `codex` por varias rutas habituales,
 - permitir `CODEX_BIN`, `STATE_DB` y `CODEX_SUMMARY_DIR`,
 - documentar claramente que cada equipo usa sus propias sesiones locales.
@@ -93,4 +93,3 @@ Antes de implementar una mejora relevante se debe:
 6. implementar,
 7. validar con tests,
 8. documentar.
-

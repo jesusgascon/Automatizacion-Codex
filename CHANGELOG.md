@@ -23,6 +23,11 @@
 - Vista agrupada por proyecto/carpeta.
 - Detalles tecnicos completos por sesion.
 - Workflow Python formal con matriz 3.11, 3.12 y 3.13.
+- Comprobacion automatica de privacidad mediante `scripts/privacy_check.py` y workflow dedicado.
+- Exportacion del listado de sesiones visibles a Markdown y CSV.
+- Vista por proyecto mejorada con agrupacion por raiz Git cuando existe.
+- Restauracion asistida con resumen previo del backup seleccionado.
+- Diagnostico de esquema SQLite con aviso de indices recomendados.
 
 ## 1.1.0 - 2026-05-18
 
