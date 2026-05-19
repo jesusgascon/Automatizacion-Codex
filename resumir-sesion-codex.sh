@@ -349,9 +349,9 @@ generate_summary() {
   if [[ $summary_status -eq 0 && -s "$OUT" ]]; then
     {
       printf '# Resumen de sesion Codex\n\n'
-      printf -- '- Session ID: `%s`\n' "$sid"
-      printf -- '- Ruta: `%s`\n' "$cwd"
-      printf -- '- Generado: `%s`\n\n' "$safe_stamp"
+      printf -- "- Session ID: \`%s\`\n" "$sid"
+      printf -- "- Ruta: \`%s\`\n" "$cwd"
+      printf -- "- Generado: \`%s\`\n\n" "$safe_stamp"
       cat "$OUT"
     } >"$MD_OUT"
     printf '\nResumen guardado en:\n%s\n' "$OUT"
