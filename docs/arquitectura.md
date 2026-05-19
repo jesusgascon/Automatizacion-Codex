@@ -26,7 +26,7 @@ Script Bash
   |-- consulta SQLite mediante Python
   |-- muestra selector
   |
-  +--> codex exec resume --ephemeral --> resumen .txt + log .log
+  +--> codex exec resume --ephemeral --> resumen .txt + resumen .md + log .log
   |
   +--> codex resume <session_id> --> sesion interactiva
 ```
@@ -152,6 +152,8 @@ Formato:
 
 ```text
 resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
+resumen-codex-<session_id>-YYYYMMDD-HHMMSS.md
+diagnostico-sesiones-codex-YYYYMMDD-HHMMSS.md
 ```
 
 ### Logs

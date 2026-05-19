@@ -89,6 +89,8 @@ Si el titulo original no aporta informacion, el selector mantiene `Sesion sin ti
 
 Las sesiones cuyo directorio original ya no existe se ocultan por defecto. Desde el listado se puede pulsar `x` para eliminarlas de la base local tras confirmacion explicita y backup previo.
 
+Si `CODEX_READ_ONLY=1`, la opcion `x` se oculta y la limpieza queda deshabilitada.
+
 Ejemplo:
 
 ```text
@@ -108,7 +110,7 @@ Opciones:
 0) Volver al listado de sesiones
 ```
 
-La pantalla inicial permite entrar en sesiones activas, archivadas o abrir un resumen explicativo con `d`. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
+La pantalla inicial permite entrar en sesiones activas, archivadas, abrir un resumen explicativo con `d` o exportar diagnostico con `e`. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
 Desde el listado de sesiones, `0` vuelve al menu inicial. Desde el menu inicial, `q` sale del lanzador.
 
 Desde el listado tambien se puede:
@@ -199,6 +201,8 @@ Antes de archivar o desarchivar, el script crea:
 Esto refuerza la reversibilidad de la unica operación que modifica la base local de Codex.
 
 Por defecto se conservan los 10 backups más recientes. El número puede ajustarse con `MAX_BACKUPS`.
+
+La misma rotacion se aplica a los backups creados antes de limpiar sesiones con rutas inexistentes.
 
 ## 7. Reapertura interactiva
 

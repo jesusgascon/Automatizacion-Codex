@@ -75,6 +75,8 @@ El resumen debe incluir:
 - pendientes,
 - riesgos.
 
+El sistema debe crear salida en texto plano y una copia Markdown del mismo resumen.
+
 ### Consultar resumen existente
 
 El usuario debe poder abrir la ultima version guardada de un resumen sin regenerarla.
@@ -90,6 +92,14 @@ El usuario debe poder archivar y desarchivar sesiones sin borrarlas. Antes de ca
 ### Limpiar rutas inexistentes
 
 El sistema debe ocultar por defecto sesiones cuya carpeta ya no existe y permitir eliminarlas de la base local solo tras confirmacion literal y backup previo.
+
+### Exportar diagnostico
+
+El usuario debe poder exportar un diagnostico local de sesiones a Markdown desde el menu inicial.
+
+### Modo solo lectura
+
+El usuario debe poder ejecutar el sistema con `CODEX_READ_ONLY=1` para ocultar archivado, desarchivado y limpieza de rutas inexistentes.
 
 ### Instalar
 
@@ -115,8 +125,11 @@ El instalador debe:
 - Una instalacion nueva en otro `$HOME` usa sesiones y salidas de ese usuario.
 - Las sesiones con carpetas borradas no aparecen en el listado normal.
 - La limpieza de rutas inexistentes crea backup y requiere confirmacion.
+- Los backups de limpieza rotan segun `MAX_BACKUPS`.
 - El usuario puede volver al menu inicial con `0`.
 - El menu se limpia entre pantallas en terminal interactiva.
+- El modo solo lectura oculta acciones que modifican SQLite.
+- La exportacion de diagnostico crea un fichero Markdown local.
 - El proyecto conserva tests automatizados sin dependencias externas.
 - README y documentacion explican rutas configurables y funcionamiento.
 
@@ -127,4 +140,3 @@ El instalador debe:
 - Algunas instalaciones pueden no tener `xdg-terminal-exec`.
 - Resumir sesiones muy grandes puede consumir tiempo o fallar por autenticacion.
 - Los nombres de carpetas con caracteres especiales exigen escapado cuidadoso.
-

@@ -9,6 +9,11 @@
 - Especificacion funcional, plan tecnico y tareas trazables en `.specify/`.
 - Guia `docs/spec-driven-development.md` para aplicar el flujo `Spec -> Plan -> Tasks -> Implement`.
 - Validacion previa del esquema SQLite de Codex antes de listar sesiones.
+- Tests de render de consola para cajas Unicode, fallback ASCII y ausencia de ANSI fuera de TTY.
+- Modo solo lectura `CODEX_READ_ONLY=1`.
+- Copia Markdown automatica de cada resumen generado.
+- Exportacion Markdown del diagnostico de sesiones desde el menu inicial.
+- Rotacion de backups de limpieza de rutas inexistentes.
 
 ## 1.1.0 - 2026-05-18
 

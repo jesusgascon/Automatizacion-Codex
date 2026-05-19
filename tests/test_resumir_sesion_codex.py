@@ -81,6 +81,26 @@ class CodexSessionScriptTests(unittest.TestCase):
         env.update(extra)
         return env
 
+    def _write_summary_codex_stub(self):
+        self.codex_bin.write_text(
+            """#!/usr/bin/env bash
+out=''
+while [[ $# -gt 0 ]]; do
+  if [[ "$1" == "-o" ]]; then
+    out="$2"
+    shift 2
+    continue
+  fi
+  shift
+done
+if [[ -n "$out" ]]; then
+  printf '**Objetivo**\\nResumen de prueba\\n' > "$out"
+fi
+exit 0
+"""
+        )
+        self.codex_bin.chmod(0o755)
+
     def test_home_filter_excludes_prefix_collision(self):
         proc = subprocess.run(
             [str(SCRIPT)],
@@ -131,6 +151,48 @@ class CodexSessionScriptTests(unittest.TestCase):
         self.assertIn("Resumen de sesiones", proc.stdout)
         self.assertIn("Activas que puedes abrir ahora", proc.stdout)
         self.assertIn("Que significa", proc.stdout)
+
+    def test_diagnostics_can_be_exported_to_markdown(self):
+        summary_dir = self.home / "summaries"
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="e\n\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(CODEX_SUMMARY_DIR=str(summary_dir)),
+            check=True,
+        )
+        self.assertIn("Diagnostico guardado en:", proc.stdout)
+        reports = sorted(summary_dir.glob("diagnostico-sesiones-codex-*.md"))
+        self.assertEqual(len(reports), 1)
+        content = reports[0].read_text()
+        self.assertIn("# Diagnostico de sesiones de Codex", content)
+        self.assertIn("Activas que puedes abrir ahora", content)
+
+    def test_console_render_uses_unicode_boxes_by_default(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="q\n",
+            text=True,
+            capture_output=True,
+            env=self._env(LC_ALL="C.UTF-8", LANG="C.UTF-8"),
+            check=True,
+        )
+        self.assertIn("┌", proc.stdout)
+        self.assertIn("│ Automatizacion-Codex", proc.stdout)
+        self.assertNotIn("\033[", proc.stdout)
+
+    def test_console_render_falls_back_to_ascii_without_utf8(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="q\n",
+            text=True,
+            capture_output=True,
+            env=self._env(LC_ALL="C", LANG="C"),
+            check=True,
+        )
+        self.assertIn("+-------------------------------------------------------------------------------+", proc.stdout)
+        self.assertNotIn("┌", proc.stdout)
 
     def test_missing_cwd_blocks_summary_generation(self):
         self.project_dir.rmdir()
@@ -191,6 +253,38 @@ class CodexSessionScriptTests(unittest.TestCase):
         con.close()
         self.assertEqual(rows, [])
 
+    def test_cleanup_backup_rotation_keeps_latest_n(self):
+        backup_dir = self.desktop / "Documentacion" / "Codex" / "Resumenes" / "backups"
+        backup_dir.mkdir(parents=True)
+        for stamp in ("20260101-000001", "20260101-000002", "20260101-000003"):
+            (backup_dir / f"state-before-cleanup-{stamp}.sqlite").write_text("old")
+
+        self.project_dir.rmdir()
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\nx\nLIMPIAR\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(MAX_BACKUPS="2"),
+            check=True,
+        )
+        self.assertIn("Limpieza completada", proc.stdout)
+        backups = sorted(backup_dir.glob("state-before-cleanup-*.sqlite"))
+        self.assertEqual(len(backups), 2)
+
+    def test_read_only_mode_hides_write_actions(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n1\n0\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(CODEX_READ_ONLY="1"),
+            check=True,
+        )
+        self.assertIn("Modo solo lectura activo", proc.stdout)
+        self.assertNotIn("Limpiar sesiones con ruta inexistente", proc.stdout)
+        self.assertNotIn("Archivar sesion", proc.stdout)
+
     def test_text_filter_searches_visible_session_metadata(self):
         proc = subprocess.run(
             [str(SCRIPT)],
@@ -220,6 +314,26 @@ class CodexSessionScriptTests(unittest.TestCase):
         self.assertIn("Sesion archivada correctamente", proc.stdout)
         backups = sorted(backup_dir.glob("state-before-archive-*.sqlite"))
         self.assertEqual(len(backups), 2)
+
+    def test_generate_summary_also_writes_markdown(self):
+        self._write_summary_codex_stub()
+        summary_dir = self.home / "summaries"
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n1\n1\n\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(CODEX_SUMMARY_DIR=str(summary_dir)),
+            check=True,
+        )
+        self.assertIn("Resumen Markdown guardado en:", proc.stdout)
+        txt_files = sorted(summary_dir.glob("resumen-codex-calendar-*.txt"))
+        md_files = sorted(summary_dir.glob("resumen-codex-calendar-*.md"))
+        self.assertEqual(len(txt_files), 1)
+        self.assertEqual(len(md_files), 1)
+        md_content = md_files[0].read_text()
+        self.assertIn("# Resumen de sesion Codex", md_content)
+        self.assertIn("Resumen de prueba", md_content)
 
     def test_installer_preserves_special_path_characters(self):
         special_root = Path(self.tmp.name) / "a&b"

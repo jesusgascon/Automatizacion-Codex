@@ -81,6 +81,10 @@ OUT_DIR="${CODEX_SUMMARY_DIR:-$DESKTOP_DIR/Documentacion/Codex/Resumenes}"
 LOG_DIR="$OUT_DIR/logs"
 BACKUP_DIR="$OUT_DIR/backups"
 MAX_BACKUPS="${MAX_BACKUPS:-10}"
+READ_ONLY_MODE=0
+if [[ "${CODEX_READ_ONLY:-}" == "1" || "${CODEX_READ_ONLY:-}" == "true" || "${CODEX_READ_ONLY:-}" == "TRUE" ]]; then
+  READ_ONLY_MODE=1
+fi
 
 if [[ "${LC_ALL:-${LC_CTYPE:-${LANG:-}}}" == *UTF-8* || "${LC_ALL:-${LC_CTYPE:-${LANG:-}}}" == *utf8* ]]; then
   RULE_CHAR='─'
@@ -163,6 +167,20 @@ print_option_panel() {
     shift
   done
   print_box_bottom
+}
+
+rotate_backups() {
+  local pattern="$1"
+  if [[ "$MAX_BACKUPS" =~ ^[0-9]+$ ]] && (( MAX_BACKUPS > 0 )); then
+    mapfile -t backups_to_remove < <(
+      find "$BACKUP_DIR" -maxdepth 1 -type f -name "$pattern" |
+        sort |
+        head -n "-$MAX_BACKUPS"
+    )
+    if [[ ${#backups_to_remove[@]} -gt 0 ]]; then
+      rm -f -- "${backups_to_remove[@]}"
+    fi
+  fi
 }
 
 if [[ ! -x "$CODEX_BIN" ]]; then
@@ -313,6 +331,7 @@ generate_summary() {
   mkdir -p "$OUT_DIR" "$LOG_DIR"
   safe_stamp="$(date '+%Y%m%d-%H%M%S')"
   OUT="$OUT_DIR/resumen-codex-${sid}-${safe_stamp}.txt"
+  MD_OUT="$OUT_DIR/resumen-codex-${sid}-${safe_stamp}.md"
   LOG="$LOG_DIR/resumen-codex-${sid}-${safe_stamp}.log"
 
   printf '\nGenerando resumen de:\n%s\n%s\n\n' "$cwd" "$title"
@@ -328,7 +347,15 @@ generate_summary() {
 
   summary_status=$?
   if [[ $summary_status -eq 0 && -s "$OUT" ]]; then
+    {
+      printf '# Resumen de sesion Codex\n\n'
+      printf -- '- Session ID: `%s`\n' "$sid"
+      printf -- '- Ruta: `%s`\n' "$cwd"
+      printf -- '- Generado: `%s`\n\n' "$safe_stamp"
+      cat "$OUT"
+    } >"$MD_OUT"
     printf '\nResumen guardado en:\n%s\n' "$OUT"
+    printf '\nResumen Markdown guardado en:\n%s\n' "$MD_OUT"
     printf '\nLog tecnico guardado en:\n%s\n' "$LOG"
     printf '\n--- Vista previa ---\n'
     sed -n '1,24p' "$OUT"
@@ -369,6 +396,10 @@ open_session() {
 set_archive_state() {
   local new_value="$1"
   local verb="$2"
+  if [[ "$READ_ONLY_MODE" -eq 1 ]]; then
+    printf '\nModo solo lectura activo. No se modifica la base local de Codex.\n'
+    return 1
+  fi
   mkdir -p "$BACKUP_DIR"
   backup_stamp="$(date '+%Y%m%d-%H%M%S')"
   backup_path="$BACKUP_DIR/state-before-archive-${backup_stamp}.sqlite"
@@ -387,16 +418,7 @@ PY
     printf '\nNo se pudo crear el backup previo. Archivado cancelado.\n'
     return "$backup_status"
   fi
-  if [[ "$MAX_BACKUPS" =~ ^[0-9]+$ ]] && (( MAX_BACKUPS > 0 )); then
-    mapfile -t backups_to_remove < <(
-      find "$BACKUP_DIR" -maxdepth 1 -type f -name 'state-before-archive-*.sqlite' |
-        sort |
-        head -n "-$MAX_BACKUPS"
-    )
-    if [[ ${#backups_to_remove[@]} -gt 0 ]]; then
-      rm -f -- "${backups_to_remove[@]}"
-    fi
-  fi
+  rotate_backups 'state-before-archive-*.sqlite'
   STATE_DB="$STATE_DB" SID="$sid" NEW_VALUE="$new_value" python3 - <<'PY'
 import os
 import sqlite3
@@ -445,6 +467,10 @@ PY
 }
 
 clean_missing_path_sessions() {
+  if [[ "$READ_ONLY_MODE" -eq 1 ]]; then
+    printf '\nModo solo lectura activo. La limpieza de sesiones esta deshabilitada.\n'
+    return 1
+  fi
   printf '\nSe eliminaran de la base local las sesiones cuyo directorio ya no existe.\n'
   printf 'La operacion crea un backup previo y no borra carpetas del disco.\n'
   printf 'Escribe LIMPIAR para confirmar: '
@@ -492,6 +518,7 @@ PY
   printf '\nLimpieza completada.\n'
   printf 'Backup previo guardado en: %s\n' "$backup_path"
   printf 'Sesiones eliminadas: %s\n' "$removed_count"
+  rotate_backups 'state-before-cleanup-*.sqlite'
 }
 
 show_session_diagnostics() {
@@ -546,6 +573,62 @@ print(f" Base local usada: {db}")
 PY
 }
 
+export_session_diagnostics() {
+  mkdir -p "$OUT_DIR"
+  diagnostic_stamp="$(date '+%Y%m%d-%H%M%S')"
+  diagnostic_path="$OUT_DIR/diagnostico-sesiones-codex-${diagnostic_stamp}.md"
+  HOME_DIR="$HOME" STATE_DB="$STATE_DB" DIAGNOSTIC_PATH="$diagnostic_path" python3 - <<'PY'
+import os
+import sqlite3
+from pathlib import Path
+
+db = os.environ["STATE_DB"]
+home = os.environ["HOME_DIR"]
+diagnostic_path = Path(os.environ["DIAGNOSTIC_PATH"])
+
+con = sqlite3.connect(db)
+rows = con.execute("select cwd, archived, source from threads").fetchall()
+con.close()
+
+under_home = [row for row in rows if row[0] == home or row[0].startswith(f"{home}/")]
+existing = [row for row in under_home if Path(row[0]).is_dir()]
+visible_active = [row for row in existing if row[1] == 0 and row[2] in ("cli", "vscode")]
+visible_archived = [row for row in existing if row[1] == 1 and row[2] in ("cli", "vscode")]
+missing = len(under_home) - len(existing)
+technical = len([row for row in existing if row[2] not in ("cli", "vscode")])
+outside_home = len(rows) - len(under_home)
+
+lines = [
+    "# Diagnostico de sesiones de Codex",
+    "",
+    f"- Activas que puedes abrir ahora: {len(visible_active)}",
+    f"- Archivadas que puedes recuperar: {len(visible_archived)}",
+    f"- Antiguas con carpeta ya borrada: {missing}",
+    f"- Tecnicas internas que se ocultan: {technical}",
+]
+if outside_home:
+    lines.append(f"- Fuera de tu carpeta personal: {outside_home}")
+lines.extend(
+    [
+        "",
+        "## Detalle tecnico",
+        "",
+        f"- Base local usada: `{db}`",
+        f"- HOME analizado: `{home}`",
+        "",
+        "## Criterios de visibilidad",
+        "",
+        "- `cwd` dentro de HOME.",
+        "- Carpeta `cwd` existente.",
+        "- `source` igual a `cli` o `vscode`.",
+        "- Estado `archived` segun vista activa o archivada.",
+    ]
+)
+diagnostic_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+print(diagnostic_path)
+PY
+}
+
 while true; do
   clear_screen
   print_title 'Automatizacion-Codex'
@@ -554,6 +637,7 @@ while true; do
     '[Enter]  Sesiones activas' \
     'a        Sesiones archivadas' \
     'd        Resumen de sesiones' \
+    'e        Exportar diagnostico' \
     'q        Salir'
   printf '\nOpcion: '
   if ! read -r view_choice; then
@@ -567,6 +651,15 @@ while true; do
     d|D)
       clear_screen
       show_session_diagnostics
+      printf '\nPulsa Enter para volver al menu inicial...'
+      read -r
+      continue
+      ;;
+    e|E)
+      clear_screen
+      print_title 'Exportar diagnostico'
+      exported_path="$(export_session_diagnostics)"
+      printf '\nDiagnostico guardado en:\n%s\n' "$exported_path"
       printf '\nPulsa Enter para volver al menu inicial...'
       read -r
       continue
@@ -596,10 +689,16 @@ while true; do
       show_session_table
     fi
     print_subtitle 'Acciones del listado'
-    print_option_panel \
-      '0        Volver al menu inicial' \
-      'f        Filtrar por texto' \
-      'x        Limpiar sesiones con ruta inexistente'
+    list_actions=(
+      '0        Volver al menu inicial'
+      'f        Filtrar por texto'
+    )
+    if [[ "$READ_ONLY_MODE" -eq 0 ]]; then
+      list_actions+=('x        Limpiar sesiones con ruta inexistente')
+    else
+      printf '\nModo solo lectura activo: limpieza y archivado deshabilitados.\n'
+    fi
+    print_option_panel "${list_actions[@]}"
     if [[ -n "$SESSION_FILTER" ]]; then
       print_option 'l' 'Limpiar filtro'
     fi
@@ -631,6 +730,10 @@ while true; do
     fi
 
     if [[ "$choice" == "x" || "$choice" == "X" ]]; then
+      if [[ "$READ_ONLY_MODE" -eq 1 ]]; then
+        printf '\nModo solo lectura activo. Opcion no disponible.\n'
+        continue
+      fi
       clean_missing_path_sessions
       load_sessions
       continue
@@ -655,13 +758,23 @@ while true; do
       else
         archive_action='4        Archivar sesion'
       fi
-      print_option_panel \
-        '1        Generar resumen' \
-        '2        Abrir sesion para continuar' \
-        '3        Generar resumen y despues abrir sesion' \
-        "$archive_action" \
-        '5        Ver ultimo resumen guardado' \
-        '0        Volver al listado de sesiones'
+      if [[ "$READ_ONLY_MODE" -eq 0 ]]; then
+        print_option_panel \
+          '1        Generar resumen' \
+          '2        Abrir sesion para continuar' \
+          '3        Generar resumen y despues abrir sesion' \
+          "$archive_action" \
+          '5        Ver ultimo resumen guardado' \
+          '0        Volver al listado de sesiones'
+      else
+        print_option_panel \
+          '1        Generar resumen' \
+          '2        Abrir sesion para continuar' \
+          '3        Generar resumen y despues abrir sesion' \
+          '5        Ver ultimo resumen guardado' \
+          '0        Volver al listado de sesiones'
+        printf '\nModo solo lectura activo: archivado y limpieza deshabilitados.\n'
+      fi
       printf '\nOpcion: '
       if ! read -r action; then
         exit 0
@@ -693,6 +806,12 @@ while true; do
           open_session
           ;;
         4)
+          if [[ "$READ_ONLY_MODE" -eq 1 ]]; then
+            printf '\nModo solo lectura activo. Opcion no disponible.\n'
+            printf '\nPulsa Enter para volver al menu de acciones...'
+            read -r
+            continue
+          fi
           if [[ "$VIEW_MODE" == "archived" ]]; then
             set_archive_state 0 'desarchivada'
           else

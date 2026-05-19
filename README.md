@@ -17,11 +17,14 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 - Oculta por defecto sesiones cuya carpeta original ya no existe y permite limpiarlas desde el menú con backup previo.
 - Muestra fecha de actualización, fecha de inicio, tokens, ruta y estado de resumen.
 - Genera resúmenes técnicos asociados al `session_id`.
+- Genera tambien una copia Markdown del resumen para lectura o documentacion.
 - Permite consultar el último resumen existente sin regenerarlo.
 - Reabre sesiones interactivas para continuar trabajando.
 - Archiva y desarchiva sesiones sin borrarlas.
 - Crea un backup de la base local antes de cambiar el estado de archivado.
-- Rota backups antiguos y conserva por defecto los 10 más recientes.
+- Rota backups antiguos de archivado y limpieza; conserva por defecto los 10 más recientes por tipo.
+- Permite modo solo lectura con `CODEX_READ_ONLY=1` para ocultar acciones que modifican SQLite.
+- Exporta el diagnostico de sesiones a Markdown desde el menu inicial.
 - Detecta automáticamente el binario `codex`, la base `state_*.sqlite` y el Escritorio del usuario, combinando `PATH`, shell de login, prefijo global de npm, rutas habituales y `nvm`.
 - Instala un lanzador `.desktop` que respeta el terminal predeterminado mediante `xdg-terminal-exec`.
 - Registra tambien una aplicacion de usuario para lanzarla desde GNOME.
@@ -90,6 +93,7 @@ Después abre el lanzador y confirma que:
    - `Enter`: sesiones activas,
    - `a`: sesiones archivadas,
    - `d`: resumen de sesiones,
+   - `e`: exportar diagnóstico de sesiones,
    - `q`: salir.
 3. Selecciona una sesión.
 4. Elige una acción:
@@ -111,6 +115,8 @@ Desde el listado:
 ```text
 <Carpeta-de-salidas-elegida>/
 ├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
+├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.md
+├── diagnostico-sesiones-codex-YYYYMMDD-HHMMSS.md
 └── logs/
     └── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.log
 ```
@@ -208,6 +214,7 @@ Variables opcionales:
 | `STATE_DB` | Fuerza la base SQLite que debe leer el script. |
 | `CODEX_SUMMARY_DIR` | Cambia la carpeta donde se guardan resúmenes, logs y backups. |
 | `MAX_BACKUPS` | Ajusta cuántos backups previos al archivado se conservan. |
+| `CODEX_READ_ONLY` | Si vale `1`, oculta acciones que modifican SQLite. |
 
 Ejemplo de diagnóstico puntual:
 
@@ -217,6 +224,12 @@ STATE_DB="$HOME/.codex/state_1.sqlite" \
 CODEX_SUMMARY_DIR="$HOME/Documentos/Codex/Resumenes" \
 MAX_BACKUPS=20 \
 bash resumir-sesion-codex.sh
+```
+
+Ejemplo de auditoria sin escritura:
+
+```bash
+CODEX_READ_ONLY=1 bash resumir-sesion-codex.sh
 ```
 
 Para uso normal no hace falta definirlas; la autodetección es la ruta recomendada.

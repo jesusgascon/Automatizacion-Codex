@@ -44,6 +44,20 @@ Si borraste o moviste la carpeta original, la sesion se oculta por defecto para 
 
 En `<Carpeta-de-salidas-elegida>/backups/`. Si durante la instalacion pulsaste `Enter`, esa carpeta queda bajo `<Escritorio>/Documentacion/Codex/Resumenes/backups/`. Se crean antes de archivar, desarchivar o limpiar sesiones y por defecto se conservan los 10 mas recientes.
 
+## Puedo usarlo sin permitir cambios en SQLite?
+
+Si. Ejecuta:
+
+```bash
+CODEX_READ_ONLY=1 bash resumir-sesion-codex.sh
+```
+
+En ese modo se ocultan archivado, desarchivado y limpieza de rutas inexistentes.
+
+## Puedo guardar el diagnostico de sesiones?
+
+Si. En el menu inicial pulsa `e`. Se generara un fichero `diagnostico-sesiones-codex-YYYYMMDD-HHMMSS.md` en la carpeta de salidas elegida.
+
 ## Puedo guardar los resumenes en otra carpeta?
 
 Si. Durante `bash instalar.sh`, el instalador te pregunta la carpeta si lo ejecutas de forma interactiva. Tambien puedes definir `CODEX_SUMMARY_DIR` antes de ejecutar el instalador o el script, por ejemplo:

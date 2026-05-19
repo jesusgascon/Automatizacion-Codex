@@ -39,6 +39,7 @@ Se mantienen puntos de extension:
 - `STATE_DB`,
 - `CODEX_SUMMARY_DIR`,
 - `MAX_BACKUPS`,
+- `CODEX_READ_ONLY`,
 - `NO_COLOR`.
 
 ### Interfaz de consola
@@ -66,6 +67,10 @@ Valor:
 - permite documentar estado del equipo,
 - no expone contenido completo de sesiones.
 
+Estado:
+
+- implementado como exportacion Markdown desde el menu inicial con `e`.
+
 ### 2. Tests de presentacion de consola
 
 Anadir tests especificos para:
@@ -79,6 +84,10 @@ Valor:
 
 - evita regresiones visuales,
 - mantiene compatibilidad con logs y CI.
+
+Estado:
+
+- implementado con tests para Unicode, ASCII y ausencia de ANSI fuera de TTY.
 
 ### 3. Guia SDD para nuevas funciones
 
@@ -99,6 +108,10 @@ Valor:
 - mejor lectura en GitHub,
 - mejor integracion con documentacion,
 - no rompe usuarios actuales.
+
+Estado:
+
+- implementado como copia `.md` automatica junto al `.txt`.
 
 ### 5. Validacion de esquema SQLite
 
@@ -122,12 +135,29 @@ Valor:
 - util en auditorias,
 - reduce riesgo en equipos compartidos.
 
+Estado:
+
+- implementado con `CODEX_READ_ONLY=1`.
+
+### 7. Rotacion de backups de limpieza
+
+Aplicar `MAX_BACKUPS` tambien a backups creados antes de limpiar rutas inexistentes.
+
+Valor:
+
+- reduce acumulacion de copias sensibles,
+- mantiene coherencia con backups de archivado.
+
+Estado:
+
+- implementado.
+
 ## Plan de implementacion futura
 
-1. Documentar flujo SDD y enlazarlo desde README.
-2. Crear tests del render de consola.
-3. Anadir modo solo lectura.
-4. Explorar exportacion Markdown de resumenes.
+1. Documentar procedimiento de recuperacion desde backup SQLite.
+2. Crear workflow adicional de tests Python en GitHub Actions.
+3. Anadir comprobacion automatica de privacidad.
+4. Ampliar filtros por fecha o estado de resumen.
 5. Revisar release notes y GitHub Actions tras cada cambio.
 
 ## Validacion obligatoria

@@ -29,6 +29,7 @@ Durante una ejecucion interactiva de `instalar.sh`, el instalador pregunta donde
 | `STATE_DB` | Ruta absoluta a una base `state_*.sqlite` | Probar una base concreta si existen varias. |
 | `CODEX_SUMMARY_DIR` | Ruta absoluta a una carpeta | Cambiar la ubicacion de resumenes, logs y backups. |
 | `MAX_BACKUPS` | Entero positivo | Cambiar la retencion de copias previas al archivado. |
+| `CODEX_READ_ONLY` | `1` | Ocultar acciones que escriben en la base local de Codex. |
 
 Ejemplo:
 
@@ -45,6 +46,16 @@ Por defecto, si `CODEX_SUMMARY_DIR` no se define y durante la instalacion se pul
 ```text
 <Escritorio>/Documentacion/Codex/Resumenes/
 ```
+
+### Modo solo lectura
+
+Para revisar sesiones sin permitir archivado, desarchivado ni limpieza:
+
+```bash
+CODEX_READ_ONLY=1 bash resumir-sesion-codex.sh
+```
+
+Este modo mantiene disponibles el listado, el filtrado, la generacion de resumenes, la consulta de resumenes y la exportacion de diagnostico. Solo oculta acciones que modifican SQLite.
 
 ## Mantenimiento recomendado
 
@@ -83,6 +94,8 @@ El proyecto escribe fuera del repositorio, dentro de la carpeta de salidas elegi
 ```text
 <Carpeta-de-salidas-elegida>/
 ├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
+├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.md
+├── diagnostico-sesiones-codex-YYYYMMDD-HHMMSS.md
 ├── logs/
 │   └── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.log
 └── backups/

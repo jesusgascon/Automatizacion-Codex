@@ -19,14 +19,14 @@
 - [x] Crear tests de regresion.
 - [x] Mejorar interfaz de consola con limpieza de pantalla y cajas.
 - [x] Validar esquema SQLite antes de consultar sesiones.
+- [x] Crear tests de render de consola para Unicode, ASCII y ausencia de ANSI fuera de TTY.
+- [x] Anadir `CODEX_READ_ONLY=1` para ocultar acciones de escritura.
+- [x] Exportar resumenes tambien como Markdown.
+- [x] Exportar diagnostico de sesiones a archivo local.
+- [x] Rotar tambien backups de limpieza de rutas inexistentes.
 
 ## Pendiente recomendado
 
-- [ ] Crear tests de render de consola para Unicode, ASCII y `NO_COLOR`.
-- [ ] Anadir `CODEX_READ_ONLY=1` para ocultar acciones de escritura.
-- [ ] Exportar resumenes tambien como Markdown.
-- [ ] Exportar diagnostico de sesiones a archivo local.
-- [ ] Rotar tambien backups de limpieza de rutas inexistentes.
 - [ ] Documentar procedimiento de recuperacion desde backup SQLite.
 - [ ] Crear workflow adicional de tests Python en GitHub Actions.
 - [ ] Anadir comprobacion de privacidad automatizada para patrones sensibles.
