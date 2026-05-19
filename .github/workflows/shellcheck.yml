@@ -15,5 +15,3 @@ jobs:
           sudo apt-get install -y shellcheck
       - name: Ejecutar ShellCheck
         run: shellcheck resumir-sesion-codex.sh instalar.sh
-      - name: Ejecutar tests
-        run: python3 -m unittest discover -s tests -v

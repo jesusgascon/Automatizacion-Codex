@@ -18,6 +18,11 @@
 - Fallback de terminales en el instalador si no existe `xdg-terminal-exec`.
 - Procedimiento documentado de recuperacion desde backups SQLite.
 - Tests SQLite adicionales para titulos con caracteres raros y deteccion de la base mas reciente.
+- Apertura de carpetas de resumenes y backups desde el menu inicial.
+- Restauracion asistida de backups SQLite con confirmacion y backup previo de la base reemplazada.
+- Vista agrupada por proyecto/carpeta.
+- Detalles tecnicos completos por sesion.
+- Workflow Python formal con matriz 3.11, 3.12 y 3.13.
 
 ## 1.1.0 - 2026-05-18
 

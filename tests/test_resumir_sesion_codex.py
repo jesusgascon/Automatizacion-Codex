@@ -361,6 +361,95 @@ exit 0
         self.assertIn("Abrir resumen en editor predeterminado", proc.stdout)
         self.assertEqual(opener_log.read_text().strip(), str(summary_file))
 
+    def test_open_summary_and_backup_directories_from_main_menu(self):
+        summary_dir = self.home / "summaries"
+        opener_log = self.home / "paths.log"
+        opener = self.bin_dir / "open-path"
+        opener.write_text("#!/usr/bin/env bash\nprintf '%s\\n' \"$1\" >> \"$PATH_OPENER_LOG\"\n")
+        opener.chmod(0o755)
+
+        subprocess.run(
+            [str(SCRIPT)],
+            input="o\n\nb\n\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(
+                CODEX_SUMMARY_DIR=str(summary_dir),
+                CODEX_PATH_OPENER=str(opener),
+                PATH_OPENER_LOG=str(opener_log),
+            ),
+            check=True,
+        )
+        opened = opener_log.read_text().splitlines()
+        self.assertEqual(opened, [str(summary_dir), str(summary_dir / "backups")])
+
+    def test_session_details_show_full_metadata(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n1\n7\n\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("ID completo: calendar", proc.stdout)
+        self.assertIn("Ruta completa:", proc.stdout)
+        self.assertIn("Tokens:", proc.stdout)
+
+    def test_project_view_groups_sessions_by_directory(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="p\n\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Sesiones por proyecto", proc.stdout)
+        self.assertIn("~/project", proc.stdout)
+        self.assertIn("2", proc.stdout)
+
+    def test_restore_backup_replaces_state_database_with_confirmation(self):
+        backup_dir = self.desktop / "Documentacion" / "Codex" / "Resumenes" / "backups"
+        backup_dir.mkdir(parents=True)
+        backup = backup_dir / "state-before-cleanup-20260519-120000.sqlite"
+        source = sqlite3.connect(self.state_db)
+        target = sqlite3.connect(backup)
+        source.backup(target)
+        target.close()
+        source.close()
+
+        con = sqlite3.connect(backup)
+        con.execute("delete from threads where id = 'calendar'")
+        con.commit()
+        con.close()
+
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="r\n1\nRESTAURAR\n\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Restauracion completada", proc.stdout)
+        con = sqlite3.connect(self.state_db)
+        rows = con.execute("select id from threads where id = 'calendar'").fetchall()
+        con.close()
+        self.assertEqual(rows, [])
+        self.assertTrue(list(backup_dir.glob("state-before-restore-*.sqlite")))
+
+    def test_restore_backup_is_disabled_in_read_only_mode(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="r\n\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(CODEX_READ_ONLY="1"),
+            check=True,
+        )
+        self.assertIn("Modo solo lectura activo. Restauracion deshabilitada.", proc.stdout)
+
     def test_session_title_sanitizes_tabs_and_newlines(self):
         con = sqlite3.connect(self.state_db)
         con.execute(

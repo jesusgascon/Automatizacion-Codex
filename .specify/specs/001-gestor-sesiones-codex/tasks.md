@@ -28,10 +28,14 @@
 - [x] Abrir ultimo resumen con editor o visor predeterminado.
 - [x] Anadir fallback de terminales cuando falta `xdg-terminal-exec`.
 - [x] Anadir tests SQLite para titulos con caracteres raros y deteccion de base mas reciente.
+- [x] Abrir carpetas de resumenes y backups desde el menu inicial.
+- [x] Mostrar detalles tecnicos completos de una sesion.
+- [x] Restaurar backups SQLite de forma asistida con confirmacion.
+- [x] Agrupar sesiones visibles por proyecto/carpeta.
+- [x] Crear workflow Python formal con matriz de versiones.
 
 ## Pendiente recomendado
 
-- [ ] Crear workflow adicional de tests Python en GitHub Actions.
 - [ ] Anadir comprobacion de privacidad automatizada para patrones sensibles.
 
 ## Criterios antes de cerrar una tarea

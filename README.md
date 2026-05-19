@@ -25,6 +25,10 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 - Rota backups antiguos de archivado y limpieza; conserva por defecto los 10 más recientes por tipo.
 - Permite modo solo lectura con `CODEX_READ_ONLY=1` para ocultar acciones que modifican SQLite.
 - Exporta el diagnostico de sesiones a Markdown desde el menu inicial.
+- Abre carpetas de resumenes y backups desde el menu inicial.
+- Muestra una vista agrupada por proyecto/carpeta.
+- Muestra detalles tecnicos completos de una sesion.
+- Permite restaurar backups SQLite desde el menu con confirmacion explicita.
 - Detecta automáticamente el binario `codex`, la base `state_*.sqlite` y el Escritorio del usuario, combinando `PATH`, shell de login, prefijo global de npm, rutas habituales y `nvm`.
 - Instala un lanzador `.desktop` que respeta el terminal predeterminado mediante `xdg-terminal-exec`.
 - Registra tambien una aplicacion de usuario para lanzarla desde GNOME.
@@ -94,6 +98,10 @@ Después abre el lanzador y confirma que:
    - `a`: sesiones archivadas,
    - `d`: resumen de sesiones,
    - `e`: exportar diagnóstico de sesiones,
+   - `p`: vista por proyecto,
+   - `o`: abrir carpeta de resúmenes,
+   - `b`: abrir carpeta de backups,
+   - `r`: restaurar backup SQLite,
    - `q`: salir.
 3. Selecciona una sesión.
 4. Elige una acción:
@@ -102,6 +110,8 @@ Después abre el lanzador y confirma que:
    - `3`: resumir y abrir,
    - `4`: archivar o desarchivar,
    - `5`: ver el último resumen guardado,
+   - `6`: abrir resumen en editor predeterminado,
+   - `7`: ver detalles técnicos,
    - `0`: volver.
 
 Desde el listado:
@@ -217,6 +227,7 @@ Variables opcionales:
 | `MAX_BACKUPS` | Ajusta cuántos backups previos al archivado se conservan. |
 | `CODEX_READ_ONLY` | Si vale `1`, oculta acciones que modifican SQLite. |
 | `CODEX_SUMMARY_OPENER` | Fuerza el programa usado para abrir resúmenes. |
+| `CODEX_PATH_OPENER` | Fuerza el programa usado para abrir carpetas. |
 
 Ejemplo de diagnóstico puntual:
 

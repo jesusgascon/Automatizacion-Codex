@@ -114,6 +114,13 @@ Opciones:
 La pantalla inicial permite entrar en sesiones activas, archivadas, abrir un resumen explicativo con `d` o exportar diagnostico con `e`. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
 Desde el listado de sesiones, `0` vuelve al menu inicial. Desde el menu inicial, `q` sale del lanzador.
 
+Tambien desde el menu inicial:
+
+- `p`: muestra sesiones agrupadas por carpeta/proyecto,
+- `o`: abre la carpeta de resumenes,
+- `b`: abre la carpeta de backups,
+- `r`: inicia restauracion asistida desde backup SQLite.
+
 Desde el listado tambien se puede:
 
 - pulsar `f` para filtrar por texto,
@@ -122,6 +129,7 @@ Desde el listado tambien se puede:
 - pulsar `x` para limpiar sesiones con ruta inexistente.
 
 La opcion `6` usa `CODEX_SUMMARY_OPENER` si esta definido; si no, intenta `xdg-open`.
+La opcion `7` muestra ID completo, ruta completa, fechas, tokens y ultimo resumen asociado.
 
 El resumen explicativo informa:
 

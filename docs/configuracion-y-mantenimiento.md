@@ -31,6 +31,7 @@ Durante una ejecucion interactiva de `instalar.sh`, el instalador pregunta donde
 | `MAX_BACKUPS` | Entero positivo | Cambiar la retencion de copias previas al archivado. |
 | `CODEX_READ_ONLY` | `1` | Ocultar acciones que escriben en la base local de Codex. |
 | `CODEX_SUMMARY_OPENER` | Ruta a ejecutable | Forzar el programa usado para abrir resumenes. |
+| `CODEX_PATH_OPENER` | Ruta a ejecutable | Forzar el programa usado para abrir carpetas. |
 
 Ejemplo:
 
@@ -64,6 +65,12 @@ La opcion `6` del menu de sesion abre el ultimo resumen asociado. Por defecto us
 
 ```bash
 CODEX_SUMMARY_OPENER="/usr/bin/gedit" bash resumir-sesion-codex.sh
+```
+
+Para forzar el abridor de carpetas:
+
+```bash
+CODEX_PATH_OPENER="/usr/bin/xdg-open" bash resumir-sesion-codex.sh
 ```
 
 ## Mantenimiento recomendado

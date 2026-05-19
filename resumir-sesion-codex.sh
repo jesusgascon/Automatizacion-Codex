@@ -407,6 +407,46 @@ open_latest_summary_file() {
   return 1
 }
 
+open_path_with_default_app() {
+  local target_path="$1"
+  if [[ ! -e "$target_path" ]]; then
+    printf '\nNo existe la ruta:\n%s\n' "$target_path"
+    return 1
+  fi
+
+  if [[ -n "${CODEX_PATH_OPENER:-}" ]]; then
+    "$CODEX_PATH_OPENER" "$target_path"
+    return $?
+  fi
+
+  if command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$target_path" >/dev/null 2>&1 &
+    printf '\nRuta abierta con xdg-open:\n%s\n' "$target_path"
+    return 0
+  fi
+
+  printf '\nNo se encontro xdg-open para abrir la ruta automaticamente.\n'
+  printf 'Ruta disponible en:\n%s\n' "$target_path"
+  return 1
+}
+
+show_session_details() {
+  printf '\nID completo: %s\n' "$sid"
+  printf 'Titulo: %s\n' "$title"
+  printf 'Ruta completa: %s\n' "$cwd"
+  printf 'Ruta abreviada: %s\n' "$short_cwd"
+  printf 'Actualizada: %s\n' "$when"
+  printf 'Iniciada: %s\n' "$started"
+  printf 'Tokens: %s\n' "$tokens"
+  printf 'Resumen asociado: %s\n' "$has_summary"
+  latest_summary="$(find "$OUT_DIR" -maxdepth 1 -type f \( -name "resumen-codex-${sid}-*.md" -o -name "resumen-codex-${sid}-*.txt" \) 2>/dev/null | sort | tail -n 1)"
+  if [[ -n "$latest_summary" ]]; then
+    printf 'Ultimo resumen: %s\n' "$latest_summary"
+  else
+    printf 'Ultimo resumen: no disponible\n'
+  fi
+}
+
 open_session() {
   printf '\nAbriendo sesion en Codex:\n%s\n%s\n\n' "$cwd" "$title"
   cd "$cwd" || {
@@ -544,6 +584,102 @@ PY
   rotate_backups 'state-before-cleanup-*.sqlite'
 }
 
+restore_backup_interactive() {
+  if [[ "$READ_ONLY_MODE" -eq 1 ]]; then
+    printf '\nModo solo lectura activo. Restauracion deshabilitada.\n'
+    return 1
+  fi
+
+  mapfile -t restore_backups < <(
+    find "$BACKUP_DIR" -maxdepth 1 -type f \( -name 'state-before-archive-*.sqlite' -o -name 'state-before-cleanup-*.sqlite' \) 2>/dev/null |
+      sort |
+      tail -n 10
+  )
+  if [[ ${#restore_backups[@]} -eq 0 ]]; then
+    printf '\nNo hay backups disponibles en:\n%s\n' "$BACKUP_DIR"
+    return 1
+  fi
+
+  print_title 'Restaurar backup SQLite'
+  printf 'Base actual:\n%s\n\n' "$STATE_DB"
+  for i in "${!restore_backups[@]}"; do
+    printf '%-3d %s\n' "$((i + 1))" "${restore_backups[$i]}"
+  done
+  printf '\n0   Cancelar\n'
+  printf '\nNumero de backup: '
+  if ! read -r backup_choice; then
+    exit 0
+  fi
+  if [[ "$backup_choice" == "0" ]]; then
+    printf 'Restauracion cancelada.\n'
+    return 1
+  fi
+  if ! [[ "$backup_choice" =~ ^[0-9]+$ ]] || (( backup_choice < 1 || backup_choice > ${#restore_backups[@]} )); then
+    printf 'Seleccion no valida.\n'
+    return 1
+  fi
+
+  selected_backup="${restore_backups[$((backup_choice - 1))]}"
+  printf '\nSe va a reemplazar la base actual por:\n%s\n' "$selected_backup"
+  printf 'Cierra Codex antes de continuar si lo tienes abierto.\n'
+  printf 'Escribe RESTAURAR para confirmar: '
+  if ! read -r confirm; then
+    exit 0
+  fi
+  if [[ "$confirm" != "RESTAURAR" ]]; then
+    printf 'Restauracion cancelada.\n'
+    return 1
+  fi
+
+  pre_restore_backup="$BACKUP_DIR/state-before-restore-$(date '+%Y%m%d-%H%M%S').sqlite"
+  cp -- "$STATE_DB" "$pre_restore_backup"
+  cp -- "$selected_backup" "$STATE_DB"
+  printf '\nRestauracion completada.\n'
+  printf 'Backup de la base reemplazada: %s\n' "$pre_restore_backup"
+}
+
+show_projects_view() {
+  clear_screen
+  print_title 'Sesiones por proyecto'
+  HOME_DIR="$HOME" STATE_DB="$STATE_DB" ARCHIVED_VALUE="$ARCHIVED_VALUE" python3 - <<'PY'
+import os
+import sqlite3
+from pathlib import Path
+
+db = os.environ["STATE_DB"]
+home = os.environ["HOME_DIR"]
+archived_value = int(os.environ["ARCHIVED_VALUE"])
+
+con = sqlite3.connect(db)
+rows = con.execute(
+    """
+    select cwd, count(*), max(updated_at), sum(tokens_used)
+    from threads
+    where (cwd = ? or cwd like ?)
+      and archived = ?
+      and source in ('cli', 'vscode')
+    group by cwd
+    order by max(updated_at) desc
+    """,
+    (home, f"{home}/%", archived_value),
+).fetchall()
+con.close()
+
+visible = [row for row in rows if Path(row[0]).is_dir()]
+if not visible:
+    print("No hay proyectos visibles en esta vista.")
+else:
+    print(f"{'Sesiones':<9} {'Tokens':<14} Ruta")
+    print(f"{'--------':<9} {'--------------':<14} {'-' * 54}")
+    for cwd, count, _updated_at, tokens in visible:
+        short_cwd = cwd.replace(home, "~", 1)
+        if len(short_cwd) > 58:
+            short_cwd = "..." + short_cwd[-55:]
+        token_label = f"{tokens or 0:,}".replace(",", ".")
+        print(f"{count:<9} {token_label:<14} {short_cwd}")
+PY
+}
+
 show_session_diagnostics() {
   RULE_CHAR="$RULE_CHAR" BOX_TOP_LEFT="$BOX_TOP_LEFT" BOX_TOP_RIGHT="$BOX_TOP_RIGHT" BOX_BOTTOM_LEFT="$BOX_BOTTOM_LEFT" BOX_BOTTOM_RIGHT="$BOX_BOTTOM_RIGHT" BOX_VERTICAL="$BOX_VERTICAL" HOME_DIR="$HOME" STATE_DB="$STATE_DB" python3 - <<'PY'
 import os
@@ -661,6 +797,10 @@ while true; do
     'a        Sesiones archivadas' \
     'd        Resumen de sesiones' \
     'e        Exportar diagnostico' \
+    'p        Vista por proyecto' \
+    'o        Abrir carpeta de resumenes' \
+    'b        Abrir carpeta de backups' \
+    'r        Restaurar backup SQLite' \
     'q        Salir'
   printf '\nOpcion: '
   if ! read -r view_choice; then
@@ -683,6 +823,39 @@ while true; do
       print_title 'Exportar diagnostico'
       exported_path="$(export_session_diagnostics)"
       printf '\nDiagnostico guardado en:\n%s\n' "$exported_path"
+      printf '\nPulsa Enter para volver al menu inicial...'
+      read -r
+      continue
+      ;;
+    p|P)
+      VIEW_MODE="active"
+      ARCHIVED_VALUE=0
+      show_projects_view
+      printf '\nPulsa Enter para volver al menu inicial...'
+      read -r
+      continue
+      ;;
+    o|O)
+      clear_screen
+      print_title 'Abrir carpeta de resumenes'
+      mkdir -p "$OUT_DIR"
+      open_path_with_default_app "$OUT_DIR"
+      printf '\nPulsa Enter para volver al menu inicial...'
+      read -r
+      continue
+      ;;
+    b|B)
+      clear_screen
+      print_title 'Abrir carpeta de backups'
+      mkdir -p "$BACKUP_DIR"
+      open_path_with_default_app "$BACKUP_DIR"
+      printf '\nPulsa Enter para volver al menu inicial...'
+      read -r
+      continue
+      ;;
+    r|R)
+      clear_screen
+      restore_backup_interactive
       printf '\nPulsa Enter para volver al menu inicial...'
       read -r
       continue
@@ -789,6 +962,7 @@ while true; do
           "$archive_action" \
           '5        Ver ultimo resumen guardado' \
           '6        Abrir resumen en editor predeterminado' \
+          '7        Ver detalles tecnicos' \
           '0        Volver al listado de sesiones'
       else
         print_option_panel \
@@ -797,6 +971,7 @@ while true; do
           '3        Generar resumen y despues abrir sesion' \
           '5        Ver ultimo resumen guardado' \
           '6        Abrir resumen en editor predeterminado' \
+          '7        Ver detalles tecnicos' \
           '0        Volver al listado de sesiones'
         printf '\nModo solo lectura activo: archivado y limpieza deshabilitados.\n'
       fi
@@ -865,6 +1040,11 @@ while true; do
           ;;
         6)
           open_latest_summary_file
+          printf '\nPulsa Enter para volver al menu de acciones...'
+          read -r
+          ;;
+        7)
+          show_session_details
           printf '\nPulsa Enter para volver al menu de acciones...'
           read -r
           ;;

@@ -59,6 +59,24 @@ cp "/ruta/a/backups/state-before-cleanup-YYYYMMDD-HHMMSS.sqlite" state_5.sqlite
 
 Despues abre de nuevo el lanzador y revisa las sesiones.
 
+## Restauracion asistida desde el menu
+
+Desde el menu inicial pulsa `r`.
+
+El lanzador:
+
+1. muestra los ultimos backups disponibles,
+2. pide seleccionar uno,
+3. exige escribir `RESTAURAR`,
+4. crea un backup previo de la base que va a reemplazar,
+5. copia el backup elegido sobre la base activa.
+
+La restauracion asistida queda deshabilitada si ejecutas con:
+
+```bash
+CODEX_READ_ONLY=1 bash resumir-sesion-codex.sh
+```
+
 ## Probar un backup sin restaurar
 
 Si no quieres sobrescribir la base activa inmediatamente, puedes probar el backup primero:
@@ -76,4 +94,3 @@ Esto permite verificar que el backup contiene lo esperado antes de restaurarlo.
 - No subas backups a GitHub.
 - Conserva solo los backups necesarios.
 - Usa `CODEX_READ_ONLY=1` si solo quieres auditar sin modificar SQLite.
-

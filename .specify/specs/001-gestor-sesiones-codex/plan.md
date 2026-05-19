@@ -41,6 +41,7 @@ Se mantienen puntos de extension:
 - `MAX_BACKUPS`,
 - `CODEX_READ_ONLY`,
 - `CODEX_SUMMARY_OPENER`,
+- `CODEX_PATH_OPENER`,
 - `NO_COLOR`.
 
 ### Interfaz de consola
@@ -192,13 +193,53 @@ Estado:
 
 - implementado.
 
+### 11. Carpetas operativas desde menu
+
+Abrir la carpeta de resumenes o backups desde el menu inicial usando `xdg-open` o `CODEX_PATH_OPENER`.
+
+Estado:
+
+- implementado.
+
+### 12. Detalles tecnicos de sesion
+
+Mostrar ID completo, ruta completa, fechas, tokens y ultimo resumen asociado.
+
+Estado:
+
+- implementado.
+
+### 13. Restauracion asistida
+
+Permitir restaurar backups SQLite desde menu con seleccion, confirmacion literal y backup previo de la base reemplazada.
+
+Estado:
+
+- implementado.
+
+### 14. Vista por proyecto
+
+Agrupar sesiones visibles por carpeta/proyecto con conteo y tokens acumulados.
+
+Estado:
+
+- implementado.
+
+### 15. Workflow Python formal
+
+Separar tests Python de ShellCheck y ejecutarlos en matriz 3.11, 3.12 y 3.13.
+
+Estado:
+
+- implementado.
+
 ## Plan de implementacion futura
 
-1. Crear workflow adicional de tests Python en GitHub Actions.
-2. Anadir comprobacion automatica de privacidad.
-3. Ampliar filtros por fecha o estado de resumen.
-4. Mejorar automatizacion de releases.
-5. Revisar compatibilidad con nuevas versiones de Codex CLI.
+1. Anadir comprobacion automatica de privacidad.
+2. Ampliar filtros por fecha o estado de resumen.
+3. Mejorar automatizacion de releases.
+4. Revisar compatibilidad con nuevas versiones de Codex CLI.
+5. Exportar listado de sesiones a Markdown/CSV.
 
 ## Validacion obligatoria
 

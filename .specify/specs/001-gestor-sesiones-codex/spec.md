@@ -83,6 +83,10 @@ El usuario debe poder abrir la ultima version guardada de un resumen sin regener
 
 El usuario debe poder abrir el ultimo resumen en el editor o visor predeterminado sin buscar manualmente el fichero.
 
+### Detalles tecnicos
+
+El usuario debe poder ver metadatos completos de una sesion seleccionada: ID, ruta completa, fechas, tokens, estado de resumen y ultimo fichero asociado.
+
 ### Reabrir sesion
 
 El usuario debe poder continuar una sesion mediante `codex resume <session_id>` desde la ruta original de trabajo, siempre que exista.
@@ -98,6 +102,18 @@ El sistema debe ocultar por defecto sesiones cuya carpeta ya no existe y permiti
 ### Exportar diagnostico
 
 El usuario debe poder exportar un diagnostico local de sesiones a Markdown desde el menu inicial.
+
+### Abrir carpetas operativas
+
+El usuario debe poder abrir la carpeta de resumenes y la carpeta de backups desde el menu inicial.
+
+### Vista por proyecto
+
+El usuario debe poder ver las sesiones agrupadas por carpeta/proyecto.
+
+### Restauracion asistida
+
+El usuario debe poder restaurar un backup SQLite desde el menu con confirmacion explicita, manteniendo una copia previa de la base reemplazada.
 
 ### Modo solo lectura
 
@@ -135,6 +151,8 @@ El instalador debe:
 - La exportacion de diagnostico crea un fichero Markdown local.
 - La opcion de abrir resumen usa `xdg-open` o `CODEX_SUMMARY_OPENER`.
 - El instalador genera `Exec=` con fallback de terminal si falta `xdg-terminal-exec`.
+- La restauracion asistida exige `RESTAURAR` y queda bloqueada en modo solo lectura.
+- La vista por proyecto solo incluye carpetas existentes bajo HOME.
 - El proyecto conserva tests automatizados sin dependencias externas.
 - README y documentacion explican rutas configurables y funcionamiento.
 

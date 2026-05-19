@@ -66,6 +66,12 @@ Si. Selecciona la sesion y pulsa `6`. Se abrira el ultimo resumen asociado con `
 
 Consulta [Recuperacion desde backups SQLite](recuperacion-backups.md). La idea basica es cerrar Codex, copiar la base actual como seguridad y sustituirla por el backup elegido.
 
+Tambien puedes usar `r` desde el menu inicial para restaurar de forma asistida. La operacion exige escribir `RESTAURAR` y crea una copia previa de la base reemplazada.
+
+## Puedo ver las sesiones agrupadas por proyecto?
+
+Si. Pulsa `p` en el menu inicial. La vista agrupa sesiones visibles por carpeta y muestra conteo y tokens acumulados.
+
 ## Puedo guardar los resumenes en otra carpeta?
 
 Si. Durante `bash instalar.sh`, el instalador te pregunta la carpeta si lo ejecutas de forma interactiva. Tambien puedes definir `CODEX_SUMMARY_DIR` antes de ejecutar el instalador o el script, por ejemplo:

@@ -21,4 +21,8 @@ Cobertura actual:
 - deteccion de la base `state_*.sqlite` mas reciente,
 - normalizacion de titulos con tabs y saltos de linea,
 - fallback de terminales del instalador,
+- apertura de carpetas de resumenes y backups,
+- detalles tecnicos de sesion,
+- restauracion asistida desde backup,
+- vista agrupada por proyecto,
 - generación segura del lanzador con rutas que contienen caracteres especiales.
