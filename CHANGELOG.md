@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Menu principal reorganizado por frecuencia de uso, con herramientas en submenu propio.
+- Accesos de diagnostico, exportacion, carpetas y restauracion movidos al submenu de herramientas.
+
 ## 1.2.0 - 2026-05-19
 
 ### Added

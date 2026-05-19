@@ -108,19 +108,24 @@ Opciones:
 4) Archivar sesion
 5) Ver ultimo resumen guardado
 6) Abrir resumen en editor predeterminado
+7) Ver detalles tecnicos
 0) Volver al listado de sesiones
 ```
 
-La pantalla inicial permite entrar en sesiones activas, archivadas, abrir un resumen explicativo con `d` o exportar diagnostico con `e`. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
+La pantalla inicial se reserva para acciones frecuentes: sesiones activas, sesiones archivadas, vista por proyecto, herramientas y salida. En la vista de archivadas, la opcion `4` pasa a ser `Desarchivar sesion`.
 Desde el listado de sesiones, `0` vuelve al menu inicial. Desde el menu inicial, `q` sale del lanzador.
 
-Tambien desde el menu inicial:
+Desde el submenu `h) Herramientas`:
 
-- `p`: muestra sesiones agrupadas por carpeta/proyecto,
+- `d`: muestra resumen de sesiones,
+- `e`: exporta diagnostico,
 - `l`: exporta el listado visible de sesiones a Markdown y CSV,
 - `o`: abre la carpeta de resumenes,
 - `b`: abre la carpeta de backups,
-- `r`: inicia restauracion asistida desde backup SQLite.
+- `r`: inicia restauracion asistida desde backup SQLite,
+- `0`: vuelve al menu inicial.
+
+Desde el menu inicial, `p` muestra sesiones agrupadas por carpeta/proyecto.
 
 La vista por proyecto agrupa por raiz Git cuando la carpeta de la sesion pertenece a un repositorio; si no hay `.git`, agrupa por carpeta exacta.
 

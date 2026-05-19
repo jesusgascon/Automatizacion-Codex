@@ -56,7 +56,7 @@ En ese modo se ocultan archivado, desarchivado y limpieza de rutas inexistentes.
 
 ## Puedo guardar el diagnostico de sesiones?
 
-Si. En el menu inicial pulsa `e`. Se generara un fichero `diagnostico-sesiones-codex-YYYYMMDD-HHMMSS.md` en la carpeta de salidas elegida.
+Si. En el menu inicial pulsa `h` y despues `e`. Se generara un fichero `diagnostico-sesiones-codex-YYYYMMDD-HHMMSS.md` en la carpeta de salidas elegida.
 
 ## Puedo abrir un resumen sin buscarlo en carpetas?
 
@@ -66,7 +66,7 @@ Si. Selecciona la sesion y pulsa `6`. Se abrira el ultimo resumen asociado con `
 
 Consulta [Recuperacion desde backups SQLite](recuperacion-backups.md). La idea basica es cerrar Codex, copiar la base actual como seguridad y sustituirla por el backup elegido.
 
-Tambien puedes usar `r` desde el menu inicial para restaurar de forma asistida. La operacion exige escribir `RESTAURAR` y crea una copia previa de la base reemplazada.
+Tambien puedes usar `h` y despues `r` para restaurar de forma asistida. La operacion exige escribir `RESTAURAR` y crea una copia previa de la base reemplazada.
 
 ## Puedo ver las sesiones agrupadas por proyecto?
 
@@ -74,7 +74,7 @@ Si. Pulsa `p` en el menu inicial. La vista agrupa sesiones visibles por carpeta 
 
 ## Puedo exportar el listado de sesiones?
 
-Si. Pulsa `l` en el menu inicial. Se generaran ficheros `listado-sesiones-codex-YYYYMMDD-HHMMSS.md` y `.csv` en la carpeta de salidas.
+Si. Pulsa `h` y despues `l`. Se generaran ficheros `listado-sesiones-codex-YYYYMMDD-HHMMSS.md` y `.csv` en la carpeta de salidas.
 
 ## Como evita el proyecto subir datos privados?
 

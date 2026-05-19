@@ -24,8 +24,8 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 - Crea un backup de la base local antes de cambiar el estado de archivado.
 - Rota backups antiguos de archivado y limpieza; conserva por defecto los 10 más recientes por tipo.
 - Permite modo solo lectura con `CODEX_READ_ONLY=1` para ocultar acciones que modifican SQLite.
-- Exporta el diagnostico de sesiones a Markdown desde el menu inicial.
-- Abre carpetas de resumenes y backups desde el menu inicial.
+- Exporta el diagnostico de sesiones a Markdown desde el submenu de herramientas.
+- Abre carpetas de resumenes y backups desde el submenu de herramientas.
 - Muestra una vista agrupada por proyecto/carpeta.
 - Muestra detalles tecnicos completos de una sesion.
 - Permite restaurar backups SQLite desde el menu con confirmacion explicita.
@@ -99,13 +99,8 @@ Después abre el lanzador y confirma que:
 2. En la pantalla inicial:
    - `Enter`: sesiones activas,
    - `a`: sesiones archivadas,
-   - `d`: resumen de sesiones,
-   - `e`: exportar diagnóstico de sesiones,
-   - `l`: exportar listado de sesiones,
    - `p`: vista por proyecto,
-   - `o`: abrir carpeta de resúmenes,
-   - `b`: abrir carpeta de backups,
-   - `r`: restaurar backup SQLite,
+   - `h`: herramientas,
    - `q`: salir.
 3. Selecciona una sesión.
 4. Elige una acción:
@@ -123,6 +118,16 @@ Desde el listado:
 - `f`: filtrar por texto,
 - `l`: limpiar el filtro activo,
 - `x`: limpiar sesiones con ruta inexistente.
+
+Desde `h) Herramientas`:
+
+- `d`: resumen de sesiones,
+- `e`: exportar diagnóstico,
+- `l`: exportar listado,
+- `o`: abrir carpeta de resúmenes,
+- `b`: abrir carpeta de backups,
+- `r`: restaurar backup SQLite,
+- `0`: volver al menú inicial.
 
 ## Dónde guarda los datos
 

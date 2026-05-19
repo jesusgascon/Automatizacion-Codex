@@ -918,6 +918,83 @@ print(diagnostic_path)
 PY
 }
 
+show_tools_menu() {
+  while true; do
+    clear_screen
+    print_title 'Herramientas'
+    print_option_panel \
+      'd        Resumen de sesiones' \
+      'e        Exportar diagnostico' \
+      'l        Exportar listado' \
+      'o        Abrir carpeta de resumenes' \
+      'b        Abrir carpeta de backups' \
+      'r        Restaurar backup SQLite' \
+      '0        Volver al menu inicial'
+    printf '\nOpcion: '
+    if ! read -r tool_choice; then
+      exit 0
+    fi
+
+    case "$tool_choice" in
+      0)
+        return 0
+        ;;
+      d|D)
+        clear_screen
+        show_session_diagnostics
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      e|E)
+        clear_screen
+        print_title 'Exportar diagnostico'
+        exported_path="$(export_session_diagnostics)"
+        printf '\nDiagnostico guardado en:\n%s\n' "$exported_path"
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      l|L)
+        clear_screen
+        print_title 'Exportar listado'
+        VIEW_MODE="active"
+        ARCHIVED_VALUE=0
+        SESSION_FILTER=""
+        exported_listing="$(export_session_list)"
+        printf '\nListado guardado en:\n%s\n' "$exported_listing"
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      o|O)
+        clear_screen
+        print_title 'Abrir carpeta de resumenes'
+        mkdir -p "$OUT_DIR"
+        open_path_with_default_app "$OUT_DIR"
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      b|B)
+        clear_screen
+        print_title 'Abrir carpeta de backups'
+        mkdir -p "$BACKUP_DIR"
+        open_path_with_default_app "$BACKUP_DIR"
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      r|R)
+        clear_screen
+        restore_backup_interactive
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      *)
+        printf '\nOpcion no valida.\n'
+        printf '\nPulsa Enter para continuar...'
+        read -r
+        ;;
+    esac
+  done
+}
+
 while true; do
   clear_screen
   print_title 'Automatizacion-Codex'
@@ -925,13 +1002,8 @@ while true; do
   print_option_panel \
     '[Enter]  Sesiones activas' \
     'a        Sesiones archivadas' \
-    'd        Resumen de sesiones' \
-    'e        Exportar diagnostico' \
-    'l        Exportar listado' \
     'p        Vista por proyecto' \
-    'o        Abrir carpeta de resumenes' \
-    'b        Abrir carpeta de backups' \
-    'r        Restaurar backup SQLite' \
+    'h        Herramientas' \
     'q        Salir'
   printf '\nOpcion: '
   if ! read -r view_choice; then
@@ -942,34 +1014,6 @@ while true; do
     q|Q)
       exit 0
       ;;
-    d|D)
-      clear_screen
-      show_session_diagnostics
-      printf '\nPulsa Enter para volver al menu inicial...'
-      read -r
-      continue
-      ;;
-    e|E)
-      clear_screen
-      print_title 'Exportar diagnostico'
-      exported_path="$(export_session_diagnostics)"
-      printf '\nDiagnostico guardado en:\n%s\n' "$exported_path"
-      printf '\nPulsa Enter para volver al menu inicial...'
-      read -r
-      continue
-      ;;
-    l|L)
-      clear_screen
-      print_title 'Exportar listado'
-      VIEW_MODE="active"
-      ARCHIVED_VALUE=0
-      SESSION_FILTER=""
-      exported_listing="$(export_session_list)"
-      printf '\nListado guardado en:\n%s\n' "$exported_listing"
-      printf '\nPulsa Enter para volver al menu inicial...'
-      read -r
-      continue
-      ;;
     p|P)
       VIEW_MODE="active"
       ARCHIVED_VALUE=0
@@ -978,29 +1022,8 @@ while true; do
       read -r
       continue
       ;;
-    o|O)
-      clear_screen
-      print_title 'Abrir carpeta de resumenes'
-      mkdir -p "$OUT_DIR"
-      open_path_with_default_app "$OUT_DIR"
-      printf '\nPulsa Enter para volver al menu inicial...'
-      read -r
-      continue
-      ;;
-    b|B)
-      clear_screen
-      print_title 'Abrir carpeta de backups'
-      mkdir -p "$BACKUP_DIR"
-      open_path_with_default_app "$BACKUP_DIR"
-      printf '\nPulsa Enter para volver al menu inicial...'
-      read -r
-      continue
-      ;;
-    r|R)
-      clear_screen
-      restore_backup_interactive
-      printf '\nPulsa Enter para volver al menu inicial...'
-      read -r
+    h|H)
+      show_tools_menu
       continue
       ;;
     a|A)

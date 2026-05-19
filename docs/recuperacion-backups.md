@@ -61,7 +61,7 @@ Despues abre de nuevo el lanzador y revisa las sesiones.
 
 ## Restauracion asistida desde el menu
 
-Desde el menu inicial pulsa `r`.
+Desde el menu inicial pulsa `h` y despues `r`.
 
 El lanzador:
 

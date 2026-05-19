@@ -143,7 +143,7 @@ exit 0
     def test_diagnostics_explain_session_visibility(self):
         proc = subprocess.run(
             [str(SCRIPT)],
-            input="d\n\nq\n",
+            input="h\nd\n\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(),
@@ -157,7 +157,7 @@ exit 0
         summary_dir = self.home / "summaries"
         proc = subprocess.run(
             [str(SCRIPT)],
-            input="e\n\nq\n",
+            input="h\ne\n\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(CODEX_SUMMARY_DIR=str(summary_dir)),
@@ -174,7 +174,7 @@ exit 0
         summary_dir = self.home / "summaries"
         proc = subprocess.run(
             [str(SCRIPT)],
-            input="l\n\nq\n",
+            input="h\nl\n\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(CODEX_SUMMARY_DIR=str(summary_dir)),
@@ -399,7 +399,7 @@ exit 0
 
         subprocess.run(
             [str(SCRIPT)],
-            input="o\n\nb\n\nq\n",
+            input="h\no\n\nb\n\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(
@@ -483,7 +483,7 @@ exit 0
 
         proc = subprocess.run(
             [str(SCRIPT)],
-            input="r\n1\nRESTAURAR\n\nq\n",
+            input="h\nr\n1\nRESTAURAR\n\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(),
@@ -501,7 +501,7 @@ exit 0
     def test_restore_backup_is_disabled_in_read_only_mode(self):
         proc = subprocess.run(
             [str(SCRIPT)],
-            input="r\n\nq\n",
+            input="h\nr\n\n0\nq\n",
             text=True,
             capture_output=True,
             env=self._env(CODEX_READ_ONLY="1"),
