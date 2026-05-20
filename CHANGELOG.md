@@ -2,7 +2,18 @@
 
 ## Unreleased
 
-## 1.2.0 - 2026-05-20
+## 1.2.1 - 2026-05-20
+
+### Changed
+
+- Menu principal reorganizado por frecuencia de uso, con herramientas en submenu propio.
+- Accesos de diagnostico, exportacion, carpetas y restauracion movidos al submenu de herramientas.
+
+### Fixed
+
+- Los tests del instalador ya no heredan stdin interactivo, evitando esperas de `Enter` durante `python3 -m unittest discover`.
+
+## 1.2.0 - 2026-05-19
 
 ### Added
 
@@ -30,15 +41,6 @@
 - Vista por proyecto mejorada con agrupacion por raiz Git cuando existe.
 - Restauracion asistida con resumen previo del backup seleccionado.
 - Diagnostico de esquema SQLite con aviso de indices recomendados.
-
-### Changed
-
-- Menu principal reorganizado por frecuencia de uso, con herramientas en submenu propio.
-- Accesos de diagnostico, exportacion, carpetas y restauracion movidos al submenu de herramientas.
-
-### Fixed
-
-- Los tests del instalador ya no heredan stdin interactivo, evitando esperas de `Enter` durante `python3 -m unittest discover`.
 
 ## 1.1.0 - 2026-05-18
 
