@@ -1053,7 +1053,7 @@ PY
 }
 
 import_config_interactive() {
-  local import_path="${1:-$CONFIG_PATH}"
+  local import_path="$CONFIG_PATH"
   if [[ "$READ_ONLY_MODE" -eq 1 ]]; then
     printf '\nModo solo lectura activo. Importacion deshabilitada.\n'
     return 1
