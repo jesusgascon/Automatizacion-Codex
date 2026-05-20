@@ -79,7 +79,7 @@ No es un error. Significa que Codex guardo titulos poco informativos como:
 - `exit`
 - cadena vacia.
 
-El script no las oculta para no impedir su recuperacion. En esos casos intenta mostrar el primer mensaje util o una pista basada en la carpeta.
+El script no las oculta para no impedir su recuperacion. En esos casos intenta mostrar proyecto/carpeta y primer mensaje util, o una pista basada solo en la carpeta.
 
 ## He archivado una sesion y ya no aparece
 

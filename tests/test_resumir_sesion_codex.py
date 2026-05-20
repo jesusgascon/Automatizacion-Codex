@@ -352,9 +352,36 @@ exit 0
             env=self._env(),
             check=True,
         )
-        self.assertIn("preparar release local", proc.stdout)
-        self.assertIn("Trabajo en project", proc.stdout)
+        self.assertIn("project: preparar release local", proc.stdout)
+        self.assertIn("project", proc.stdout)
         self.assertNotIn("Sesion sin titulo util", proc.stdout)
+
+    def test_action_panel_truncates_long_box_lines(self):
+        long_dir = self.home / ("proyecto-" + "muy-largo-" * 8)
+        long_dir.mkdir()
+        con = sqlite3.connect(self.state_db)
+        con.execute(
+            """
+            insert into threads
+            (id, cwd, title, first_user_message, created_at, updated_at, tokens_used, archived, archived_at, source)
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("longbox", str(long_dir), "titulo largo", "mensaje", 100, 800, 10, 0, None, "cli"),
+        )
+        con.commit()
+        con.close()
+
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n1\n0\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        box_lines = [line for line in proc.stdout.splitlines() if line.startswith(("│", "|"))]
+        self.assertTrue(box_lines)
+        self.assertTrue(all(len(line) <= 81 for line in box_lines))
 
     def test_backup_rotation_keeps_latest_n(self):
         backup_dir = self.desktop / "Documentacion" / "Codex" / "Resumenes" / "backups"

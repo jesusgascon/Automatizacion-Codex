@@ -18,7 +18,7 @@ No. El menu ofrece archivado reversible, no borrado destructivo.
 
 ## Por que una sesion muestra una descripcion generica?
 
-Porque Codex guardo un titulo poco informativo, por ejemplo `.` o `exit`, y tampoco hay un primer mensaje suficientemente util. En ese caso se muestra una pista basada en la carpeta de trabajo.
+Porque Codex guardo un titulo poco informativo, por ejemplo `.` o `exit`. En ese caso se muestra una pista basada en proyecto/carpeta y primer mensaje util; si no hay mensaje util, se usa solo la carpeta de trabajo.
 
 ## Por que una sesion marca `NO` en `Resumen`?
 

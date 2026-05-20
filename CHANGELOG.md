@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.2.3 - 2026-05-20
+
+### Changed
+
+- Las sesiones con titulos poco utiles usan una descripcion basada en proyecto/carpeta y primer mensaje util.
+- Las cajas del menu recortan textos largos para evitar desbordes con rutas amplias.
+
 ## 1.2.2 - 2026-05-20
 
 ### Changed

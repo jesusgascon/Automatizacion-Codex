@@ -157,6 +157,9 @@ print_box_bottom() {
 print_box_line() {
   local text="$1"
   local style="${2:-}"
+  if (( ${#text} > 77 )); then
+    text="${text:0:74}..."
+  fi
   printf '%s %s%-77s%s %s\n' "$BOX_VERTICAL" "$style" "$text" "$STYLE_RESET" "$BOX_VERTICAL"
 }
 
@@ -291,6 +294,31 @@ rows = con.execute(
 ).fetchall()
 con.close()
 
+def project_label(cwd):
+    path = Path(cwd)
+    home_path = Path(home)
+    if path == home_path:
+        return "Carpeta personal"
+    root = path
+    for parent in [path, *path.parents]:
+        if parent == home_path.parent:
+            break
+        if (parent / ".git").is_dir():
+            root = parent
+            break
+    return root.name or path.name or cwd
+
+def describe_session(cwd, raw_title, raw_first):
+    low_signal = {"", ".", "exit"}
+    title_line = " ".join(raw_title.split())
+    first_line = " ".join(raw_first.split())
+    label = project_label(cwd)
+    if title_line.casefold() not in low_signal:
+        return title_line
+    if first_line.casefold() not in low_signal:
+        return f"{label}: {first_line}"
+    return label
+
 for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in rows:
     if not Path(cwd).is_dir():
         continue
@@ -301,16 +329,7 @@ for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in 
         continue
     when = datetime.fromtimestamp(updated_at).strftime("%Y-%m-%d %H:%M")
     started = datetime.fromtimestamp(created_at).strftime("%Y-%m-%d %H:%M")
-    low_signal = {"", ".", "exit"}
-    title_line = " ".join(raw_title.split())
-    first_line = " ".join(raw_first.split())
-    if title_line.casefold() not in low_signal:
-        clean_title = title_line
-    elif first_line.casefold() not in low_signal:
-        clean_title = first_line
-    else:
-        project_name = "carpeta personal" if cwd == home else (Path(cwd).name or cwd)
-        clean_title = f"Trabajo en {project_name}"
+    clean_title = describe_session(cwd, raw_title, raw_first)
     if len(clean_title) > 58:
         clean_title = clean_title[:55] + "..."
     short_cwd = cwd.replace(home, "~", 1)
@@ -357,6 +376,31 @@ rows = con.execute(
 ).fetchall()
 con.close()
 
+def project_label(cwd):
+    path = Path(cwd)
+    home_path = Path(home)
+    if path == home_path:
+        return "Carpeta personal"
+    root = path
+    for parent in [path, *path.parents]:
+        if parent == home_path.parent:
+            break
+        if (parent / ".git").is_dir():
+            root = parent
+            break
+    return root.name or path.name or cwd
+
+def describe_session(cwd, raw_title, raw_first):
+    low_signal = {"", ".", "exit"}
+    title_line = " ".join(raw_title.split())
+    first_line = " ".join(raw_first.split())
+    label = project_label(cwd)
+    if title_line.casefold() not in low_signal:
+        return title_line
+    if first_line.casefold() not in low_signal:
+        return f"{label}: {first_line}"
+    return label
+
 items = []
 for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in rows:
     if not Path(cwd).is_dir():
@@ -366,16 +410,7 @@ for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in 
     haystack = "\n".join((sid, cwd, raw_title, raw_first)).casefold()
     if session_filter and session_filter not in haystack:
         continue
-    low_signal = {"", ".", "exit"}
-    title_line = " ".join(raw_title.split())
-    first_line = " ".join(raw_first.split())
-    if title_line.casefold() not in low_signal:
-        clean_title = title_line
-    elif first_line.casefold() not in low_signal:
-        clean_title = first_line
-    else:
-        project_name = "carpeta personal" if cwd == home else (Path(cwd).name or cwd)
-        clean_title = f"Trabajo en {project_name}"
+    clean_title = describe_session(cwd, raw_title, raw_first)
     short_cwd = cwd.replace(home, "~", 1)
     has_summary = "SI" if any(out_dir.glob(f"resumen-codex-{sid}-*.txt")) else "NO"
     items.append(

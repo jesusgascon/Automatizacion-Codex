@@ -41,7 +41,7 @@ Codex conserva sesiones útiles, pero retomarlas días después no siempre es c�
 ```text
 N   Actualizada      Iniciada         Tokens       Resumen  Ruta                               Descripcion
 --- ---------------- ---------------- ------------ -------- ---------------------------------- ------------------------
-1   2026-05-18 15:38 2026-05-18 08:48 27.954.698   SI       ~/Escritorio                       Revisar automatizacion local
+1   2026-05-18 15:38 2026-05-18 08:48 27.954.698   SI       ~/Escritorio                       Automatizacion-Codex: revisar menu
 2   2026-05-08 09:56 2026-05-08 09:17 656.896      NO       ~/Escritorio/calendario-vacaciones $graphify .
 ```
 
@@ -204,7 +204,7 @@ Automatizacion-Codex/
 
 - SQLite se usa porque Codex ya mantiene ahí el catálogo local de sesiones.
 - Solo se listan sesiones de origen `cli` y `vscode` para evitar ruido interno.
-- Las sesiones con títulos pobres no se ocultan; la descripcion usa el primer mensaje o la carpeta como pista breve.
+- Las sesiones con títulos pobres no se ocultan; la descripcion usa proyecto/carpeta y primer mensaje como pista breve.
 - `codex exec --ephemeral` permite resumir sin contaminar el historial con otra sesión persistente.
 - Los resúmenes nuevos incluyen `session_id` en el nombre para asociarlos sin ambigüedad.
 - El filtrado por `HOME` distingue la ruta exacta de subrutas válidas y evita coincidencias solo por prefijo textual.

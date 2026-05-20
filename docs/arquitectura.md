@@ -87,7 +87,7 @@ Algunos hilos guardan como titulo:
 - `.`,
 - `exit`.
 
-Esos casos usan una descripcion alternativa de una linea: primero el primer mensaje util y, si tampoco sirve, la carpeta de trabajo.
+Esos casos usan una descripcion alternativa de una linea: proyecto/carpeta mas primer mensaje util y, si tampoco sirve, la carpeta de trabajo.
 
 Motivo:
 

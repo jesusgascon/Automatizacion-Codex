@@ -219,4 +219,4 @@ Posibles causas:
 
 ### Se ven descripciones genericas
 
-No es un fallo. Significa que la sesion existe, pero su titulo original no aporta informacion. El selector intenta mostrar el primer mensaje o una pista basada en la carpeta.
+No es un fallo. Significa que la sesion existe, pero su titulo original no aporta informacion. El selector intenta mostrar proyecto/carpeta y primer mensaje util, o una pista basada solo en la carpeta.
