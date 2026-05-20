@@ -123,6 +123,9 @@ Desde el submenu `h) Herramientas`:
 - `o`: abre la carpeta de resumenes,
 - `b`: abre la carpeta de backups,
 - `r`: inicia restauracion asistida desde backup SQLite,
+- `c`: audita compatibilidad de Codex CLI, esquema SQLite y rutas detectadas,
+- `g`: exporta configuracion local a JSON,
+- `i`: importa configuracion local para la ejecucion actual,
 - `?`: explica brevemente para que sirve cada herramienta,
 - `0`: vuelve al menu inicial.
 
@@ -223,6 +226,8 @@ Esto refuerza la reversibilidad de la unica operación que modifica la base loca
 Por defecto se conservan los 10 backups más recientes. El número puede ajustarse con `MAX_BACKUPS`.
 
 La misma rotacion se aplica a los backups creados antes de limpiar sesiones con rutas inexistentes.
+
+Antes de restaurar un backup, la restauracion asistida compara la base actual con el backup elegido y muestra cambios en sesiones bajo HOME, activas, archivadas, rutas inexistentes y sesiones tecnicas ocultas.
 
 ## 7. Reapertura interactiva
 

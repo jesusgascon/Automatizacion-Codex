@@ -80,6 +80,7 @@ DESKTOP_DIR="$(detect_desktop_dir)"
 OUT_DIR="${CODEX_SUMMARY_DIR:-$DESKTOP_DIR/Documentacion/Codex/Resumenes}"
 LOG_DIR="$OUT_DIR/logs"
 BACKUP_DIR="$OUT_DIR/backups"
+CONFIG_PATH="$OUT_DIR/configuracion-automatizacion-codex.json"
 MAX_BACKUPS="${MAX_BACKUPS:-10}"
 READ_ONLY_MODE=0
 if [[ "${CODEX_READ_ONLY:-}" == "1" || "${CODEX_READ_ONLY:-}" == "true" || "${CODEX_READ_ONLY:-}" == "TRUE" ]]; then
@@ -170,6 +171,12 @@ print_option_panel() {
     shift
   done
   print_box_bottom
+}
+
+refresh_output_paths() {
+  LOG_DIR="$OUT_DIR/logs"
+  BACKUP_DIR="$OUT_DIR/backups"
+  CONFIG_PATH="$OUT_DIR/configuracion-automatizacion-codex.json"
 }
 
 rotate_backups() {
@@ -667,6 +674,56 @@ source.close()
 PY
 }
 
+compare_state_databases() {
+  local current_db="$1"
+  local backup_db="$2"
+  CURRENT_DB="$current_db" BACKUP_DB="$backup_db" HOME_DIR="$HOME" python3 - <<'PY'
+import os
+import sqlite3
+from pathlib import Path
+
+home = os.environ["HOME_DIR"]
+
+def load(db):
+    con = sqlite3.connect(db)
+    rows = con.execute("select id, cwd, archived, source from threads").fetchall()
+    con.close()
+    under_home = [row for row in rows if row[1] and (row[1] == home or row[1].startswith(f"{home}/"))]
+    existing = [row for row in under_home if Path(row[1]).is_dir()]
+    return {
+        "ids": {row[0] for row in under_home},
+        "active": len([row for row in existing if row[2] == 0 and row[3] in ("cli", "vscode")]),
+        "archived": len([row for row in existing if row[2] == 1 and row[3] in ("cli", "vscode")]),
+        "missing": len(under_home) - len(existing),
+        "technical": len([row for row in existing if row[3] not in ("cli", "vscode")]),
+        "under_home": len(under_home),
+    }
+
+current = load(os.environ["CURRENT_DB"])
+backup = load(os.environ["BACKUP_DB"])
+
+print("  Campo                  Actual   Backup   Cambio")
+print("  ---------------------  -------  -------  ------")
+for key, label in [
+    ("under_home", "Sesiones bajo HOME"),
+    ("active", "Activas visibles"),
+    ("archived", "Archivadas visibles"),
+    ("missing", "Rutas inexistentes"),
+    ("technical", "Tecnicas ocultas"),
+]:
+    delta = backup[key] - current[key]
+    delta_label = f"{delta:+d}"
+    print(f"  {label:<21}  {current[key]:>7}  {backup[key]:>7}  {delta_label:>6}")
+
+added = sorted(backup["ids"] - current["ids"])
+removed = sorted(current["ids"] - backup["ids"])
+if added:
+    print("  IDs que aparecerian: " + ", ".join(added[:5]) + ("..." if len(added) > 5 else ""))
+if removed:
+    print("  IDs que desaparecerian: " + ", ".join(removed[:5]) + ("..." if len(removed) > 5 else ""))
+PY
+}
+
 clean_missing_path_sessions() {
   if [[ "$READ_ONLY_MODE" -eq 1 ]]; then
     printf '\nModo solo lectura activo. La limpieza de sesiones esta deshabilitada.\n'
@@ -758,26 +815,8 @@ restore_backup_interactive() {
   fi
 
   selected_backup="${restore_backups[$((backup_choice - 1))]}"
-  printf '\nResumen del backup seleccionado:\n'
-  STATE_DB="$selected_backup" HOME_DIR="$HOME" python3 - <<'PY'
-import os
-import sqlite3
-from pathlib import Path
-
-db = os.environ["STATE_DB"]
-home = os.environ["HOME_DIR"]
-con = sqlite3.connect(db)
-rows = con.execute("select cwd, archived, source from threads").fetchall()
-con.close()
-under_home = [row for row in rows if row[0] == home or row[0].startswith(f"{home}/")]
-existing = [row for row in under_home if Path(row[0]).is_dir()]
-active = [row for row in existing if row[1] == 0 and row[2] in ("cli", "vscode")]
-archived = [row for row in existing if row[1] == 1 and row[2] in ("cli", "vscode")]
-print(f"  Sesiones bajo HOME: {len(under_home)}")
-print(f"  Activas visibles: {len(active)}")
-print(f"  Archivadas visibles: {len(archived)}")
-print(f"  Rutas inexistentes: {len(under_home) - len(existing)}")
-PY
+  printf '\nComparacion con base actual:\n'
+  compare_state_databases "$STATE_DB" "$selected_backup"
   printf '\nSe va a reemplazar la base actual por:\n%s\n' "$selected_backup"
   printf 'Cierra Codex antes de continuar si lo tienes abierto.\n'
   printf 'Escribe RESTAURAR para confirmar: '
@@ -962,6 +1001,128 @@ print(diagnostic_path)
 PY
 }
 
+audit_codex_compatibility() {
+  print_title 'Auditoria de compatibilidad'
+  printf 'Codex: %s\n' "$CODEX_BIN"
+  if "$CODEX_BIN" --version >/dev/null 2>&1; then
+    printf 'Version Codex: %s\n' "$("$CODEX_BIN" --version 2>/dev/null | head -n 1)"
+  else
+    printf 'Version Codex: no disponible\n'
+  fi
+  printf 'Base SQLite: %s\n' "$STATE_DB"
+  printf 'Carpeta salidas: %s\n' "$OUT_DIR"
+  printf '\nEsquema SQLite:\n'
+  if validate_state_schema; then
+    printf '  OK: tabla threads compatible.\n'
+  else
+    printf '  ERROR: esquema no compatible.\n'
+  fi
+  printf '\nComandos Codex:\n'
+  if "$CODEX_BIN" resume --help >/dev/null 2>&1; then
+    printf '  OK: codex resume disponible.\n'
+  else
+    printf '  Aviso: no se pudo verificar codex resume.\n'
+  fi
+  if "$CODEX_BIN" exec --help >/dev/null 2>&1; then
+    printf '  OK: codex exec disponible.\n'
+  else
+    printf '  Aviso: no se pudo verificar codex exec.\n'
+  fi
+}
+
+export_config() {
+  mkdir -p "$OUT_DIR"
+  CONFIG_PATH="$CONFIG_PATH" CODEX_BIN="$CODEX_BIN" STATE_DB="$STATE_DB" OUT_DIR="$OUT_DIR" MAX_BACKUPS="$MAX_BACKUPS" CODEX_READ_ONLY="$READ_ONLY_MODE" CODEX_SUMMARY_OPENER="${CODEX_SUMMARY_OPENER:-}" CODEX_PATH_OPENER="${CODEX_PATH_OPENER:-}" python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+config = {
+    "CODEX_BIN": os.environ["CODEX_BIN"],
+    "STATE_DB": os.environ["STATE_DB"],
+    "CODEX_SUMMARY_DIR": os.environ["OUT_DIR"],
+    "MAX_BACKUPS": os.environ["MAX_BACKUPS"],
+    "CODEX_READ_ONLY": os.environ["CODEX_READ_ONLY"],
+    "CODEX_SUMMARY_OPENER": os.environ["CODEX_SUMMARY_OPENER"],
+    "CODEX_PATH_OPENER": os.environ["CODEX_PATH_OPENER"],
+}
+path = Path(os.environ["CONFIG_PATH"])
+path.write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+print(path)
+PY
+}
+
+import_config_interactive() {
+  local import_path="${1:-$CONFIG_PATH}"
+  if [[ "$READ_ONLY_MODE" -eq 1 ]]; then
+    printf '\nModo solo lectura activo. Importacion deshabilitada.\n'
+    return 1
+  fi
+  if [[ ! -f "$import_path" ]]; then
+    printf '\nNo existe configuracion exportada:\n%s\n' "$import_path"
+    return 1
+  fi
+  printf '\nSe importara configuracion desde:\n%s\n' "$import_path"
+  printf 'Afecta solo a esta ejecucion del lanzador. Escribe IMPORTAR para confirmar: '
+  if ! read -r confirm; then
+    exit 0
+  fi
+  if [[ "$confirm" != "IMPORTAR" ]]; then
+    printf 'Importacion cancelada.\n'
+    return 1
+  fi
+
+  mapfile -t config_lines < <(CONFIG_PATH="$import_path" python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+allowed = {
+    "CODEX_BIN",
+    "STATE_DB",
+    "CODEX_SUMMARY_DIR",
+    "MAX_BACKUPS",
+    "CODEX_READ_ONLY",
+    "CODEX_SUMMARY_OPENER",
+    "CODEX_PATH_OPENER",
+}
+data = json.loads(Path(os.environ["CONFIG_PATH"]).read_text(encoding="utf-8"))
+for key in sorted(allowed):
+    value = str(data.get(key, ""))
+    print(f"{key}\t{value}")
+PY
+  )
+  for line in "${config_lines[@]}"; do
+    IFS=$'\t' read -r key value <<< "$line"
+    case "$key" in
+      CODEX_BIN)
+        if [[ -n "$value" && -x "$value" ]]; then CODEX_BIN="$value"; fi
+        ;;
+      STATE_DB)
+        if [[ -n "$value" && -f "$value" ]]; then STATE_DB="$value"; fi
+        ;;
+      CODEX_SUMMARY_DIR)
+        if [[ -n "$value" ]]; then OUT_DIR="$value"; refresh_output_paths; fi
+        ;;
+      MAX_BACKUPS)
+        if [[ "$value" =~ ^[0-9]+$ ]]; then MAX_BACKUPS="$value"; fi
+        ;;
+      CODEX_READ_ONLY)
+        if [[ "$value" == "1" || "$value" == "true" || "$value" == "TRUE" ]]; then CODEX_READ_ONLY=1; READ_ONLY_MODE=1; else CODEX_READ_ONLY=0; READ_ONLY_MODE=0; fi
+        ;;
+      CODEX_SUMMARY_OPENER)
+        if [[ -n "$value" ]]; then CODEX_SUMMARY_OPENER="$value"; fi
+        ;;
+      CODEX_PATH_OPENER)
+        if [[ -n "$value" ]]; then CODEX_PATH_OPENER="$value"; fi
+        ;;
+    esac
+  done
+  printf '\nConfiguracion importada para esta ejecucion.\n'
+  printf 'Resumenes: %s\n' "$OUT_DIR"
+  printf 'Backups: %s\n' "$BACKUP_DIR"
+}
+
 show_tools_help() {
   print_title 'Ayuda de herramientas'
   print_option_panel \
@@ -970,8 +1131,34 @@ show_tools_help() {
     'l        Exporta el listado activo visible a Markdown y CSV.' \
     'o        Abre la carpeta donde se guardan resumenes y diagnosticos.' \
     'b        Abre la carpeta de backups SQLite creados antes de cambios.' \
-    'r        Restaura un backup SQLite con resumen previo y confirmacion.' \
+    'r        Restaura un backup SQLite tras compararlo con la base actual.' \
+    'c        Audita Codex CLI, esquema SQLite y rutas detectadas.' \
+    'g        Exporta configuracion local a JSON en la carpeta de resumenes.' \
+    'i        Importa ese JSON para la ejecucion actual del lanzador.' \
     '0        Vuelve al menu inicial sin hacer cambios.'
+}
+
+show_list_help() {
+  print_title 'Ayuda del listado'
+  print_option_panel \
+    'Numero   Abre el menu de acciones de esa sesion.' \
+    'f        Filtra por ID, ruta, titulo o primer mensaje.' \
+    'l        Limpia el filtro textual activo cuando exista.' \
+    'x        Limpia sesiones con carpeta borrada, con backup y confirmacion.' \
+    '0        Vuelve al menu inicial.'
+}
+
+show_session_actions_help() {
+  print_title 'Ayuda de acciones'
+  print_option_panel \
+    '1        Genera resumen txt y Markdown de la sesion seleccionada.' \
+    '2        Reabre la sesion real con codex resume.' \
+    '3        Genera resumen y despues reabre la sesion.' \
+    '4        Archiva o desarchiva sin borrar, con backup previo.' \
+    '5        Muestra el ultimo resumen asociado.' \
+    '6        Abre el resumen asociado en el visor/editor predeterminado.' \
+    '7        Muestra ID, ruta, fechas, tokens y resumen asociado.' \
+    '0        Vuelve al listado.'
 }
 
 show_tools_menu() {
@@ -985,6 +1172,9 @@ show_tools_menu() {
       'o        Abrir carpeta de resumenes' \
       'b        Abrir carpeta de backups' \
       'r        Restaurar backup SQLite' \
+      'c        Auditar compatibilidad' \
+      'g        Exportar configuracion' \
+      'i        Importar configuracion' \
       '?        Ayuda de herramientas' \
       '0        Volver al menu inicial'
     printf '\nOpcion: '
@@ -1040,6 +1230,27 @@ show_tools_menu() {
       r|R)
         clear_screen
         restore_backup_interactive
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      c|C)
+        clear_screen
+        audit_codex_compatibility
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      g|G)
+        clear_screen
+        print_title 'Exportar configuracion'
+        exported_config="$(export_config)"
+        printf '\nConfiguracion guardada en:\n%s\n' "$exported_config"
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      i|I)
+        clear_screen
+        print_title 'Importar configuracion'
+        import_config_interactive
         printf '\nPulsa Enter para volver a herramientas...'
         read -r
         ;;
@@ -1117,6 +1328,7 @@ while true; do
     list_actions=(
       '0        Volver al menu inicial'
       'f        Filtrar por texto'
+      '?        Ayuda del listado'
     )
     if [[ "$READ_ONLY_MODE" -eq 0 ]]; then
       list_actions+=('x        Limpiar sesiones con ruta inexistente')
@@ -1151,6 +1363,14 @@ while true; do
     if [[ "$choice" == "l" || "$choice" == "L" ]]; then
       SESSION_FILTER=""
       load_sessions
+      continue
+    fi
+
+    if [[ "$choice" == "?" || "$choice" == "ayuda" || "$choice" == "Ayuda" || "$choice" == "AYUDA" ]]; then
+      clear_screen
+      show_list_help
+      printf '\nPulsa Enter para volver al listado...'
+      read -r
       continue
     fi
 
@@ -1192,6 +1412,7 @@ while true; do
           '5        Ver ultimo resumen guardado' \
           '6        Abrir resumen en editor predeterminado' \
           '7        Ver detalles tecnicos' \
+          '?        Ayuda de acciones' \
           '0        Volver al listado de sesiones'
       else
         print_option_panel \
@@ -1201,6 +1422,7 @@ while true; do
           '5        Ver ultimo resumen guardado' \
           '6        Abrir resumen en editor predeterminado' \
           '7        Ver detalles tecnicos' \
+          '?        Ayuda de acciones' \
           '0        Volver al listado de sesiones'
         printf '\nModo solo lectura activo: archivado y limpieza deshabilitados.\n'
       fi
@@ -1274,6 +1496,11 @@ while true; do
           ;;
         7)
           show_session_details
+          printf '\nPulsa Enter para volver al menu de acciones...'
+          read -r
+          ;;
+        '?'|ayuda|Ayuda|AYUDA)
+          show_session_actions_help
           printf '\nPulsa Enter para volver al menu de acciones...'
           read -r
           ;;

@@ -127,6 +127,9 @@ Desde `h) Herramientas`:
 - `o`: abrir carpeta de resúmenes,
 - `b`: abrir carpeta de backups,
 - `r`: restaurar backup SQLite,
+- `c`: auditar compatibilidad de Codex y SQLite,
+- `g`: exportar configuración local,
+- `i`: importar configuración local,
 - `?`: ayuda de herramientas,
 - `0`: volver al menú inicial.
 
@@ -271,6 +274,7 @@ Para uso normal no hace falta definirlas; la autodetección es la ruta recomenda
 bash -n resumir-sesion-codex.sh instalar.sh
 python3 -m unittest discover -s tests -v
 python3 scripts/privacy_check.py
+python3 scripts/release_check.py
 ```
 
 ## Licencia

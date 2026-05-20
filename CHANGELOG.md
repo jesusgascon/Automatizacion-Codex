@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 1.3.0 - 2026-05-20
+
+### Added
+
+- Ayuda contextual con `?` en el listado de sesiones y en el menu de acciones.
+- Comparacion entre base actual y backup antes de confirmar una restauracion SQLite.
+- Exportacion e importacion de configuracion local desde el submenu de herramientas.
+- Auditoria de compatibilidad para Codex CLI, rutas detectadas y esquema SQLite.
+- Script `scripts/release_check.py` para agrupar sintaxis Bash, tests y privacidad.
+
 ## 1.2.4 - 2026-05-20
 
 ### Added

@@ -73,6 +73,15 @@ Para forzar el abridor de carpetas:
 CODEX_PATH_OPENER="/usr/bin/xdg-open" bash resumir-sesion-codex.sh
 ```
 
+### Exportar e importar configuracion
+
+Desde `Herramientas` se puede:
+
+- pulsar `g` para exportar la configuracion local a `configuracion-automatizacion-codex.json`,
+- pulsar `i` para importar ese JSON durante la ejecucion actual.
+
+La importacion no reescribe el lanzador ni modifica archivos del repositorio. Sirve para comprobar una configuracion concreta o mover ajustes entre equipos antes de reinstalar el lanzador.
+
 ## Mantenimiento recomendado
 
 ### Tras actualizar el repositorio
@@ -81,18 +90,14 @@ Ejecutar:
 
 ```bash
 git pull --ff-only
-bash -n resumir-sesion-codex.sh instalar.sh
-python3 -m unittest discover -s tests -v
-python3 scripts/privacy_check.py
+python3 scripts/release_check.py
 bash instalar.sh
 ```
 
 Motivo:
 
 - `git pull --ff-only` evita merges accidentales en una copia de uso personal,
-- `bash -n` valida sintaxis,
-- los tests cubren regresiones conocidas,
-- `privacy_check.py` evita subir rutas reales, bases SQLite, logs o identificadores reales,
+- `release_check.py` agrupa sintaxis Bash, tests Python y comprobacion de privacidad,
 - volver a ejecutar el instalador actualiza el lanzador si cambia la ruta o la plantilla.
 
 ### Periodicamente
@@ -104,6 +109,7 @@ Revisar:
 - que los logs no crecen sin control,
 - que los backups conservados siguen siendo suficientes para tu forma de trabajo,
 - que README y manual siguen describiendo el comportamiento real si se cambia el script.
+- que la auditoria de compatibilidad del menu `Herramientas` reconoce `codex resume`, `codex exec` y el esquema SQLite.
 
 ## Gestion de salidas
 
@@ -114,6 +120,7 @@ El proyecto escribe fuera del repositorio, dentro de la carpeta de salidas elegi
 ├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.txt
 ├── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.md
 ├── diagnostico-sesiones-codex-YYYYMMDD-HHMMSS.md
+├── configuracion-automatizacion-codex.json
 ├── logs/
 │   └── resumen-codex-<session_id>-YYYYMMDD-HHMMSS.log
 └── backups/
@@ -165,8 +172,7 @@ Antes de introducir cambios nuevos, comprobar:
 ## Checklist de salud
 
 - `git status` sin cambios inesperados.
-- `bash -n resumir-sesion-codex.sh instalar.sh` correcto.
-- `python3 -m unittest discover -s tests -v` correcto.
+- `python3 scripts/release_check.py` correcto.
 - El lanzador abre el terminal predeterminado.
 - La vista inicial distingue activas y archivadas.
 - La columna `Resumen` cambia de `NO` a `SI` tras generar un resumen.

@@ -35,15 +35,18 @@
 - [x] Crear workflow Python formal con matriz de versiones.
 - [x] Anadir comprobacion automatica de privacidad.
 - [x] Exportar listado de sesiones a Markdown y CSV.
-- [x] Probar backup antes de restaurar mostrando resumen previo.
+- [x] Probar backup antes de restaurar comparandolo con la base actual.
 - [x] Agrupar proyectos por raiz Git cuando existe.
 - [x] Ampliar diagnostico de esquema SQLite con indices recomendados.
+- [x] Anadir ayuda contextual en listado y menu de acciones de sesion.
+- [x] Exportar e importar configuracion local.
+- [x] Crear comprobacion local de release.
+- [x] Auditar compatibilidad con Codex CLI desde el menu.
 
 ## Pendiente recomendado
 
 - [ ] Ampliar filtros por fecha o estado de resumen.
-- [ ] Mejorar automatizacion de releases.
-- [ ] Exportar/importar configuracion.
+- [ ] Ampliar pruebas de consultas SQLite con bases grandes.
 
 ## Criterios antes de cerrar una tarea
 

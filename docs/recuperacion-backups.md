@@ -67,7 +67,7 @@ El lanzador:
 
 1. muestra los ultimos backups disponibles,
 2. pide seleccionar uno,
-3. muestra un resumen del backup seleccionado,
+3. compara la base actual con el backup seleccionado,
 4. exige escribir `RESTAURAR`,
 5. crea un backup previo de la base que va a reemplazar,
 6. copia el backup elegido sobre la base activa.

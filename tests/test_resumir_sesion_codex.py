@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import json
 import sqlite3
 import subprocess
 import sys
@@ -186,6 +187,20 @@ exit 0
         self.assertIn("Ayuda de herramientas", proc.stdout)
         self.assertIn("Resumen visual", proc.stdout)
         self.assertIn("Restaura un backup SQLite", proc.stdout)
+
+    def test_list_and_session_menus_have_help(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n?\n\n1\n?\n\n0\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Ayuda del listado", proc.stdout)
+        self.assertIn("Filtra por ID", proc.stdout)
+        self.assertIn("Ayuda de acciones", proc.stdout)
+        self.assertIn("Genera resumen txt", proc.stdout)
 
     def test_session_list_can_be_exported_to_markdown_and_csv(self):
         summary_dir = self.home / "summaries"
@@ -559,7 +574,8 @@ exit 0
             check=True,
         )
         self.assertIn("Restauracion completada", proc.stdout)
-        self.assertIn("Resumen del backup seleccionado", proc.stdout)
+        self.assertIn("Comparacion con base actual", proc.stdout)
+        self.assertIn("Campo", proc.stdout)
         self.assertIn("Activas visibles", proc.stdout)
         con = sqlite3.connect(self.state_db)
         rows = con.execute("select id from threads where id = 'calendar'").fetchall()
@@ -577,6 +593,44 @@ exit 0
             check=True,
         )
         self.assertIn("Modo solo lectura activo. Restauracion deshabilitada.", proc.stdout)
+
+    def test_tools_can_export_and_import_configuration(self):
+        summary_dir = self.home / "summaries"
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="h\ng\n\ni\nIMPORTAR\n\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(CODEX_SUMMARY_DIR=str(summary_dir), MAX_BACKUPS="7"),
+            check=True,
+        )
+        config_file = summary_dir / "configuracion-automatizacion-codex.json"
+        self.assertTrue(config_file.is_file())
+        data = json.loads(config_file.read_text())
+        self.assertEqual(data["MAX_BACKUPS"], "7")
+        self.assertIn("Configuracion importada", proc.stdout)
+
+    def test_compatibility_audit_reports_codex_and_schema(self):
+        self.codex_bin.write_text(
+            "#!/usr/bin/env bash\n"
+            "if [[ \"$1\" == \"--version\" ]]; then echo codex-test; exit 0; fi\n"
+            "if [[ \"$1\" == \"resume\" && \"$2\" == \"--help\" ]]; then exit 0; fi\n"
+            "if [[ \"$1\" == \"exec\" && \"$2\" == \"--help\" ]]; then exit 0; fi\n"
+            "exit 0\n"
+        )
+        self.codex_bin.chmod(0o755)
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="h\nc\n\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Auditoria de compatibilidad", proc.stdout)
+        self.assertIn("Version Codex: codex-test", proc.stdout)
+        self.assertIn("OK: tabla threads compatible", proc.stdout)
+        self.assertIn("OK: codex resume disponible", proc.stdout)
 
     def test_session_title_sanitizes_tabs_and_newlines(self):
         con = sqlite3.connect(self.state_db)

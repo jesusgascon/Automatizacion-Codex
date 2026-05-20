@@ -251,7 +251,7 @@ Estado:
 
 ### 18. Prueba de backup antes de restaurar
 
-Mostrar resumen de sesiones del backup seleccionado antes de exigir confirmacion `RESTAURAR`.
+Comparar la base actual con el backup seleccionado antes de exigir confirmacion `RESTAURAR`.
 
 Estado:
 
@@ -273,19 +273,48 @@ Estado:
 
 - implementado.
 
+### 21. Ayuda contextual ampliada
+
+Anadir ayuda con `?` en listado y acciones de sesion, ademas del submenu de herramientas.
+
+Estado:
+
+- implementado.
+
+### 22. Exportacion e importacion de configuracion
+
+Guardar los ajustes locales detectados en JSON e importarlos para la ejecucion actual.
+
+Estado:
+
+- implementado.
+
+### 23. Comprobacion local de release
+
+Agrupar sintaxis Bash, tests Python y privacidad en `scripts/release_check.py`.
+
+Estado:
+
+- implementado.
+
+### 24. Auditoria de compatibilidad Codex CLI
+
+Verificar version disponible, comandos `resume` y `exec`, rutas detectadas y esquema SQLite desde el submenu de herramientas.
+
+Estado:
+
+- implementado.
+
 ## Plan de implementacion futura
 
 1. Ampliar filtros por fecha o estado de resumen.
-2. Mejorar automatizacion de releases.
-3. Revisar compatibilidad con nuevas versiones de Codex CLI.
-4. Comparador de backups antes de restaurar.
-5. Exportar/importar configuracion.
+2. Ampliar pruebas con bases SQLite grandes.
+3. Revisar compatibilidad manualmente tras cambios mayores de Codex CLI.
 
 ## Validacion obligatoria
 
 ```bash
-bash -n resumir-sesion-codex.sh instalar.sh
-python3 -m unittest discover -s tests -v
+python3 scripts/release_check.py
 ```
 
 Si se modifican lanzadores:
