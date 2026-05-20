@@ -85,7 +85,7 @@ Cada sesion muestra:
 - si existe resumen asociado,
 - titulo normalizado.
 
-Si el titulo original no aporta informacion, el selector mantiene `Sesion sin titulo util`, pero la tabla muestra aparte fecha de inicio y tokens para distinguir mejor sesiones reales de aperturas accidentales.
+Si el titulo original no aporta informacion, el selector usa el primer mensaje como descripcion breve. Si tampoco aporta informacion, usa la carpeta de trabajo como pista, por ejemplo `Trabajo en Automatizacion-Codex`.
 
 Las sesiones cuyo directorio original ya no existe se ocultan por defecto. Desde el listado se puede pulsar `x` para eliminarlas de la base local tras confirmacion explicita y backup previo.
 
@@ -94,7 +94,7 @@ Si `CODEX_READ_ONLY=1`, la opcion `x` se oculta y la limpieza queda deshabilitad
 Ejemplo:
 
 ```text
-1   2026-05-18 11:03  2026-05-18 08:48  23.072.099  NO  ~/Escritorio  Sesion sin titulo util
+1   2026-05-18 11:03  2026-05-18 08:48  23.072.099  NO  ~/Escritorio  Revisar automatizacion local
 ```
 
 ## 5. Seleccion de accion

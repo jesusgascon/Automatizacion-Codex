@@ -87,7 +87,7 @@ Algunos hilos guardan como titulo:
 - `.`,
 - `exit`.
 
-Esos casos se muestran como `Sesion sin titulo util`.
+Esos casos usan una descripcion alternativa de una linea: primero el primer mensaje util y, si tampoco sirve, la carpeta de trabajo.
 
 Motivo:
 

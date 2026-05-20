@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.2.2 - 2026-05-20
+
+### Changed
+
+- El diagnostico de sesiones ya no muestra atajos que no se pueden usar dentro de esa pantalla informativa.
+- Las sesiones con titulos poco utiles usan una descripcion de una linea basada en el primer mensaje o la carpeta de trabajo.
+
 ## 1.2.1 - 2026-05-20
 
 ### Changed

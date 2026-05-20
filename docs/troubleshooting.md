@@ -71,7 +71,7 @@ Si una sesion no aparece, revisar esos criterios antes de asumir perdida de dato
 
 Para ver una explicacion resumida en el propio lanzador, elegir `d) Resumen de sesiones` desde la vista inicial.
 
-## Se ven muchas sesiones `Sesion sin titulo util`
+## Se ven descripciones genericas de trabajo
 
 No es un error. Significa que Codex guardo titulos poco informativos como:
 
@@ -79,7 +79,7 @@ No es un error. Significa que Codex guardo titulos poco informativos como:
 - `exit`
 - cadena vacia.
 
-El script no las oculta para no impedir su recuperacion.
+El script no las oculta para no impedir su recuperacion. En esos casos intenta mostrar el primer mensaje util o una pista basada en la carpeta.
 
 ## He archivado una sesion y ya no aparece
 

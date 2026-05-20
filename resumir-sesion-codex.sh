@@ -302,13 +302,15 @@ for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in 
     when = datetime.fromtimestamp(updated_at).strftime("%Y-%m-%d %H:%M")
     started = datetime.fromtimestamp(created_at).strftime("%Y-%m-%d %H:%M")
     low_signal = {"", ".", "exit"}
-    if raw_title in low_signal:
-        clean_title = "Sesion sin titulo util"
-    elif raw_first in low_signal and raw_title == raw_first:
-        clean_title = "Sesion sin titulo util"
+    title_line = " ".join(raw_title.split())
+    first_line = " ".join(raw_first.split())
+    if title_line.casefold() not in low_signal:
+        clean_title = title_line
+    elif first_line.casefold() not in low_signal:
+        clean_title = first_line
     else:
-        clean_title = raw_title
-    clean_title = clean_title.replace("\t", " ").replace("\n", " ")
+        project_name = "carpeta personal" if cwd == home else (Path(cwd).name or cwd)
+        clean_title = f"Trabajo en {project_name}"
     if len(clean_title) > 58:
         clean_title = clean_title[:55] + "..."
     short_cwd = cwd.replace(home, "~", 1)
@@ -364,8 +366,16 @@ for sid, cwd, title, first_user_message, created_at, updated_at, tokens_used in 
     haystack = "\n".join((sid, cwd, raw_title, raw_first)).casefold()
     if session_filter and session_filter not in haystack:
         continue
-    clean_title = raw_title if raw_title not in {"", ".", "exit"} else "Sesion sin titulo util"
-    clean_title = clean_title.replace("\t", " ").replace("\n", " ")
+    low_signal = {"", ".", "exit"}
+    title_line = " ".join(raw_title.split())
+    first_line = " ".join(raw_first.split())
+    if title_line.casefold() not in low_signal:
+        clean_title = title_line
+    elif first_line.casefold() not in low_signal:
+        clean_title = first_line
+    else:
+        project_name = "carpeta personal" if cwd == home else (Path(cwd).name or cwd)
+        clean_title = f"Trabajo en {project_name}"
     short_cwd = cwd.replace(home, "~", 1)
     has_summary = "SI" if any(out_dir.glob(f"resumen-codex-{sid}-*.txt")) else "NO"
     items.append(
@@ -846,15 +856,14 @@ if outside_home:
 
 print("\nQue significa")
 print(rule)
-print("  Activas              aparecen al pulsar Enter")
-print("  Archivadas           aparecen al pulsar a y se pueden desarchivar")
+print("  Activas              vista principal de sesiones disponibles")
+print("  Archivadas           sesiones ocultas que se pueden recuperar")
 print("  Carpeta borrada      no se muestran para evitar errores al abrirlas")
 print("  Tecnicas internas    tareas auxiliares de Codex, no sesiones normales")
 
-print("\nAcciones utiles")
+print("\nSiguiente paso")
 print(rule)
-print("  a    Ver archivadas")
-print("  x    Limpiar sesiones con carpeta borrada desde un listado")
+print("  Pulsa Enter para volver a herramientas y elegir una accion.")
 
 print("\nDetalle tecnico")
 print(rule)

@@ -16,9 +16,9 @@ Si, siempre que ese equipo tenga Codex CLI instalado, autenticado y con sesiones
 
 No. El menu ofrece archivado reversible, no borrado destructivo.
 
-## Por que una sesion muestra `Sesion sin titulo util`?
+## Por que una sesion muestra una descripcion generica?
 
-Porque Codex guardo un titulo poco informativo, por ejemplo `.` o `exit`.
+Porque Codex guardo un titulo poco informativo, por ejemplo `.` o `exit`, y tampoco hay un primer mensaje suficientemente util. En ese caso se muestra una pista basada en la carpeta de trabajo.
 
 ## Por que una sesion marca `NO` en `Resumen`?
 

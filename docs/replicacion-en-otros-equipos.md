@@ -217,6 +217,6 @@ Posibles causas:
 - el entorno grafico no confia aun en el `.desktop`,
 - el terminal indicado no existe.
 
-### Se ven sesiones con `Sesion sin titulo util`
+### Se ven descripciones genericas
 
-No es un fallo. Significa que la sesion existe, pero su titulo original no aporta informacion.
+No es un fallo. Significa que la sesion existe, pero su titulo original no aporta informacion. El selector intenta mostrar el primer mensaje o una pista basada en la carpeta.

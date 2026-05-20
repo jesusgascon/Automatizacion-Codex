@@ -153,6 +153,9 @@ exit 0
         self.assertIn("Resumen de sesiones", proc.stdout)
         self.assertIn("Activas que puedes abrir ahora", proc.stdout)
         self.assertIn("Que significa", proc.stdout)
+        self.assertIn("Siguiente paso", proc.stdout)
+        self.assertNotIn("a    Ver archivadas", proc.stdout)
+        self.assertNotIn("x    Limpiar sesiones", proc.stdout)
 
     def test_diagnostics_can_be_exported_to_markdown(self):
         summary_dir = self.home / "summaries"
@@ -327,6 +330,31 @@ exit 0
         )
         self.assertIn("Filtro activo: calendario", proc.stdout)
         self.assertIn("calendario vacaciones", proc.stdout)
+
+    def test_low_signal_title_uses_one_line_fallback_description(self):
+        con = sqlite3.connect(self.state_db)
+        con.execute(
+            """
+            insert into threads
+            (id, cwd, title, first_user_message, created_at, updated_at, tokens_used, archived, archived_at, source)
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("fallback", str(self.project_dir), ".", "preparar release local", 100, 450, 10, 0, None, "cli"),
+        )
+        con.commit()
+        con.close()
+
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("preparar release local", proc.stdout)
+        self.assertIn("Trabajo en project", proc.stdout)
+        self.assertNotIn("Sesion sin titulo util", proc.stdout)
 
     def test_backup_rotation_keeps_latest_n(self):
         backup_dir = self.desktop / "Documentacion" / "Codex" / "Resumenes" / "backups"

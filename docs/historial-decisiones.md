@@ -28,7 +28,7 @@ Motivo:
 
 Decision:
 
-- mostrarlas como `Sesion sin titulo util` y separar fecha de inicio + tokens en columnas dedicadas.
+- mostrarlas con una descripcion alternativa de una linea y separar fecha de inicio + tokens en columnas dedicadas.
 
 Motivo:
 
