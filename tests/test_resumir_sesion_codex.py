@@ -133,6 +133,7 @@ exit 0
     def test_installer_reports_detected_codex_path(self):
         proc = subprocess.run(
             [str(INSTALLER)],
+            input="",
             text=True,
             capture_output=True,
             env=self._env(),
@@ -592,6 +593,7 @@ exit 0
 
         subprocess.run(
             [str(installer_copy)],
+            input="",
             text=True,
             capture_output=True,
             env=self._env(),
@@ -635,6 +637,7 @@ exit 0
         env = self._env(PATH=str(tool_dir))
         subprocess.run(
             ["/bin/bash", str(installer_copy)],
+            input="",
             text=True,
             capture_output=True,
             env=env,
@@ -659,6 +662,7 @@ exit 0
     def test_installer_creates_user_application_launcher(self):
         subprocess.run(
             [str(INSTALLER)],
+            input="",
             text=True,
             capture_output=True,
             env=self._env(),
