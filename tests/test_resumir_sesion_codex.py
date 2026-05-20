@@ -174,6 +174,19 @@ exit 0
         self.assertIn("# Diagnostico de sesiones de Codex", content)
         self.assertIn("Activas que puedes abrir ahora", content)
 
+    def test_tools_menu_has_contextual_help(self):
+        proc = subprocess.run(
+            [str(SCRIPT)],
+            input="h\n?\n\n0\nq\n",
+            text=True,
+            capture_output=True,
+            env=self._env(),
+            check=True,
+        )
+        self.assertIn("Ayuda de herramientas", proc.stdout)
+        self.assertIn("Resumen visual", proc.stdout)
+        self.assertIn("Restaura un backup SQLite", proc.stdout)
+
     def test_session_list_can_be_exported_to_markdown_and_csv(self):
         summary_dir = self.home / "summaries"
         proc = subprocess.run(

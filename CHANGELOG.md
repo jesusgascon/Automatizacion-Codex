@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.2.4 - 2026-05-20
+
+### Added
+
+- El submenu de herramientas incluye ayuda contextual con `?` para explicar cada opcion.
+
 ## 1.2.3 - 2026-05-20
 
 ### Changed

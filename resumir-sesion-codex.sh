@@ -962,6 +962,18 @@ print(diagnostic_path)
 PY
 }
 
+show_tools_help() {
+  print_title 'Ayuda de herramientas'
+  print_option_panel \
+    'd        Resumen visual: activas, archivadas, carpetas borradas y base usada.' \
+    'e        Guarda ese diagnostico como Markdown en la carpeta de resumenes.' \
+    'l        Exporta el listado activo visible a Markdown y CSV.' \
+    'o        Abre la carpeta donde se guardan resumenes y diagnosticos.' \
+    'b        Abre la carpeta de backups SQLite creados antes de cambios.' \
+    'r        Restaura un backup SQLite con resumen previo y confirmacion.' \
+    '0        Vuelve al menu inicial sin hacer cambios.'
+}
+
 show_tools_menu() {
   while true; do
     clear_screen
@@ -973,6 +985,7 @@ show_tools_menu() {
       'o        Abrir carpeta de resumenes' \
       'b        Abrir carpeta de backups' \
       'r        Restaurar backup SQLite' \
+      '?        Ayuda de herramientas' \
       '0        Volver al menu inicial'
     printf '\nOpcion: '
     if ! read -r tool_choice; then
@@ -1027,6 +1040,12 @@ show_tools_menu() {
       r|R)
         clear_screen
         restore_backup_interactive
+        printf '\nPulsa Enter para volver a herramientas...'
+        read -r
+        ;;
+      '?'|ayuda|Ayuda|AYUDA)
+        clear_screen
+        show_tools_help
         printf '\nPulsa Enter para volver a herramientas...'
         read -r
         ;;

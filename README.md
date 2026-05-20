@@ -127,6 +127,7 @@ Desde `h) Herramientas`:
 - `o`: abrir carpeta de resúmenes,
 - `b`: abrir carpeta de backups,
 - `r`: restaurar backup SQLite,
+- `?`: ayuda de herramientas,
 - `0`: volver al menú inicial.
 
 ## Dónde guarda los datos

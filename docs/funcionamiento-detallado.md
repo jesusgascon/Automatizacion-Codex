@@ -123,6 +123,7 @@ Desde el submenu `h) Herramientas`:
 - `o`: abre la carpeta de resumenes,
 - `b`: abre la carpeta de backups,
 - `r`: inicia restauracion asistida desde backup SQLite,
+- `?`: explica brevemente para que sirve cada herramienta,
 - `0`: vuelve al menu inicial.
 
 Desde el menu inicial, `p` muestra sesiones agrupadas por carpeta/proyecto.
